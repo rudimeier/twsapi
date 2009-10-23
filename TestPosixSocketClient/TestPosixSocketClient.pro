@@ -1,3 +1,7 @@
+TEMPLATE = app
+
+CONFIG -= qt
+
 SOURCES += \
   ../PosixSocketClient/src/EClientSocketBase.cpp \
   ../PosixSocketClient/src/EPosixClientSocket.cpp \
