@@ -5,6 +5,8 @@
 #include "IBString.h"
 
 #include <float.h>
+#include <limits.h>
+
 #include <vector>
 
 #define UNSET_DOUBLE DBL_MAX

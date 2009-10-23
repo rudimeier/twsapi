@@ -28,7 +28,7 @@ import com.ib.client.Order;
 import com.ib.client.UnderComp;
 
 public class OrderDlg extends JDialog {
-	final static String ALL_GENERIC_TICK_TAGS = "mdoff,100,101,104,105,106,107,165,221,225,233,236,258";
+	final static String ALL_GENERIC_TICK_TAGS = "100,101,104,105,106,107,165,221,225,233,236,258";
     final static int OPERATION_INSERT = 0;
     final static int OPERATION_UPDATE = 1;
     final static int OPERATION_DELETE = 2;
@@ -179,9 +179,9 @@ public class OrderDlg extends JDialog {
         addGBComponent(pOrderDetails, m_totalQuantity, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
         addGBComponent(pOrderDetails, new JLabel( "Order Type"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
         addGBComponent(pOrderDetails, m_orderType, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
-        addGBComponent(pOrderDetails, new JLabel( "Lmt Price"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
+        addGBComponent(pOrderDetails, new JLabel( "Lmt Price / Option Price / Volatility"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
         addGBComponent(pOrderDetails, m_lmtPrice, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
-        addGBComponent(pOrderDetails, new JLabel( "Aux Price"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
+        addGBComponent(pOrderDetails, new JLabel( "Aux Price / Underlying Price"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
         addGBComponent(pOrderDetails, m_auxPrice, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
         addGBComponent(pOrderDetails, new JLabel( "Good After Time"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
         addGBComponent(pOrderDetails, m_goodAfterTime, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);

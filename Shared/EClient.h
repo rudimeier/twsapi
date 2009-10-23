@@ -53,6 +53,10 @@ public:
    virtual void reqCurrentTime() = 0;
    virtual void reqFundamentalData( TickerId reqId, const Contract&, const IBString& reportType) = 0;
    virtual void cancelFundamentalData( TickerId reqId) = 0;
+   virtual void calculateImpliedVolatility( TickerId reqId, const Contract &contract, double optionPrice, double underPrice) = 0;
+   virtual void calculateOptionPrice( TickerId reqId, const Contract &contract, double volatility, double underPrice) = 0;
+   virtual void cancelCalculateImpliedVolatility( TickerId reqId) = 0;
+   virtual void cancelCalculateOptionPrice( TickerId reqId) = 0;
 private:
 };
 

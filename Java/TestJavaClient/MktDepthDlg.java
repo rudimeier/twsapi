@@ -101,6 +101,7 @@ public class MktDepthDlg extends JDialog {
                     if ( side == SIDE_BID ) {
                             tmpRow = m_bidModel.getOrderAt(position);
                             if ( tmpRow != null ) {
+                                    tmpRow.m_marketMaker = marketMaker;
                                     tmpRow.m_price = price;
                                     tmpRow.m_size = size;
                             }
@@ -109,6 +110,7 @@ public class MktDepthDlg extends JDialog {
                     else {
                             tmpRow = m_askModel.getOrderAt(position);
                             if ( tmpRow != null ) {
+                                    tmpRow.m_marketMaker = marketMaker;
                                     tmpRow.m_price = price;
                                     tmpRow.m_size = size;
                             }

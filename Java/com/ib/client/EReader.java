@@ -138,14 +138,42 @@ public class EReader extends Thread {
             	if (Math.abs(delta) > 1) { // -2 is the "not yet computed" indicator
             		delta = Double.MAX_VALUE;
             	}
-            	double modelPrice, pvDividend;
-            	if (tickType == TickType.MODEL_OPTION) { // introduced in version == 5
-            		modelPrice = readDouble();
+            	double optPrice = Double.MAX_VALUE;
+            	double pvDividend = Double.MAX_VALUE; 
+            	double gamma = Double.MAX_VALUE;
+            	double vega = Double.MAX_VALUE;
+            	double theta = Double.MAX_VALUE;
+            	double undPrice = Double.MAX_VALUE;
+            	if (version >= 6 || tickType == TickType.MODEL_OPTION) { // introduced in version == 5
+            		optPrice = readDouble();
+            		if (optPrice < 0) { // -1 is the "not yet computed" indicator
+            			optPrice = Double.MAX_VALUE;
+            		}
             		pvDividend = readDouble();
-            	} else {
-            		modelPrice = pvDividend = Double.MAX_VALUE;
+            		if (pvDividend < 0) { // -1 is the "not yet computed" indicator
+            			pvDividend = Double.MAX_VALUE;
+            		}
             	}
-                eWrapper().tickOptionComputation( tickerId, tickType, impliedVol, delta, modelPrice, pvDividend);
+            	if (version >= 6) {
+            		gamma = readDouble();
+            		if (Math.abs(gamma) > 1) { // -2 is the "not yet computed" indicator
+            			gamma = Double.MAX_VALUE;
+            		}
+            		vega = readDouble();
+            		if (Math.abs(vega) > 1) { // -2 is the "not yet computed" indicator
+            			vega = Double.MAX_VALUE;
+            		}
+            		theta = readDouble();
+            		if (Math.abs(theta) > 1) { // -2 is the "not yet computed" indicator
+            			theta = Double.MAX_VALUE;
+            		}                
+            		undPrice = readDouble();
+            		if (undPrice < 0) { // -1 is the "not yet computed" indicator
+            			undPrice = Double.MAX_VALUE;
+            		}
+            	}
+            	
+            	eWrapper().tickOptionComputation( tickerId, tickType, impliedVol, delta, optPrice, pvDividend, gamma, vega, theta, undPrice);
             	break;
             }
             	

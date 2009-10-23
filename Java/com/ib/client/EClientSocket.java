@@ -71,8 +71,9 @@ public class EClientSocket {
 	// 45 = can receive notHeld field in openOrder
 	// 46 = can receive contractMonth, industry, category, subcategory fields in contractDetails
 	//    ; can receive timeZoneId, tradingHours, liquidHours fields in contractDetails
-	
-    private static final int CLIENT_VERSION = 46;
+    // 47 = can receive gamma, vega, theta, undPrice fields in TICK_OPTION_COMPUTATION
+
+    private static final int CLIENT_VERSION = 47;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -125,6 +126,10 @@ public class EClientSocket {
     private static final int CANCEL_REAL_TIME_BARS = 51;
     private static final int REQ_FUNDAMENTAL_DATA = 52;
     private static final int CANCEL_FUNDAMENTAL_DATA = 53;
+    private static final int REQ_CALC_IMPLIED_VOLAT = 54;
+    private static final int REQ_CALC_OPTION_PRICE = 55;
+    private static final int CANCEL_CALC_IMPLIED_VOLAT = 56;
+    private static final int CANCEL_CALC_OPTION_PRICE = 57;
     
 	private static final int MIN_SERVER_VER_REAL_TIME_BARS = 34;
 	private static final int MIN_SERVER_VER_SCALE_ORDERS = 35;
@@ -141,6 +146,12 @@ public class EClientSocket {
 	private static final int MIN_SERVER_VER_EXECUTION_DATA_CHAIN = 42;
 	private static final int MIN_SERVER_VER_NOT_HELD = 44;
 	private static final int MIN_SERVER_VER_SEC_ID_TYPE = 45;
+	private static final int MIN_SERVER_VER_PLACE_ORDER_CONID = 46;
+	private static final int MIN_SERVER_VER_REQ_MKT_DATA_CONID = 47;
+    private static final int MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT = 49;
+    private static final int MIN_SERVER_VER_REQ_CALC_OPTION_PRICE = 50;
+    private static final int MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT = 50;
+    private static final int MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE = 50;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -397,8 +408,16 @@ public class EClientSocket {
         		return;
         	}
         }
+        
+        if (m_serverVersion < MIN_SERVER_VER_REQ_MKT_DATA_CONID) {
+            if (contract.m_conId > 0) {
+                error(tickerId, EClientErrors.UPDATE_TWS,
+                    "  It does not support conId parameter.");
+                return;
+            }
+        }
 
-        final int VERSION = 8;
+        final int VERSION = 9;
 
         try {
             // send req mkt data msg
@@ -407,6 +426,9 @@ public class EClientSocket {
             send(tickerId);
 
             // send contract fields
+            if (m_serverVersion >= MIN_SERVER_VER_REQ_MKT_DATA_CONID) {
+                send(contract.m_conId);
+            }
             send(contract.m_symbol);
             send(contract.m_secType);
             send(contract.m_expiry);
@@ -921,8 +943,16 @@ public class EClientSocket {
         		return;
         	}
         }
+
+        if (m_serverVersion < MIN_SERVER_VER_PLACE_ORDER_CONID) {
+        	if (contract.m_conId > 0) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support conId parameter.");
+        		return;
+        	}
+        }
         
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 29;
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 30;
         
         // send place order msg
         try {
@@ -931,6 +961,9 @@ public class EClientSocket {
             send( id);
 
             // send contract fields
+            if( m_serverVersion >= MIN_SERVER_VER_PLACE_ORDER_CONID) {
+                send(contract.m_conId);
+            }
             send( contract.m_symbol);
             send( contract.m_secType);
             send( contract.m_expiry);
@@ -1550,7 +1583,148 @@ public class EClientSocket {
         }
     }
 
+    public synchronized void calculateImpliedVolatility(int reqId, Contract contract, 
+            double optionPrice, double underPrice) {    
 
+        if (!m_connected) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT) {
+            error(reqId, EClientErrors.UPDATE_TWS,
+                    "  It does not support calculate implied volatility requests.");
+            return;
+        }
+
+        final int VERSION = 1;
+
+        try {
+            // send calculate implied volatility msg
+            send( REQ_CALC_IMPLIED_VOLAT);
+            send( VERSION);
+            send( reqId);
+
+            // send contract fields
+            send( contract.m_conId);
+            send( contract.m_symbol);
+            send( contract.m_secType);
+            send( contract.m_expiry);
+            send( contract.m_strike);
+            send( contract.m_right);
+            send( contract.m_multiplier);
+            send( contract.m_exchange);
+            send( contract.m_primaryExch);
+            send( contract.m_currency);
+            send( contract.m_localSymbol);
+
+            send( optionPrice);
+            send( underPrice);
+        }
+        catch( Exception e) {
+            error( reqId, EClientErrors.FAIL_SEND_REQCALCIMPLIEDVOLAT, "" + e);
+            close();
+        }
+    }
+    
+    public synchronized void cancelCalculateImpliedVolatility(int reqId) {    
+
+        if (!m_connected) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT) {
+            error(reqId, EClientErrors.UPDATE_TWS,
+                    "  It does not support calculate implied volatility cancellation.");
+            return;
+        }
+
+        final int VERSION = 1;
+
+        try {
+            // send cancel calculate implied volatility msg
+            send( CANCEL_CALC_IMPLIED_VOLAT);
+            send( VERSION);
+            send( reqId);
+        }
+        catch( Exception e) {
+            error( reqId, EClientErrors.FAIL_SEND_CANCALCIMPLIEDVOLAT, "" + e);
+            close();
+        }
+    }
+    
+    public synchronized void calculateOptionPrice(int reqId, Contract contract, 
+            double volatility, double underPrice) {    
+
+        if (!m_connected) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_REQ_CALC_OPTION_PRICE) {
+            error(reqId, EClientErrors.UPDATE_TWS,
+                    "  It does not support calculate option price requests.");
+            return;
+        }
+
+        final int VERSION = 1;
+
+        try {
+            // send calculate option price msg
+            send( REQ_CALC_OPTION_PRICE);
+            send( VERSION);
+            send( reqId);
+
+            // send contract fields
+            send( contract.m_conId);
+            send( contract.m_symbol);
+            send( contract.m_secType);
+            send( contract.m_expiry);
+            send( contract.m_strike);
+            send( contract.m_right);
+            send( contract.m_multiplier);
+            send( contract.m_exchange);
+            send( contract.m_primaryExch);
+            send( contract.m_currency);
+            send( contract.m_localSymbol);
+
+            send( volatility);
+            send( underPrice);
+        }
+        catch( Exception e) {
+            error( reqId, EClientErrors.FAIL_SEND_REQCALCOPTIONPRICE, "" + e);
+            close();
+        }
+    }
+
+    public synchronized void cancelCalculateOptionPrice(int reqId) {    
+
+        if (!m_connected) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE) {
+            error(reqId, EClientErrors.UPDATE_TWS,
+                    "  It does not support calculate option price cancellation.");
+            return;
+        }
+
+        final int VERSION = 1;
+
+        try {
+            // send cancel calculate option price msg
+            send( CANCEL_CALC_OPTION_PRICE);
+            send( VERSION);
+            send( reqId);
+        }
+        catch( Exception e) {
+            error( reqId, EClientErrors.FAIL_SEND_CANCALCOPTIONPRICE, "" + e);
+            close();
+        }
+    }    
+    
     protected synchronized void error( String err) {
         m_anyWrapper.error( err);
     }

@@ -144,6 +144,30 @@ class SampleFrame extends JFrame implements EWrapper {
                 onReqOpenOrders();
             }
         });
+        JButton butCalculateImpliedVolatility = new JButton( "Calculate Implied Volatility");
+        butCalculateImpliedVolatility.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onCalculateImpliedVolatility();
+            }
+        });
+        JButton butCancelCalculateImpliedVolatility = new JButton( "Cancel Calc Impl Volatility");
+        butCancelCalculateImpliedVolatility.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onCancelCalculateImpliedVolatility();
+            }
+        });
+        JButton butCalculateOptionPrice = new JButton( "Calculate Option Price");
+        butCalculateOptionPrice.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onCalculateOptionPrice();
+            }
+        });
+        JButton butCancelCalculateOptionPrice = new JButton( "Cancel Calc Opt Price");
+        butCancelCalculateOptionPrice.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onCancelCalculateOptionPrice();
+            }
+        });
         JButton butWhatIfOrder = new JButton( "What If");
         butWhatIfOrder.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -257,6 +281,10 @@ class SampleFrame extends JFrame implements EWrapper {
         buttonPanel.add( butCancelRealTimeBars);
         buttonPanel.add( butScanner);
         buttonPanel.add( butCurrentTime);
+        buttonPanel.add( butCalculateImpliedVolatility);
+        buttonPanel.add( butCancelCalculateImpliedVolatility);
+        buttonPanel.add( butCalculateOptionPrice);
+        buttonPanel.add( butCancelCalculateOptionPrice);
 
         buttonPanel.add( new JPanel() );
         buttonPanel.add( butWhatIfOrder);
@@ -604,16 +632,60 @@ class SampleFrame extends JFrame implements EWrapper {
             m_client.cancelNewsBulletins();
         }
     }
+    
+    void onCalculateImpliedVolatility() {
+        // run m_orderDlg
+        m_orderDlg.show();
+        if( !m_orderDlg.m_rc ) {
+            return;
+        }
 
+        m_client.calculateImpliedVolatility( m_orderDlg.m_id, m_orderDlg.m_contract, 
+                m_orderDlg.m_order.m_lmtPrice, m_orderDlg.m_order.m_auxPrice);
+    }
+
+    void onCancelCalculateImpliedVolatility() {
+        // run m_orderDlg
+        m_orderDlg.show();
+        if( !m_orderDlg.m_rc ) {
+            return;
+        }
+
+        m_client.cancelCalculateImpliedVolatility( m_orderDlg.m_id);
+    }
+    
+    void onCalculateOptionPrice() {
+        // run m_orderDlg
+        m_orderDlg.show();
+        if( !m_orderDlg.m_rc ) {
+            return;
+        }
+
+        m_client.calculateOptionPrice( m_orderDlg.m_id, m_orderDlg.m_contract, 
+                m_orderDlg.m_order.m_lmtPrice, m_orderDlg.m_order.m_auxPrice);
+    }
+
+    void onCancelCalculateOptionPrice() {
+        // run m_orderDlg
+        m_orderDlg.show();
+        if( !m_orderDlg.m_rc ) {
+            return;
+        }
+
+        m_client.cancelCalculateOptionPrice( m_orderDlg.m_id);
+    }
+    
     public void tickPrice( int tickerId, int field, double price, int canAutoExecute) {
         // received price tick
     	String msg = EWrapperMsgGenerator.tickPrice( tickerId, field, price, canAutoExecute);
         m_tickers.add( msg );
     }
 
-    public void tickOptionComputation( int tickerId, int field, double impliedVol, double delta, double modelPrice, double pvDividend) {
+    public void tickOptionComputation( int tickerId, int field, double impliedVol, double delta, double optPrice, double pvDividend,
+        double gamma, double vega, double theta, double undPrice) {
         // received computation tick
-    	String msg = EWrapperMsgGenerator.tickOptionComputation( tickerId, field, impliedVol, delta, modelPrice, pvDividend);
+        String msg = EWrapperMsgGenerator.tickOptionComputation( tickerId, field, impliedVol, delta, optPrice, pvDividend,
+            gamma, vega, theta, undPrice);
         m_tickers.add( msg );
     }
 

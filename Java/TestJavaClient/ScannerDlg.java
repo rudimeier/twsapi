@@ -206,7 +206,9 @@ public class ScannerDlg extends JDialog {
             m_subscription.abovePrice(parseDouble(m_abovePrice));
             m_subscription.belowPrice(parseDouble(m_belowPrice));
             m_subscription.aboveVolume(parseInt(m_aboveVolume));
-            m_subscription.averageOptionVolumeAbove(parseInt(m_averageOptionVolumeAbove));
+            int avgOptVolume = parseInt(m_averageOptionVolumeAbove);
+            // with Integer.MAX_VALUE creates filter in TWS
+            m_subscription.averageOptionVolumeAbove(avgOptVolume!= Integer.MAX_VALUE  ? avgOptVolume : Integer.MIN_VALUE);
             m_subscription.marketCapAbove(parseDouble(m_marketCapAbove));
             m_subscription.marketCapBelow(parseDouble(m_marketCapBelow));
             m_subscription.moodyRatingAbove(m_moodyRatingAbove.getText().trim());

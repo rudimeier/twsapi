@@ -9,6 +9,8 @@ typedef std::string IBString;
 typedef CString IBString;
 #endif
 
+#include <stdlib.h>
+
 inline bool IsEmpty(const IBString& str)
 {
 #ifdef IB_USE_STD_STRING

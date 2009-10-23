@@ -4,6 +4,8 @@
 #include "TwsSocketClientErrors.h"
 #include "EWrapper.h"
 
+#include <string.h>
+
 ///////////////////////////////////////////////////////////
 // member funcs
 EPosixClientSocket::EPosixClientSocket( EWrapper *ptr) : EClientSocketBase( ptr)

@@ -96,7 +96,8 @@ public class SimpleWrapper implements EWrapper {
    }	
    
    public void tickOptionComputation(int tickerId, int field, double impliedVol,
-      double delta, double modelPrice, double pvDividend) {
+      double delta, double optPrice, double pvDividend,
+      double gamma, double vega, double theta, double undPrice) {
       logIn("tickOptionComputation");
    }	
 

@@ -12,7 +12,8 @@ public interface EWrapper extends AnyWrapper {
     void tickPrice( int tickerId, int field, double price, int canAutoExecute);
     void tickSize( int tickerId, int field, int size);
     void tickOptionComputation( int tickerId, int field, double impliedVol,
-    		double delta, double modelPrice, double pvDividend);
+    		double delta, double optPrice, double pvDividend,
+    		double gamma, double vega, double theta, double undPrice);
 	void tickGeneric(int tickerId, int tickType, double value);
 	void tickString(int tickerId, int tickType, String value);
 	void tickEFP(int tickerId, int tickType, double basisPoints,

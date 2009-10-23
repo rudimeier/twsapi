@@ -18,14 +18,17 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     }
     
     static public String tickOptionComputation( int tickerId, int field, double impliedVol,
-    		double delta, double modelPrice, double pvDividend) {
+    		double delta, double optPrice, double pvDividend,
+    		double gamma, double vega, double theta, double undPrice) {
     	String toAdd = "id=" + tickerId + "  " + TickType.getField( field) +
-		   ": vol = " + ((impliedVol >= 0 && impliedVol != Double.MAX_VALUE) ? Double.toString(impliedVol) : "N/A") +
-		   " delta = " + ((Math.abs(delta) <= 1) ? Double.toString(delta) : "N/A");
-    	if (field == TickType.MODEL_OPTION) {
-    		toAdd += ": modelPrice = " + ((modelPrice >= 0 && modelPrice != Double.MAX_VALUE) ? Double.toString(modelPrice) : "N/A");
-    		toAdd += ": pvDividend = " + ((pvDividend >= 0 && pvDividend != Double.MAX_VALUE) ? Double.toString(pvDividend) : "N/A");
-    	}
+    		": vol = " + ((impliedVol >= 0 && impliedVol != Double.MAX_VALUE) ? Double.toString(impliedVol) : "N/A") +
+    		" delta = " + ((Math.abs(delta) <= 1) ? Double.toString(delta) : "N/A") +
+    		" gamma = " + ((Math.abs(gamma) <= 1) ? Double.toString(gamma) : "N/A") +
+    		" vega = " + ((Math.abs(vega) <= 1) ? Double.toString(vega) : "N/A") +
+    		" theta = " + ((Math.abs(theta) <= 1) ? Double.toString(theta) : "N/A") +
+    		" optPrice = " + ((optPrice >= 0 && optPrice != Double.MAX_VALUE) ? Double.toString(optPrice) : "N/A") +
+    		" pvDividend = " + ((pvDividend >= 0 && pvDividend != Double.MAX_VALUE) ? Double.toString(pvDividend) : "N/A") +
+    		" undPrice = " + ((undPrice >= 0 && undPrice != Double.MAX_VALUE) ? Double.toString(undPrice) : "N/A");
 		return toAdd;
     }
     
