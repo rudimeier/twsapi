@@ -84,7 +84,8 @@
 // 46 = can receive contractMonth, industry, category, subcategory fields in contractDetails
 //    ; can receive timeZoneId, tradingHours, liquidHours fields in contractDetails
 // 47 = can receive gamma, vega, theta, undPrice fields in TICK_OPTION_COMPUTATION
-const int CLIENT_VERSION    = 47;
+// 48 = can receive exemptCode in openOrder
+const int CLIENT_VERSION    = 48;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -144,6 +145,8 @@ const int MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT = 49;
 const int MIN_SERVER_VER_REQ_CALC_OPTION_PRICE  = 50;
 const int MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT = 50;
 const int MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE  = 50;
+const int MIN_SERVER_VER_SSHORTX_OLD            = 51;
+const int MIN_SERVER_VER_SSHORTX                = 52;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -1202,7 +1205,7 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	//		const ComboLegList::const_iterator iterEnd = comboLegs.end();
 	//		for( ; iter != iterEnd; ++iter) {
 	//			const ComboLeg* comboLeg = *iter;
-	//			ASSERT( comboLeg);
+	//			assert( comboLeg);
 	//			if( comboLeg->shortSaleSlot != 0 ||
 	//				!comboLeg->designatedLocation.IsEmpty()) {
 	//				m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
@@ -1270,9 +1273,35 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		}
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_SSHORTX) {
+		if( order.exemptCode != -1) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support exemptCode parameter.");
+			return;
+		}
+	}
+
+	if (m_serverVersion < MIN_SERVER_VER_SSHORTX) {
+		if( contract.comboLegs && !contract.comboLegs->empty()) {
+			typedef Contract::ComboLegList ComboLegList;
+			const ComboLegList& comboLegs = *contract.comboLegs;
+			ComboLegList::const_iterator iter = comboLegs.begin();
+			const ComboLegList::const_iterator iterEnd = comboLegs.end();
+			for( ; iter != iterEnd; ++iter) {
+				const ComboLeg* comboLeg = *iter;
+				assert( comboLeg);
+				if( comboLeg->exemptCode != -1 ){
+					m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+						"  It does not support exemptCode parameter.");
+					return;
+				}
+			}
+		}
+	}
+
 	std::ostringstream msg;
 
-	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 30;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 31;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1355,6 +1384,9 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 
 				ENCODE_FIELD( comboLeg->shortSaleSlot); // srv v35 and above
 				ENCODE_FIELD( comboLeg->designatedLocation); // srv v35 and above
+				if (m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD) { 
+					ENCODE_FIELD( comboLeg->exemptCode);
+				}
 			}
 		}
 	}
@@ -1388,6 +1420,9 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	// institutional short saleslot data (srv v18 and above)
 	ENCODE_FIELD( order.shortSaleSlot);      // 0 for retail, 1 or 2 for institutions
 	ENCODE_FIELD( order.designatedLocation); // populate only when shortSaleSlot = 2.
+	if (m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD) { 
+		ENCODE_FIELD( order.exemptCode);
+	}
 
 	// not needed anymore
 	//bool isVolOrder = (order.orderType.CompareNoCase("VOL") == 0);
@@ -2277,6 +2312,13 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( order.settlingFirm); // ver 9 field
 				DECODE_FIELD( order.shortSaleSlot); // ver 9 field
 				DECODE_FIELD( order.designatedLocation); // ver 9 field
+				if( m_serverVersion == MIN_SERVER_VER_SSHORTX_OLD){
+					int exemptCode;
+					DECODE_FIELD( exemptCode);
+				}
+				else if( version >= 23){
+					DECODE_FIELD( order.exemptCode);
+				}
 				DECODE_FIELD( order.auctionStrategy); // ver 9 field
 				DECODE_FIELD( order.startingPrice); // ver 9 field
 				DECODE_FIELD( order.stockRefPrice); // ver 9 field

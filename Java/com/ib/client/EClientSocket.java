@@ -72,8 +72,9 @@ public class EClientSocket {
 	// 46 = can receive contractMonth, industry, category, subcategory fields in contractDetails
 	//    ; can receive timeZoneId, tradingHours, liquidHours fields in contractDetails
     // 47 = can receive gamma, vega, theta, undPrice fields in TICK_OPTION_COMPUTATION
+	// 48 = can receive exemptCode in openOrder
 
-    private static final int CLIENT_VERSION = 47;
+    private static final int CLIENT_VERSION = 48;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -152,6 +153,8 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_REQ_CALC_OPTION_PRICE = 50;
     private static final int MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT = 50;
     private static final int MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE = 50;
+    private static final int MIN_SERVER_VER_SSHORTX_OLD = 51;
+    private static final int MIN_SERVER_VER_SSHORTX = 52;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -952,7 +955,29 @@ public class EClientSocket {
         	}
         }
         
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 30;
+        if (m_serverVersion < MIN_SERVER_VER_SSHORTX) {
+        	if (order.m_exemptCode != -1) {
+        		error(id, EClientErrors.UPDATE_TWS,
+            		"  It does not support exemptCode parameter.");
+        		return;
+        	}
+        }
+        
+        if (m_serverVersion < MIN_SERVER_VER_SSHORTX) {
+        	if (!contract.m_comboLegs.isEmpty()) {
+                ComboLeg comboLeg;
+                for (int i = 0; i < contract.m_comboLegs.size(); ++i) {
+                    comboLeg = (ComboLeg)contract.m_comboLegs.get(i);
+                    if (comboLeg.m_exemptCode != -1) {
+                		error(id, EClientErrors.UPDATE_TWS,
+                			"  It does not support exemptCode parameter.");
+                		return;
+                    }
+                }
+        	}
+        }
+        
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 31;
         
         // send place order msg
         try {
@@ -1043,6 +1068,9 @@ public class EClientSocket {
                         	send( comboLeg.m_shortSaleSlot);
                         	send( comboLeg.m_designatedLocation);
                         }
+                        if (m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD) { 
+                            send( comboLeg.m_exemptCode);
+                        }
                     }
                 }
             }
@@ -1073,6 +1101,9 @@ public class EClientSocket {
            if (m_serverVersion >= 18) { // institutional short sale slot fields.
                send( order.m_shortSaleSlot);      // 0 only for retail, 1 or 2 only for institution.
                send( order.m_designatedLocation); // only populate when order.m_shortSaleSlot = 2.
+           }
+           if (m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD) { 
+               send( order.m_exemptCode);
            }
            if (m_serverVersion >= 19) {
                send( order.m_ocaType);

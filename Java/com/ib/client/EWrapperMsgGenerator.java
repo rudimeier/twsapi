@@ -86,6 +86,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " faProfile=" + order.m_faProfile +
         " shortSaleSlot=" + order.m_shortSaleSlot +
         " designatedLocation=" + order.m_designatedLocation +
+        " exemptCode=" + order.m_exemptCode +
         " ocaGroup=" + order.m_ocaGroup +
         " ocaType=" + order.m_ocaType +
         " rule80A=" + order.m_rule80A +

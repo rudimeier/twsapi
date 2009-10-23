@@ -41,6 +41,7 @@ public class ComboLegDlg extends JDialog {
     private JTextField 		m_openClose = new JTextField( "0");
     private JTextField      m_shortSaleSlot = new JTextField( "0");
     private JTextField      m_designatedLocation = new JTextField( "");
+    private JTextField      m_exemptCode = new JTextField( "-1");
     
     private JButton 		m_addLeg = new JButton( "Add");
     private JButton	 	    m_removeLeg = new JButton( "Remove");
@@ -87,6 +88,8 @@ public class ComboLegDlg extends JDialog {
         pComboDetails.add( m_shortSaleSlot);
         pComboDetails.add( new JLabel( "Designated Location:") );
         pComboDetails.add( m_designatedLocation);
+        pComboDetails.add( new JLabel( "Exempt Code:") );
+        pComboDetails.add( m_exemptCode);
         pComboDetails.add( m_addLeg);
         pComboDetails.add( m_removeLeg);
 
@@ -137,9 +140,10 @@ public class ComboLegDlg extends JDialog {
             int ratio = Integer.parseInt( m_ratio.getText());
             int openClose = Integer.parseInt( m_openClose.getText());
             int shortSaleSlot = Integer.parseInt(m_shortSaleSlot.getText());
+            int exemptCode = Integer.parseInt(m_exemptCode.getText().length() != 0 ? m_exemptCode.getText() : "-1");
             m_comboLegsModel.addComboLeg( new ComboLeg(conId, ratio,
                             m_action.getText(), m_exchange.getText(), openClose,
-                            shortSaleSlot, m_designatedLocation.getText()) );
+                            shortSaleSlot, m_designatedLocation.getText(), exemptCode) );
         }
         catch( Exception e) {
             reportError( "Error - ", e);
@@ -226,7 +230,7 @@ class ComboLegModel extends AbstractTableModel {
     }
 
     synchronized public int getColumnCount() {
-        return 7;
+        return 8;
     }
 
     synchronized public Object getValueAt(int r, int c) {
@@ -247,6 +251,8 @@ class ComboLegModel extends AbstractTableModel {
             	return Integer.toString(leg.m_shortSaleSlot);
             case 6:
             	return leg.m_designatedLocation;
+            case 7:
+            	return Integer.toString(leg.m_exemptCode);
             default:
                 return "";
         }
@@ -273,6 +279,8 @@ class ComboLegModel extends AbstractTableModel {
             	return "Short Sale Slot";
             case 6:
             	return "Designated Location";
+            case 7:
+            	return "Exempt Code";
             default:
                 return null;
         }

@@ -64,6 +64,7 @@ public class Order {
     public int 		m_origin;             // 0=Customer, 1=Firm
     public int      m_shortSaleSlot;      // 1 if you hold the shares, 2 if they will be delivered from elsewhere.  Only for Action="SSHORT
     public String   m_designatedLocation; // set when slot=2 only.
+    public int      m_exemptCode;
 
     // SMART routing only
     public double   m_discretionaryAmt;
@@ -122,6 +123,7 @@ public class Order {
         m_origin = CUSTOMER;
         m_transmit = true;
         m_designatedLocation = EMPTY_STR;
+        m_exemptCode = -1;
         m_minQty = Integer.MAX_VALUE;
         m_percentOffset = Double.MAX_VALUE;
         m_nbboPriceCap = Double.MAX_VALUE;
@@ -201,7 +203,8 @@ public class Order {
         	m_scaleSubsLevelSize != l_theOther.m_scaleSubsLevelSize ||
         	m_scalePriceIncrement != l_theOther.m_scalePriceIncrement ||
         	m_whatIf != l_theOther.m_whatIf ||
-        	m_notHeld != l_theOther.m_notHeld) {
+        	m_notHeld != l_theOther.m_notHeld ||
+        	m_exemptCode != l_theOther.m_exemptCode) {
         	return false;
         }
         

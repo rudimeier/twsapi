@@ -46,7 +46,7 @@ public class ExtOrdDlg extends JDialog {
     private JTextField 	m_discretionaryAmt = new JTextField( "0");
     private JTextField 	m_shortSaleSlot = new JTextField( "0");
     private JTextField 	m_designatedLocation = new JTextField();
-
+    private JTextField 	m_exemptCode = new JTextField( "-1");
     private JTextField  m_rule80A = new JTextField();
     private JTextField  m_allOrNone = new JTextField();
     private JTextField  m_overridePercentageConstraints = new JTextField();
@@ -131,6 +131,8 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add( m_shortSaleSlot);
         extOrderDetailsPanel.add( new JLabel( "Institutional Designated Location") );
         extOrderDetailsPanel.add( m_designatedLocation);
+        extOrderDetailsPanel.add( new JLabel( "Exempt Code") );
+        extOrderDetailsPanel.add( m_exemptCode);
         extOrderDetailsPanel.add( new JLabel( "Rule 80 A") );
         extOrderDetailsPanel.add(m_rule80A);
 
@@ -234,6 +236,7 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_discretionaryAmt = parseDouble( m_discretionaryAmt);
             m_order.m_shortSaleSlot = parseInt( m_shortSaleSlot );
             m_order.m_designatedLocation = m_designatedLocation.getText().trim();
+            m_order.m_exemptCode = Integer.parseInt(m_exemptCode.getText().length() != 0 ? m_exemptCode.getText() : "-1");
             m_order.m_rule80A = m_rule80A.getText().trim();
             m_order.m_allOrNone = parseInt(m_allOrNone) != 0;
             m_order.m_minQty = parseMaxInt(m_minQty);

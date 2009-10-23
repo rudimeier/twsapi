@@ -8,6 +8,9 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -30,16 +33,16 @@ class SampleFrame extends JFrame implements EWrapper {
     private int faErrorCodes[] = { 503, 504, 505, 522, 1100, NOT_AN_FA_ACCOUNT_ERROR } ;
     private boolean faError ;
 
-    EClientSocket   m_client = new EClientSocket( this);
-    IBTextPanel     m_tickers = new IBTextPanel("Market and Historical Data", false);
-    IBTextPanel     m_TWS = new IBTextPanel("TWS Server Responses", false);
-    IBTextPanel     m_errors = new IBTextPanel("Errors and Messages", false);
-    OrderDlg        m_orderDlg = new OrderDlg( this);
-    ExtOrdDlg       m_extOrdDlg = new ExtOrdDlg( m_orderDlg);
-    AccountDlg      m_acctDlg = new AccountDlg(this);
-    MktDepthDlg     m_mktDepthDlg = new MktDepthDlg(this);
-    NewsBulletinDlg m_newsBulletinDlg = new NewsBulletinDlg(this);
-    ScannerDlg      m_scannerDlg = new ScannerDlg(this);
+    private EClientSocket   m_client = new EClientSocket( this);
+    private IBTextPanel     m_tickers = new IBTextPanel("Market and Historical Data", false);
+    private IBTextPanel     m_TWS = new IBTextPanel("TWS Server Responses", false);
+    private IBTextPanel     m_errors = new IBTextPanel("Errors and Messages", false);
+    private OrderDlg        m_orderDlg = new OrderDlg( this);
+    private ExtOrdDlg       m_extOrdDlg = new ExtOrdDlg( m_orderDlg);
+    private AccountDlg      m_acctDlg = new AccountDlg(this);
+    private HashMap<Integer, MktDepthDlg> m_mapRequestToMktDepthDlg = new HashMap<Integer, MktDepthDlg>(); 
+    private NewsBulletinDlg m_newsBulletinDlg = new NewsBulletinDlg(this);
+    private ScannerDlg      m_scannerDlg = new ScannerDlg(this);
 
     String faGroupXML ;
     String faProfilesXML ;
@@ -448,12 +451,26 @@ class SampleFrame extends JFrame implements EWrapper {
         if( !m_orderDlg.m_rc ) {
             return;
         }
+        
+        final Integer dialogId = m_orderDlg.m_id;
+        MktDepthDlg depthDialog = m_mapRequestToMktDepthDlg.get(dialogId);
+        if ( depthDialog == null ) {
+            depthDialog = new MktDepthDlg("Market Depth ID ["+dialogId+"]", this);
+            m_mapRequestToMktDepthDlg.put(dialogId, depthDialog);
+            
+            // cleanup the map after depth dialog is closed so it does not linger or leak memory
+            depthDialog.addWindowListener(new WindowAdapter() {
+            	@Override public void windowClosed(WindowEvent e) {
+            		m_mapRequestToMktDepthDlg.remove(dialogId);
+            	}
+			});
+        }
 
-        m_mktDepthDlg.setParams( m_client, m_orderDlg.m_id);
+        depthDialog.setParams( m_client, dialogId);
 
         // req mkt data
-        m_client.reqMktDepth( m_orderDlg.m_id, m_orderDlg.m_contract, m_orderDlg.m_marketDepthRows );
-        m_mktDepthDlg.show();
+        m_client.reqMktDepth( dialogId, m_orderDlg.m_contract, m_orderDlg.m_marketDepthRows );
+        depthDialog.setVisible(true);
     }
 
     void onCancelMktData() {
@@ -535,7 +552,7 @@ class SampleFrame extends JFrame implements EWrapper {
 
     void onExtendedOrder() {
         //Show the extended order attributes dialog
-        m_extOrdDlg.show();
+        m_extOrdDlg.setVisible(true);
         if( !m_extOrdDlg.m_rc ) {
             return;
         }
@@ -547,7 +564,7 @@ class SampleFrame extends JFrame implements EWrapper {
     void  onReqAcctData() {
         AcctUpdatesDlg dlg = new AcctUpdatesDlg(this);
 
-        dlg.show();
+        dlg.setVisible(true);
         
         if ( dlg.m_subscribe) {
         	m_acctDlg.accountDownloadBegin(dlg.m_acctCode);
@@ -572,7 +589,7 @@ class SampleFrame extends JFrame implements EWrapper {
     void  onServerLogging() {
         // get server logging level
         LogConfigDlg dlg = new LogConfigDlg( this);
-        dlg.show();
+        dlg.setVisible(true);
         if( !dlg.m_rc) {
             return;
         }
@@ -611,7 +628,7 @@ class SampleFrame extends JFrame implements EWrapper {
     void onReqExecutions() {
         ExecFilterDlg dlg = new ExecFilterDlg(this);
 
-        dlg.show();
+        dlg.setVisible(true);
         if ( dlg.m_rc ) {
             // request execution reports based on the supplied filter criteria
             m_client.reqExecutions( dlg.m_reqId, dlg.m_execFilter);
@@ -620,7 +637,7 @@ class SampleFrame extends JFrame implements EWrapper {
 
     void onReqNewsBulletins() {
         // run m_newsBulletinDlg
-        m_newsBulletinDlg.show();
+        m_newsBulletinDlg.setVisible(true);
         if( !m_newsBulletinDlg.m_rc ) {
             return;
         }
@@ -787,12 +804,25 @@ class SampleFrame extends JFrame implements EWrapper {
 
     public void updateMktDepth( int tickerId, int position, int operation,
                     int side, double price, int size) {
-        m_mktDepthDlg.updateMktDepth( tickerId, position, "", operation, side, price, size);
+    	
+        MktDepthDlg depthDialog = m_mapRequestToMktDepthDlg.get(tickerId);
+        if ( depthDialog != null ) {
+            depthDialog.updateMktDepth( tickerId, position, "", operation, side, price, size);    
+        } else {
+            System.err.println("cannot find dialog that corresponds to request id ["+tickerId+"]");    
+        }
+
+        
     }
 
     public void updateMktDepthL2( int tickerId, int position, String marketMaker,
                     int operation, int side, double price, int size) {
-        m_mktDepthDlg.updateMktDepth( tickerId, position, marketMaker, operation, side, price, size);
+        MktDepthDlg depthDialog = m_mapRequestToMktDepthDlg.get(tickerId);
+        if ( depthDialog != null ) {
+            depthDialog.updateMktDepth( tickerId, position, marketMaker, operation, side, price, size);
+        } else {
+            System.err.println("cannot find dialog that corresponds to request id ["+tickerId+"]");    
+        }
     }
 
     public void nextValidId( int orderId) {
@@ -823,7 +853,13 @@ class SampleFrame extends JFrame implements EWrapper {
             faError |= (errorCode == faErrorCodes[ctr]);
         }
         if (errorCode == MktDepthDlg.MKT_DEPTH_DATA_RESET) {
-            m_mktDepthDlg.reset();
+            
+            MktDepthDlg depthDialog = m_mapRequestToMktDepthDlg.get(id);
+            if ( depthDialog != null ) {
+                depthDialog.reset();
+            } else {
+                System.err.println("cannot find dialog that corresponds to request id ["+id+"]");    
+            }
         }
     }
 
@@ -916,7 +952,7 @@ class SampleFrame extends JFrame implements EWrapper {
           !(faGroupXML == null || faProfilesXML == null || faAliasesXML == null)) {
           FinancialAdvisorDlg dlg = new FinancialAdvisorDlg(this);
           dlg.receiveInitialXML(faGroupXML, faProfilesXML, faAliasesXML);
-          dlg.show();
+          dlg.setVisible(true);
 
           if (!dlg.m_rc) {
             return;
@@ -948,6 +984,7 @@ class SampleFrame extends JFrame implements EWrapper {
         destOrder.m_goodAfterTime = srcOrder.m_goodAfterTime;
         destOrder.m_shortSaleSlot = srcOrder.m_shortSaleSlot;
         destOrder.m_designatedLocation = srcOrder.m_designatedLocation;
+        destOrder.m_exemptCode = srcOrder.m_exemptCode;
         destOrder.m_ocaType = srcOrder.m_ocaType;
         destOrder.m_rule80A = srcOrder.m_rule80A;
         destOrder.m_allOrNone = srcOrder.m_allOrNone;

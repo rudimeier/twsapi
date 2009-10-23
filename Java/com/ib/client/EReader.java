@@ -412,6 +412,12 @@ public class EReader extends Thread {
                     order.m_settlingFirm = readStr();
                     order.m_shortSaleSlot = readInt();
                     order.m_designatedLocation = readStr();
+                    if ( m_parent.serverVersion() == 51){
+                        readInt(); // exemptCode
+                    }
+                    else if ( version >= 23){
+                    	order.m_exemptCode = readInt();
+                    }
                     order.m_auctionStrategy = readInt();
                     order.m_startingPrice = readDouble();
                     order.m_stockRefPrice = readDouble();

@@ -50,6 +50,9 @@ enum TickType { BID_SIZE, BID, ASK, ASK_SIZE, LAST, LAST_SIZE,
 				ASK_YIELD,
 				LAST_YIELD,
 				CUST_OPTION_COMPUTATION,
+				TRADE_COUNT,
+				TRADE_RATE,
+				VOLUME_RATE,
 				NOT_SET };
 
 inline bool isPrice( TickType tickType) {

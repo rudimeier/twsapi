@@ -40,8 +40,8 @@ public class MktDepthDlg extends JDialog {
     private EClientSocket 	m_client;
     private int			  	m_id;
 
-    public MktDepthDlg(JFrame parent) {
-        super(parent, true);
+    public MktDepthDlg(String title, JFrame parent) {
+        super(parent, title, false);
 
         JScrollPane bidPane = new JScrollPane(new JTable(m_bidModel));
         JScrollPane askPane = new JScrollPane(new JTable(m_askModel));
@@ -152,7 +152,7 @@ public class MktDepthDlg extends JDialog {
 }
 
 class MktDepthModel extends AbstractTableModel {
-    private LinkedList  m_allData = new LinkedList();
+    private LinkedList<MktDepthTableRow>  m_allData = new LinkedList<MktDepthTableRow>();
 
     synchronized public void addOrderAt(int position, String marketMaker, double price, int size)
     {
@@ -171,7 +171,7 @@ class MktDepthModel extends AbstractTableModel {
         return (MktDepthTableRow)getIteratorAt(orderPosition).next();
     }
 
-    synchronized public ListIterator getIteratorAt(int orderPosition) {
+    synchronized public ListIterator<MktDepthTableRow> getIteratorAt(int orderPosition) {
         return m_allData.listIterator(orderPosition);
     }
 
