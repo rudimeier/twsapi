@@ -84,6 +84,8 @@ struct Contract
    IBString currency;
    IBString localSymbol;
    bool includeExpired;
+   IBString secIdType;		// CUSIP;SEDOL;ISIN;RIC
+   IBString secId;
 
    // COMBOS
    IBString comboLegsDescrip; // received in open order 14 and up for all combos
@@ -125,6 +127,13 @@ struct ContractDetails
    long		priceMagnifier;
    int		underConId;
    IBString	longName;
+   IBString	contractMonth;
+   IBString	industry;
+   IBString	category;
+   IBString	subcategory;
+   IBString	timeZoneId;
+   IBString	tradingHours;
+   IBString	liquidHours;
 
    // BOND values
    IBString cusip;

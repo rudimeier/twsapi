@@ -581,6 +581,15 @@ public class EReader extends Thread {
                    contract.m_longName = readStr();
                    contract.m_summary.m_primaryExch = readStr();
                 }
+                if( version >= 6) {
+                    contract.m_contractMonth = readStr();
+                    contract.m_industry = readStr();
+                    contract.m_category = readStr();
+                    contract.m_subcategory = readStr();
+                    contract.m_timeZoneId = readStr();
+                    contract.m_tradingHours = readStr();
+                    contract.m_liquidHours = readStr();
+                 }
                 eWrapper().contractDetails( reqId, contract);
                 break;
             }

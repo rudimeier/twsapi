@@ -71,6 +71,8 @@ public class OrderDlg extends JDialog {
     private JTextField 	m_currency = new JTextField("USD");
     private JTextField 	m_localSymbol = new JTextField();
     private JTextField 	m_includeExpired = new JTextField("0");
+    private JTextField 	m_secIdType = new JTextField();
+    private JTextField 	m_secId = new JTextField();
     private JTextField 	m_action = new JTextField( "BUY");
     private JTextField 	m_totalQuantity = new JTextField( "10");
     private JTextField 	m_orderType = new JTextField( "LMT");
@@ -163,6 +165,10 @@ public class OrderDlg extends JDialog {
         addGBComponent(pContractDetails, m_localSymbol, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
         addGBComponent(pContractDetails, new JLabel( "Include Expired"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
         addGBComponent(pContractDetails, m_includeExpired, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
+        addGBComponent(pContractDetails, new JLabel( "Sec Id Type"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
+        addGBComponent(pContractDetails, m_secIdType, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
+        addGBComponent(pContractDetails, new JLabel( "Sec Id"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
+        addGBComponent(pContractDetails, m_secId, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
 
         // create order panel
         IBGridBagPanel pOrderDetails = new IBGridBagPanel();
@@ -375,6 +381,8 @@ public class OrderDlg extends JDialog {
             catch (NumberFormatException ex) {
             	m_contract.m_includeExpired = false;
             }
+            m_contract.m_secIdType = m_secIdType.getText();
+            m_contract.m_secId = m_secId.getText();
             
             // set order fields
             m_order.m_action = m_action.getText();

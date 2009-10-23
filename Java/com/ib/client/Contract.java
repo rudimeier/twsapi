@@ -22,6 +22,9 @@ public class Contract implements Cloneable {
     public String m_primaryExch;      // pick a non-aggregate (ie not the SMART exchange) exchange that the contract trades on.  DO NOT SET TO SMART.
     public boolean m_includeExpired;  // can not be set to true for orders.
     
+    public String m_secIdType;        // CUSIP;SEDOL;ISIN;RIC
+    public String m_secId;
+    
     // COMBOS
     public String m_comboLegsDescrip; // received in open order version 14 and up for all combos
     public Vector m_comboLegs = new Vector();
@@ -44,7 +47,8 @@ public class Contract implements Cloneable {
     public Contract(int p_conId, String p_symbol, String p_secType, String p_expiry,
                     double p_strike, String p_right, String p_multiplier,
                     String p_exchange, String p_currency, String p_localSymbol,
-                    Vector p_comboLegs, String p_primaryExch, boolean p_includeExpired) {
+                    Vector p_comboLegs, String p_primaryExch, boolean p_includeExpired, 
+                    String p_secIdType, String p_secId) {
     	m_conId = p_conId;
         m_symbol = p_symbol;
         m_secType = p_secType;
@@ -58,6 +62,8 @@ public class Contract implements Cloneable {
         m_localSymbol = p_localSymbol;
         m_comboLegs = p_comboLegs;
         m_primaryExch = p_primaryExch;
+        m_secIdType = p_secIdType;
+        m_secId = p_secId ;
     }
 
     public boolean equals(Object p_other) {
@@ -99,6 +105,14 @@ public class Contract implements Cloneable {
         		Util.StringCompare(m_localSymbol, l_theOther.m_localSymbol) != 0) {
         		return false;
         	}
+        }
+
+        if (Util.StringCompare(m_secIdType, l_theOther.m_secIdType) != 0) {
+        	return false;
+        }
+        
+        if (Util.StringCompare(m_secId, l_theOther.m_secId) != 0) {
+        	return false;
         }
 
     	// compare combo legs

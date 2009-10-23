@@ -69,8 +69,10 @@ public class EClientSocket {
 	//    ; can receive RTVolume tick
 	// 44 = can receive end market for ticker snapshot
 	// 45 = can receive notHeld field in openOrder
+	// 46 = can receive contractMonth, industry, category, subcategory fields in contractDetails
+	//    ; can receive timeZoneId, tradingHours, liquidHours fields in contractDetails
 	
-    private static final int CLIENT_VERSION = 45;
+    private static final int CLIENT_VERSION = 46;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -138,6 +140,7 @@ public class EClientSocket {
 	private static final int MIN_SERVER_VER_ALGO_ORDERS = 41;
 	private static final int MIN_SERVER_VER_EXECUTION_DATA_CHAIN = 42;
 	private static final int MIN_SERVER_VER_NOT_HELD = 44;
+	private static final int MIN_SERVER_VER_SEC_ID_TYPE = 45;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -654,7 +657,15 @@ public class EClientSocket {
             return;
         }
 
-        final int VERSION = 5;
+        if( m_serverVersion < MIN_SERVER_VER_SEC_ID_TYPE) {
+        	if (!IsEmpty(contract.m_secIdType) || !IsEmpty(contract.m_secId)) {
+        		error(reqId, EClientErrors.UPDATE_TWS,
+        			"  It does not support secIdType and secId parameters.");
+        		return;
+        	}
+        }
+
+        final int VERSION = 6;
 
         try {
             // send req mkt data msg
@@ -683,6 +694,11 @@ public class EClientSocket {
             if (m_serverVersion >= 31) {
                 send(contract.m_includeExpired);
             }
+            if (m_serverVersion >= MIN_SERVER_VER_SEC_ID_TYPE) {
+            	send( contract.m_secIdType);
+            	send( contract.m_secId);
+            }
+            
         }
         catch( Exception e) {
             error( EClientErrors.NO_VALID_ID, EClientErrors.FAIL_SEND_REQCONTRACT, "" + e);
@@ -898,7 +914,15 @@ public class EClientSocket {
         	}
         }
         
-        final int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 28;
+        if (m_serverVersion < MIN_SERVER_VER_SEC_ID_TYPE) {
+        	if (!IsEmpty(contract.m_secIdType) || !IsEmpty(contract.m_secId)) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support secIdType and secId parameters.");
+        		return;
+        	}
+        }
+        
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 29;
         
         // send place order msg
         try {
@@ -922,6 +946,10 @@ public class EClientSocket {
             send( contract.m_currency);
             if( m_serverVersion >= 2) {
                 send (contract.m_localSymbol);
+            }
+            if( m_serverVersion >= MIN_SERVER_VER_SEC_ID_TYPE){
+            	send( contract.m_secIdType);
+            	send( contract.m_secId);
             }
 
             // send main order fields

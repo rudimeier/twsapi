@@ -211,7 +211,14 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "orderTypes = " + contractDetails.m_orderTypes + "\n"
         + "validExchanges = " + contractDetails.m_validExchanges + "\n"
         + "underConId = " + contractDetails.m_underConId + "\n"
-        + "longName = " + contractDetails.m_longName + "\n";
+        + "longName = " + contractDetails.m_longName + "\n"
+        + "contractMonth = " + contractDetails.m_contractMonth + "\n"
+        + "industry = " + contractDetails.m_industry + "\n"
+        + "category = " + contractDetails.m_category + "\n"
+        + "subcategory = " + contractDetails.m_subcategory + "\n"
+        + "timeZoneId = " + contractDetails.m_timeZoneId + "\n"
+        + "tradingHours = " + contractDetails.m_tradingHours + "\n"
+        + "liquidHours = " + contractDetails.m_liquidHours + "\n";
     	return msg;
     }
     

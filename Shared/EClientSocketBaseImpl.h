@@ -80,8 +80,10 @@
 //    ; can receive RTVolume tick
 // 44 = can receive end market for ticker snapshot
 // 45 = can receive notHeld field in openOrder
+// 46 = can receive contractMonth, industry, category, subcategory fields in contractDetails
+//    ; can receive timeZoneId, tradingHours, liquidHours fields in contractDetails
 
-const int CLIENT_VERSION    = 45;
+const int CLIENT_VERSION    = 46;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -130,6 +132,7 @@ const int MIN_SERVER_VER_SCALE_ORDERS2          = 40;
 const int MIN_SERVER_VER_ALGO_ORDERS            = 41;
 const int MIN_SERVER_VER_EXECUTION_DATA_CHAIN   = 42;
 const int MIN_SERVER_VER_NOT_HELD               = 44;
+const int MIN_SERVER_VER_SEC_ID_TYPE            = 45;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -950,10 +953,17 @@ void EClientSocketBase::reqContractDetails( int reqId, const Contract& contract)
 	//	m_pEWrapper->error( NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg());
 	//	return;
 	//}
-
+	if (m_serverVersion < MIN_SERVER_VER_SEC_ID_TYPE) {
+		if( !IsEmpty(contract.secIdType) || !IsEmpty(contract.secId)) {
+			m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+     			"  It does not support secIdType and secId parameters.");
+     		return;
+     	}
+    }
+        
 	std::ostringstream msg;
 
-	const int VERSION = 5;
+	const int VERSION = 6;
 
 	// send req mkt data msg
 	ENCODE_FIELD( REQ_CONTRACT_DATA);
@@ -975,6 +985,11 @@ void EClientSocketBase::reqContractDetails( int reqId, const Contract& contract)
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol);
 	ENCODE_FIELD( contract.includeExpired); // srv v31 and above
+
+	if( m_serverVersion >= MIN_SERVER_VER_SEC_ID_TYPE){
+		ENCODE_FIELD( contract.secIdType);
+		ENCODE_FIELD( contract.secId);
+	}
 
 	bufferedSend( msg.str());
 }
@@ -1084,10 +1099,18 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 			return;
 		}
 	}
+
+	if (m_serverVersion < MIN_SERVER_VER_SEC_ID_TYPE) {
+		if( !IsEmpty(contract.secIdType) || !IsEmpty(contract.secId)) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+     			"  It does not support secIdType and secId parameters.");
+     		return;
+     	}
+    }
         
 	std::ostringstream msg;
 
-	const int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 28;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 29;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1105,6 +1128,11 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	ENCODE_FIELD( contract.primaryExchange); // srv v14 and above
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol); // srv v2 and above
+
+	if( m_serverVersion >= MIN_SERVER_VER_SEC_ID_TYPE){
+		ENCODE_FIELD( contract.secIdType);
+		ENCODE_FIELD( contract.secId);
+	}
 
 	// send main order fields
 	ENCODE_FIELD( order.action);
@@ -2300,6 +2328,15 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				if( version >= 5) {
 					DECODE_FIELD( contract.longName);
 					DECODE_FIELD( contract.summary.primaryExchange);
+				}
+				if( version >= 6) {
+					DECODE_FIELD( contract.contractMonth);
+					DECODE_FIELD( contract.industry);
+					DECODE_FIELD( contract.category);
+					DECODE_FIELD( contract.subcategory);
+					DECODE_FIELD( contract.timeZoneId);
+					DECODE_FIELD( contract.tradingHours);
+					DECODE_FIELD( contract.liquidHours);
 				}
 
 				m_pEWrapper->contractDetails( reqId, contract);

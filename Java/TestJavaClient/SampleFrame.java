@@ -697,7 +697,7 @@ class SampleFrame extends JFrame implements EWrapper {
 
     public void bondContractDetails(int reqId, ContractDetails contractDetails)
     {
-    	String msg = EWrapperMsgGenerator.contractDetails( reqId, contractDetails);
+    	String msg = EWrapperMsgGenerator.bondContractDetails( reqId, contractDetails);
     	m_TWS.add(msg);
     }
 
