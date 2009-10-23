@@ -1,6 +1,11 @@
 TEMPLATE = app
 
-CONFIG -= qt
+CONFIG -= \
+  release \
+  qt
+
+CONFIG += \
+  debug
 
 SOURCES += \
   PosixTestClient.cpp \

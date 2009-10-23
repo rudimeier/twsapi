@@ -1,8 +1,12 @@
 TEMPLATE = lib
 
-CONFIG -= qt
+CONFIG -= \
+ release \
+ qt
 
-CONFIG += staticlib
+CONFIG += \
+ debug \
+ staticlib
 
 SOURCES += \
   src/EClientSocketBase.cpp \
@@ -10,7 +14,7 @@ SOURCES += \
 
 HEADERS += \
   src/EPosixClientSocket.h \
-  src/EPosixClientSocketPlatform.h\ 
+  src/EPosixClientSocketPlatform.h\
   ../Shared/EClientSocketBase.h \
   ../Shared/EClientSocketBaseImpl.h \
   ../Shared/TwsSocketClientErrors.h \
