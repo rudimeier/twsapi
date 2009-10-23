@@ -23,5 +23,4 @@ INCLUDEPATH += \
   ../Shared
 
 QMAKE_CXXFLAGS_WARN_ON += \
-  -Wno-switch \
-  -Wno-unused-parameter
+  -Wno-switch
