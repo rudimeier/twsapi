@@ -13,3 +13,7 @@ DEFINES += \
 INCLUDEPATH += \
   ../PosixSocketClient/src \
   ../Shared
+
+QMAKE_CXXFLAGS_WARN_ON += \
+  -Wno-switch \
+  -Wno-unused-parameter
