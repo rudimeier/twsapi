@@ -1,7 +1,10 @@
 #ifndef order_def
 #define order_def
 
+#include "shared_ptr.h"
+
 #include <float.h>
+#include <vector>
 
 #define UNSET_DOUBLE DBL_MAX
 #define UNSET_INTEGER INT_MAX
@@ -14,6 +17,19 @@ enum AuctionStrategy { AUCTION_UNSET = 0,
                        AUCTION_MATCH = 1,
                        AUCTION_IMPROVEMENT = 2,
 					   AUCTION_TRANSPARENT = 3 };
+
+struct TagValue
+{
+	TagValue() {}
+	TagValue(const CString& p_tag, const CString& p_value)
+		: tag(p_tag), value(p_value)
+	{}
+
+	CString tag;
+	CString value;
+};
+
+typedef shared_ptr<TagValue> TagValueSPtr;
 
 struct Order
 {
@@ -157,6 +173,14 @@ struct Order
    CString settlingFirm;
    CString clearingAccount; // True beneficiary of the order
    CString clearingIntent; // "" (Default), "IB", "Away", "PTA" (PostTrade)
+
+   // ALGO ORDERS ONLY
+   CString algoStrategy;
+
+   typedef std::vector<TagValueSPtr> TagValueList;
+   typedef shared_ptr<TagValueList> TagValueListSPtr;
+
+   TagValueListSPtr algoParams;
 
    // What-if
    bool   whatIf;

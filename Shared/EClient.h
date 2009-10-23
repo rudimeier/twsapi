@@ -23,7 +23,7 @@ public:
    virtual void cancelOrder( OrderId id) = 0;
    virtual void reqOpenOrders() = 0;
    virtual void reqAccountUpdates(bool subscribe, const CString& acctCode) = 0;
-   virtual void reqExecutions(const ExecutionFilter& filter) = 0;
+   virtual void reqExecutions(int reqId, const ExecutionFilter& filter) = 0;
    virtual void reqIds( int numIds) = 0;
    virtual void checkMessages() = 0;
    virtual void reqContractDetails( int reqId, const Contract &contract) = 0;

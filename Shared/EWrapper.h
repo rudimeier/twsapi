@@ -54,6 +54,7 @@ struct ContractDetails;
 struct Order;
 struct OrderState;
 struct Execution;
+struct UnderComp;
 
 class EWrapper
 {
@@ -70,6 +71,7 @@ public:
 	   int remaining, double avgFillPrice, int permId, int parentId,
 	   double lastFillPrice, int clientId, const CString& whyHeld) = 0;
    virtual void openOrder( OrderId orderId, const Contract&, const Order&, const OrderState&) = 0;
+   virtual void openOrderEnd() = 0;
    virtual void winError( const CString &str, int lastError) = 0;
    virtual void connectionClosed() = 0;
    virtual void updateAccountValue(const CString& key, const CString& val,
@@ -78,11 +80,13 @@ public:
       double marketPrice, double marketValue, double averageCost,
       double unrealizedPNL, double realizedPNL, const CString& accountName) = 0;
    virtual void updateAccountTime(const CString& timeStamp) = 0;
+   virtual void accountDownloadEnd(const CString& accountName) = 0;
    virtual void nextValidId( OrderId orderId) = 0;
    virtual void contractDetails( int reqId, const ContractDetails& contractDetails) = 0;
    virtual void bondContractDetails( int reqId, const ContractDetails& contractDetails) = 0;
    virtual void contractDetailsEnd( int reqId) = 0;
-   virtual void execDetails( OrderId orderId, const Contract& contract, const Execution& execution) =0;
+   virtual void execDetails( int reqId, const Contract& contract, const Execution& execution) =0;
+   virtual void execDetailsEnd( int reqId) =0;
    virtual void error(const int id, const int errorCode, const CString errorString) = 0;
    virtual void updateMktDepth(TickerId id, int position, int operation, int side,
       double price, int size) = 0;
@@ -102,6 +106,7 @@ public:
 	   long volume, double wap, int count) = 0;
    virtual void currentTime(long time) = 0;
    virtual void fundamentalData(TickerId reqId, const CString& data) = 0;
+   virtual void deltaNeutralValidation(int reqId, const UnderComp& underComp) = 0;
 };
 
 

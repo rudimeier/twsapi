@@ -37,7 +37,7 @@ public:
    void cancelOrder( OrderId id) ;
    void reqOpenOrders();
    void reqAccountUpdates(bool subscribe, const CString& acctCode);
-   void reqExecutions(const ExecutionFilter& filter);
+   void reqExecutions(int reqId, const ExecutionFilter& filter);
    void reqIds( int numIds);
    void checkMessages();
    void reqContractDetails( int reqId, const Contract &contract);

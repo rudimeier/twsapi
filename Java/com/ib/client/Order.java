@@ -4,6 +4,8 @@
  */
 package com.ib.client;
 
+import java.util.Vector;
+
 public class Order {
     final public static int 	CUSTOMER = 0;
     final public static int 	FIRM = 1;
@@ -103,6 +105,10 @@ public class Order {
     public String   m_settlingFirm;
     public String   m_clearingAccount; // True beneficiary of the order
     public String   m_clearingIntent; // "" (Default), "IB", "Away", "PTA" (PostTrade)
+    
+    // ALGO ORDERS ONLY
+    public String m_algoStrategy;
+    public Vector m_algoParams;
 
     // What-if
     public boolean  m_whatIf;
@@ -212,7 +218,12 @@ public class Order {
         	Util.StringCompare(m_account, l_theOther.m_account) != 0 ||
         	Util.StringCompare(m_settlingFirm, l_theOther.m_settlingFirm) != 0 ||
         	Util.StringCompare(m_clearingAccount, l_theOther.m_clearingAccount) != 0 ||
-        	Util.StringCompare(m_clearingIntent, l_theOther.m_clearingIntent) != 0) {
+        	Util.StringCompare(m_clearingIntent, l_theOther.m_clearingIntent) != 0 ||
+        	Util.StringCompare(m_algoStrategy, l_theOther.m_algoStrategy) != 0) {
+        	return false;
+        }
+        
+        if (!Util.VectorEqualsUnordered(m_algoParams, l_theOther.m_algoParams)) {
         	return false;
         }
 

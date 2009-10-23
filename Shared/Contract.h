@@ -106,6 +106,7 @@ struct ContractDetails
    ContractDetails()
       : minTick(0)
 	  , priceMagnifier(0)
+	  , underConId(0)
 	  , callable(false)
 	  , putable(false)
 	  , coupon(0)
@@ -121,7 +122,8 @@ struct ContractDetails
    double	minTick;
    CString	orderTypes;
    CString	validExchanges;
-   long     priceMagnifier;
+   long		priceMagnifier;
+   int		underConId;
 
    // BOND values
    CString cusip;

@@ -2,6 +2,7 @@ package com.ib.client;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Vector;
 
 public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     public static final String SCANNER_PARAMETERS = "SCANNER PARAMETERS:";
@@ -131,6 +132,22 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     			" underComp.delta =" + underComp.m_delta +
     			" underComp.price =" + underComp.m_price ;
     	}
+    	
+    	if (!Util.StringIsEmpty(order.m_algoStrategy)) {
+    		msg += " algoStrategy=" + order.m_algoStrategy;
+    		msg += " algoParams={";
+    		if (order.m_algoParams != null) {
+    			Vector algoParams = order.m_algoParams;
+    			for (int i = 0; i < algoParams.size(); ++i) {
+    				TagValue param = (TagValue)algoParams.elementAt(i);
+    				if (i > 0) {
+    					msg += ",";
+    				}
+    				msg += param.m_tag + "=" + param.m_value;
+    			}
+    		}
+    		msg += "}";
+    	}
     
         String orderStateMsg =
         	" status=" + orderState.m_status
@@ -145,6 +162,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
 		;
 
         return msg + orderStateMsg;
+    }
+    
+    static public String openOrderEnd() {
+    	return " =============== end ===============";
     }
     
     static public String updateAccountValue(String key, String value, String currency, String accountName) {
@@ -162,6 +183,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     
     static public String updateAccountTime(String timeStamp) {
     	return "updateAccountTime: " + timeStamp;
+    }
+    
+    static public String accountDownloadEnd(String accountName) {
+    	return "accountDownloadEnd: " + accountName;
     }
     
     static public String nextValidId( int orderId) {
@@ -183,7 +208,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "minTick = " + contractDetails.m_minTick + "\n"
         + "price magnifier = " + contractDetails.m_priceMagnifier + "\n"
         + "orderTypes = " + contractDetails.m_orderTypes + "\n"
-        + "validExchanges = " + contractDetails.m_validExchanges + "\n";
+        + "validExchanges = " + contractDetails.m_validExchanges + "\n"
+        + "underConId = " + contractDetails.m_underConId + "\n";
     	return msg;
     }
     
@@ -239,10 +265,11 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     	return "reqId = " + reqId + " =============== end ===============";
     }
     
-    static public String execDetails( int orderId, Contract contract, Execution execution) {
+    static public String execDetails( int reqId, Contract contract, Execution execution) {
         String msg = " ---- Execution Details begin ----\n"
-        + "orderId = " + Integer.toString(orderId) + "\n"
-        + "clientId = " + Integer.toString(execution.m_clientId) + "\n"
+        + "reqId = " + reqId + "\n"
+        + "orderId = " + execution.m_orderId + "\n"
+        + "clientId = " + execution.m_clientId + "\n"
         + "symbol = " + contract.m_symbol + "\n"
         + "secType = " + contract.m_secType + "\n"
         + "expiry = " + contract.m_expiry + "\n"
@@ -264,6 +291,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "avgPrice = " + execution.m_avgPrice + "\n"
         + " ---- Execution Details end ----\n";
         return msg;
+    }
+    
+    static public String execDetailsEnd(int reqId) {
+    	return "reqId = " + reqId + " =============== end ===============";
     }
     
     static public String updateMktDepth( int tickerId, int position, int operation, int side,
@@ -351,5 +382,12 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
 
     static public String fundamentalData(int reqId, String data) {
 		return "id  = " + reqId + " len = " + data.length() + '\n' + data;
+    }
+    
+    static public String deltaNeutralValidation(int reqId, UnderComp underComp) {
+    	return "id = " + reqId
+    	+ " underComp.conId =" + underComp.m_conId
+    	+ " underComp.delta =" + underComp.m_delta
+    	+ " underComp.price =" + underComp.m_price;
     }
 }

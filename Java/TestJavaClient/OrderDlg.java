@@ -7,6 +7,7 @@ package TestJavaClient;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
@@ -85,8 +86,10 @@ public class OrderDlg extends JDialog {
     private JTextField m_overrideTextField = new JTextField("0");
 
     private JButton	    m_sharesAlloc = new JButton("FA Allocation Info...");
-    private JButton 	m_comboLegs = new JButton( "Add Combination Order Legs...");
+    private JButton 	m_comboLegs = new JButton( "Combo Legs");
     private JButton 	m_btnUnderComp = new JButton( "Delta Neutral");
+    private JButton 	m_btnAlgoParams = new JButton( "Algo Params");
+    
     private JButton 	m_ok = new JButton( "OK");
     private JButton 	m_cancel = new JButton( "Cancel");
     private SampleFrame m_parent;
@@ -239,9 +242,15 @@ public class OrderDlg extends JDialog {
         pMidPanel.add( pMarketData, BorderLayout.CENTER);
         pMidPanel.add( pOptionsExercise, BorderLayout.CENTER);
         pMidPanel.add( pBackfill, BorderLayout.CENTER);
-        pMidPanel.add( m_sharesAlloc, BorderLayout.CENTER);
-        pMidPanel.add( m_comboLegs, BorderLayout.CENTER);
-        pMidPanel.add( m_btnUnderComp, BorderLayout.CENTER);
+        
+        // create order button panel
+        JPanel pOrderButtonPanel = new JPanel();
+        pOrderButtonPanel.add( m_sharesAlloc);
+        pOrderButtonPanel.add( m_comboLegs);
+        pOrderButtonPanel.add( m_btnUnderComp);
+        pOrderButtonPanel.add( m_btnAlgoParams);
+        
+        pMidPanel.add( pOrderButtonPanel, BorderLayout.CENTER);
 
         // create button panel
         JPanel buttonPanel = new JPanel();
@@ -263,6 +272,11 @@ public class OrderDlg extends JDialog {
         m_btnUnderComp.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
                 onBtnUnderComp();
+            }
+        });
+        m_btnAlgoParams.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onBtnAlgoParams();
             }
         });
         m_ok.addActionListener( new ActionListener() {
@@ -325,6 +339,14 @@ public class OrderDlg extends JDialog {
         else if (underCompDlg.reset()) {
         	m_contract.m_underComp = null;
         }
+    }
+    
+    void onBtnAlgoParams() {
+    	
+        AlgoParamsDlg algoParamsDlg = new AlgoParamsDlg(m_order, this);
+        
+        // show delta neutral dialog
+        algoParamsDlg.setVisible( true);
     }
 
     void onOk() {

@@ -22,9 +22,12 @@ import javax.swing.JTextField;
 import com.ib.client.ExecutionFilter;
 
 public class ExecFilterDlg extends JDialog {
+	
+	public int m_reqId;
     public ExecutionFilter	m_execFilter = new ExecutionFilter();
     public boolean 		m_rc;
 
+    private JTextField 	m_reqIdTxt = new JTextField("0");
     private JTextField 	m_clientID = new JTextField("0");
     private JTextField 	m_acctCode = new JTextField();
     private JTextField 	m_time = new JTextField();
@@ -44,6 +47,8 @@ public class ExecFilterDlg extends JDialog {
         // create extended order attributes panel
         JPanel execRptFilterPanel = new JPanel( new GridLayout( 0, 2, 7, 7) );
         execRptFilterPanel.setBorder( BorderFactory.createTitledBorder( "Filter Criteria") );
+        execRptFilterPanel.add( new JLabel( "Request ID:") );
+        execRptFilterPanel.add( m_reqIdTxt);
         execRptFilterPanel.add( new JLabel( "Client ID:") );
         execRptFilterPanel.add( m_clientID);
         execRptFilterPanel.add( new JLabel( "Account Code:") );
@@ -86,6 +91,9 @@ public class ExecFilterDlg extends JDialog {
         m_rc = false;
 
         try {
+        	
+            m_reqId = Integer.parseInt( m_reqIdTxt.getText());
+
             // set extended order fields
             String clientId = m_clientID.getText().toString();
             m_execFilter.m_clientId = clientId != ""

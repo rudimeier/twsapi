@@ -22,6 +22,7 @@ import com.ib.client.EWrapperMsgGenerator;
 import com.ib.client.Execution;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
+import com.ib.client.UnderComp;
 import com.ib.client.Util;
 
 class SampleFrame extends JFrame implements EWrapper {
@@ -519,7 +520,13 @@ class SampleFrame extends JFrame implements EWrapper {
         AcctUpdatesDlg dlg = new AcctUpdatesDlg(this);
 
         dlg.show();
+        
+        if ( dlg.m_subscribe) {
+        	m_acctDlg.accountDownloadBegin(dlg.m_acctCode);
+        }
+        
         m_client.reqAccountUpdates( dlg.m_subscribe, dlg.m_acctCode);
+        
         if ( m_client.isConnected() && dlg.m_subscribe) {
             m_acctDlg.reset();
             m_acctDlg.setVisible(true);
@@ -579,7 +586,7 @@ class SampleFrame extends JFrame implements EWrapper {
         dlg.show();
         if ( dlg.m_rc ) {
             // request execution reports based on the supplied filter criteria
-            m_client.reqExecutions( dlg.m_execFilter);
+            m_client.reqExecutions( dlg.m_reqId, dlg.m_execFilter);
         }
     }
 
@@ -654,6 +661,12 @@ class SampleFrame extends JFrame implements EWrapper {
     	String msg = EWrapperMsgGenerator.openOrder( orderId, contract, order, orderState);
         m_TWS.add( msg) ;
     }
+    
+    public void openOrderEnd() {
+        // received open order end
+    	String msg = EWrapperMsgGenerator.openOrderEnd();
+        m_TWS.add( msg) ;
+    }
 
     public void contractDetails(int reqId, ContractDetails contractDetails)
     {
@@ -684,9 +697,15 @@ class SampleFrame extends JFrame implements EWrapper {
     	m_TWS.add(msg);
     }
 
-    public void execDetails(int orderId, Contract contract, Execution execution)
+    public void execDetails(int reqId, Contract contract, Execution execution)
     {
-    	String msg = EWrapperMsgGenerator.execDetails(orderId, contract, execution);
+    	String msg = EWrapperMsgGenerator.execDetails(reqId, contract, execution);
+    	m_TWS.add(msg);
+    }
+    
+    public void execDetailsEnd(int reqId)
+    {
+    	String msg = EWrapperMsgGenerator.execDetailsEnd(reqId);
     	m_TWS.add(msg);
     }
 
@@ -752,6 +771,13 @@ class SampleFrame extends JFrame implements EWrapper {
     public void updateAccountTime(String timeStamp) {
         m_acctDlg.updateAccountTime(timeStamp);
     }
+    
+    public void accountDownloadEnd(String accountName) {
+    	m_acctDlg.accountDownloadEnd( accountName);
+    	
+    	String msg = EWrapperMsgGenerator.accountDownloadEnd( accountName);
+        m_TWS.add( msg);
+    }
 
     public void updateNewsBulletin( int msgId, int msgType, String message, String origExchange) {
         String msg = EWrapperMsgGenerator.updateNewsBulletin(msgId, msgType, message, origExchange);
@@ -785,6 +811,10 @@ class SampleFrame extends JFrame implements EWrapper {
 	public void fundamentalData(int reqId, String data) {
 		String msg = EWrapperMsgGenerator.fundamentalData(reqId, data);
 		m_tickers.add(msg);
+	}
+	public void deltaNeutralValidation(int reqId, UnderComp underComp) {
+		String msg = EWrapperMsgGenerator.deltaNeutralValidation(reqId, underComp);
+		m_TWS.add(msg);
 	}
 
     void displayXML(String title, String xml) {

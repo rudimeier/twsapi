@@ -52,14 +52,20 @@ public class EClientSocket {
 	// 35 = can receive contId field for Contract objects
 	// 36 = can receive outsideRth field for Order objects
 	// 37 = can receive clearingAccount and clearingIntent for Order objects
-	// 38 = can receive multipier and primaryExchange in portfolio updates
+	// 38 = can receive multiplier and primaryExchange in portfolio updates
 	//    ; can receive cumQty and avgPrice in execution
 	//    ; can receive fundamental data
 	//    ; can receive underComp for Contract objects
 	//    ; can receive reqId and end marker in contractDetails/bondContractDetails
  	//    ; can receive ScaleInitComponentSize and ScaleSubsComponentSize for Order objects
+	// 39 = can receive underConId in contractDetails
+	// 40 = can receive algoStrategy/algoParams in openOrder
+	// 41 = can receive end marker for openOrder
+	//    ; can receive end marker for account download
+	//    ; can receive end marker for executions download
+	// 42 = can receive deltaNeutralValidation
 	
-    private static final int CLIENT_VERSION = 38;
+    private static final int CLIENT_VERSION = 42;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -124,6 +130,8 @@ public class EClientSocket {
 	private static final int MIN_SERVER_VER_UNDER_COMP = 40;
 	private static final int MIN_SERVER_VER_CONTRACT_DATA_CHAIN = 40;
 	private static final int MIN_SERVER_VER_SCALE_ORDERS2 = 40;
+	private static final int MIN_SERVER_VER_ALGO_ORDERS = 41;
+	private static final int MIN_SERVER_VER_EXECUTION_DATA_CHAIN = 42;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -867,8 +875,16 @@ public class EClientSocket {
         		return;
         	}
         }
+        
+        if (m_serverVersion < MIN_SERVER_VER_ALGO_ORDERS) {
+        	if (!IsEmpty(order.m_algoStrategy)) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support algo orders.");
+        		return;
+        	}
+        }
   
-        final int VERSION = 26;
+        final int VERSION = 27;
 
         // send place order msg
         try {
@@ -1070,6 +1086,22 @@ public class EClientSocket {
         		   send( false);
         	   }
            }
+           
+           if (m_serverVersion >= MIN_SERVER_VER_ALGO_ORDERS) {
+        	   send( order.m_algoStrategy);
+        	   if( !IsEmpty(order.m_algoStrategy)) {
+        		   java.util.Vector algoParams = order.m_algoParams;
+        		   int algoParamsCount = algoParams == null ? 0 : algoParams.size();
+        		   send( algoParamsCount);
+        		   if( algoParamsCount > 0) {
+        			   for( int i = 0; i < algoParamsCount; ++i) {
+        				   TagValue tagValue = (TagValue)algoParams.get(i);
+        				   send( tagValue.m_tag);
+        				   send( tagValue.m_value);
+        			   }
+        		   }
+        	   }
+           }
 
            if (m_serverVersion >= MIN_SERVER_VER_WHAT_IF_ORDERS) {
         	   send (order.m_whatIf);
@@ -1107,19 +1139,23 @@ public class EClientSocket {
         }
     }
 
-    public synchronized void reqExecutions(ExecutionFilter filter) {
+    public synchronized void reqExecutions(int reqId, ExecutionFilter filter) {
         // not connected?
         if( !m_connected) {
             error( EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
             return;
         }
 
-        final int VERSION = 2;
+        final int VERSION = 3;
 
         // send cancel order msg
         try {
             send( REQ_EXECUTIONS);
             send( VERSION);
+            
+            if (m_serverVersion >= MIN_SERVER_VER_EXECUTION_DATA_CHAIN) {
+            	send( reqId);
+            }
 
             // Send the execution rpt filter data
             if ( m_serverVersion >= 9 ) {
@@ -1549,7 +1585,7 @@ public class EClientSocket {
     }
     
     private static boolean IsEmpty(String str) { 
-    	return str == null || str.length() == 0;
+    	return Util.StringIsEmpty(str);
     }
 
 }

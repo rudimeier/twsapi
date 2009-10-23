@@ -7,6 +7,7 @@ package com.ib.client;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 public class EReader extends Thread {
 
@@ -39,6 +40,11 @@ public class EReader extends Thread {
     static final int REAL_TIME_BARS = 50;
     static final int FUNDAMENTAL_DATA = 51;
     static final int CONTRACT_DATA_END = 52;
+    static final int OPEN_ORDER_END = 53;
+    static final int ACCT_DOWNLOAD_END = 54;
+    static final int EXECUTION_DATA_END = 55;
+    static final int DELTA_NEUTRAL_VALIDATION = 56;
+    
 
     private EClientSocket 	m_parent;
     private DataInputStream m_dis;
@@ -459,6 +465,22 @@ public class EReader extends Thread {
                     }
                 }
                 
+                if (version >= 21) {
+                	order.m_algoStrategy = readStr();
+                	if (!Util.StringIsEmpty(order.m_algoStrategy)) {
+                		int algoParamsCount = readInt();
+                		if (algoParamsCount > 0) {
+                			order.m_algoParams = new Vector(algoParamsCount);
+                			for (int i = 0; i < algoParamsCount; ++i) {
+                				TagValue tagValue = new TagValue();
+                				tagValue.m_tag = readStr();
+                				tagValue.m_value = readStr();
+                				order.m_algoParams.add(tagValue);
+                			}
+                		}
+                	}
+                }
+                
                 OrderState orderState = new OrderState();
                 
                 if (version >= 16) {
@@ -548,6 +570,9 @@ public class EReader extends Thread {
                 if (version >= 2) {
                     contract.m_priceMagnifier = readInt();
                 }
+                if (version >= 4) {
+                	contract.m_underConId = readInt();
+                }
                 eWrapper().contractDetails( reqId, contract);
                 break;
             }
@@ -593,6 +618,12 @@ public class EReader extends Thread {
             }
             case EXECUTION_DATA: {
                 int version = readInt();
+                
+                int reqId = -1;
+                if (version >= 7) {
+                	reqId = readInt();
+                }
+                
                 int orderId = readInt();
 
                 // read contract fields
@@ -632,7 +663,7 @@ public class EReader extends Thread {
                 	exec.m_avgPrice = readDouble();
                 }
 
-                eWrapper().execDetails( orderId, contract, exec);
+                eWrapper().execDetails( reqId, contract, exec);
                 break;
             }
             case MARKET_DEPTH: {
@@ -759,6 +790,35 @@ public class EReader extends Thread {
                 /*int version =*/ readInt();
                 int reqId = readInt();
                 eWrapper().contractDetailsEnd(reqId);
+                break;
+            }
+            case OPEN_ORDER_END: {
+                /*int version =*/ readInt();
+                eWrapper().openOrderEnd();
+                break;
+            }
+            case ACCT_DOWNLOAD_END: {
+                /*int version =*/ readInt();
+                String accountName = readStr();
+                eWrapper().accountDownloadEnd( accountName);
+                break;
+            }
+            case EXECUTION_DATA_END: {
+                /*int version =*/ readInt();
+                int reqId = readInt();
+                eWrapper().execDetailsEnd( reqId);
+                break;
+            }
+            case DELTA_NEUTRAL_VALIDATION: {
+                /*int version =*/ readInt();
+                int reqId = readInt();
+                
+                UnderComp underComp = new UnderComp();
+                underComp.m_conId = readInt();
+                underComp.m_delta = readDouble();
+                underComp.m_price = readDouble();
+                
+                eWrapper().deltaNeutralValidation( reqId, underComp);
                 break;
             }
             default: {

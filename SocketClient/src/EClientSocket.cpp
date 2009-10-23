@@ -66,8 +66,15 @@
 //    ; can receive underComp for Contract objects
 //    ; can receive reqId and end marker in contractDetails/bondContractDetails
 //    ; can receive ScaleInitComponentSize and ScaleSubsComponentSize for Order objects
+// 39 = can receive underConId in contractDetails
+// 40 = can receive algoStrategy/algoParams in openOrder
+// 41 = can receive end marker for openOrder
+//    ; can receive end marker for account download
+//    ; can receive end marker for executions download
+// 42 = can receive deltaNeutralValidation
 
-const int CLIENT_VERSION    = 38;
+
+const int CLIENT_VERSION    = 42;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -113,6 +120,8 @@ const int MIN_SERVER_VER_FUNDAMENTAL_DATA = 40;
 const int MIN_SERVER_VER_UNDER_COMP = 40;
 const int MIN_SERVER_VER_CONTRACT_DATA_CHAIN = 40;
 const int MIN_SERVER_VER_SCALE_ORDERS2 = 40;
+const int MIN_SERVER_VER_ALGO_ORDERS = 41;
+const int MIN_SERVER_VER_EXECUTION_DATA_CHAIN = 42;
 
 // incoming msg id's
 const int TICK_PRICE		= 1;
@@ -143,6 +152,10 @@ const int CURRENT_TIME = 49;
 const int REAL_TIME_BARS = 50;
 const int FUNDAMENTAL_DATA = 51;
 const int CONTRACT_DATA_END = 52;
+const int OPEN_ORDER_END = 53;
+const int ACCT_DOWNLOAD_END = 54;
+const int EXECUTION_DATA_END = 55;
+const int DELTA_NEUTRAL_VALIDATION = 56;
 
 // TWS New Bulletins constants
 const int NEWS_MSG            = 1;    // standard IB news bulleting message
@@ -1092,9 +1105,17 @@ void EClientSocket::placeOrder( OrderId id, const Contract &contract, const Orde
 		}
 	}
 
+	if( m_serverVersion < MIN_SERVER_VER_ALGO_ORDERS) {
+		if( !order.algoStrategy.IsEmpty()) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support algo orders.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 26;
+	const int VERSION = 27;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1226,7 +1247,7 @@ void EClientSocket::placeOrder( OrderId id, const Contract &contract, const Orde
 	//double lower = (m_serverVersion == 26 && isVolOrder) ? DBL_MAX : order.stockRangeLower;
 	//double upper = (m_serverVersion == 26 && isVolOrder) ? DBL_MAX : order.stockRangeUpper;
 	ENCODE_FIELD_MAX( order.stockRangeLower);
-	ENCODE_FIELD_MAX( order.stockRangeLower);
+	ENCODE_FIELD_MAX( order.stockRangeUpper);
 
 	ENCODE_FIELD( order.overridePercentageConstraints); // srv v22 and above
 
@@ -1281,6 +1302,22 @@ void EClientSocket::placeOrder( OrderId id, const Contract &contract, const Orde
 		}
 		else {
 			ENCODE_FIELD( false);
+		}
+	}
+
+	if( m_serverVersion >= MIN_SERVER_VER_ALGO_ORDERS) {
+		ENCODE_FIELD( order.algoStrategy);
+		if( !order.algoStrategy.IsEmpty()) {
+			const Order::TagValueList* const algoParams = order.algoParams.get();
+			const int algoParamsCount = algoParams ? algoParams->size() : 0;
+			ENCODE_FIELD( algoParamsCount);
+			if( algoParamsCount > 0) {
+				for( int i = 0; i < algoParamsCount; ++i) {
+					const TagValue* tagValue = ((*algoParams)[i]).get();
+					ENCODE_FIELD( tagValue->tag);
+					ENCODE_FIELD( tagValue->value);
+				}
+			}
 		}
 	}
 
@@ -1390,7 +1427,7 @@ void EClientSocket::reqAllOpenOrders()
 	bufferedSend( msg.str());
 }
 
-void EClientSocket::reqExecutions(const ExecutionFilter& filter) 
+void EClientSocket::reqExecutions(int reqId, const ExecutionFilter& filter) 
 {
 	//NOTE: Time format must be 'yyyymmdd-hh:mm:ss' E.g. '20030702-14:55'
 
@@ -1402,11 +1439,15 @@ void EClientSocket::reqExecutions(const ExecutionFilter& filter)
 
 	std::ostringstream msg;
 
-	const int VERSION = 2;
+	const int VERSION = 3;
 
 	// send req open orders msg
 	ENCODE_FIELD( REQ_EXECUTIONS);
 	ENCODE_FIELD( VERSION);
+
+	if( m_serverVersion >= MIN_SERVER_VER_EXECUTION_DATA_CHAIN) {
+		ENCODE_FIELD( reqId);
+	}
 
 	// Send the execution rpt filter data (srv v9 and above)
 	ENCODE_FIELD( filter.m_clientId);
@@ -2123,6 +2164,26 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 					}
 				}
 
+
+				if( version >= 21) {
+					DECODE_FIELD( order.algoStrategy);
+					if( !order.algoStrategy.IsEmpty()) {
+						int algoParamsCount = 0;
+						DECODE_FIELD( algoParamsCount);
+						if( algoParamsCount > 0) {
+							Order::TagValueListSPtr algoParams( new Order::TagValueList);
+							algoParams->reserve( algoParamsCount);
+							for( int i = 0; i < algoParamsCount; ++i) {
+								TagValueSPtr tagValue( new TagValue());
+								DECODE_FIELD( tagValue->tag);
+								DECODE_FIELD( tagValue->value);
+								algoParams->push_back( tagValue);
+							}
+							order.algoParams = algoParams;
+						}
+					}
+				}
+
 				OrderState orderState;
 
 				DECODE_FIELD( order.whatIf); // ver 16 field
@@ -2261,6 +2322,9 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.orderTypes);
 				DECODE_FIELD( contract.validExchanges);
 				DECODE_FIELD( contract.priceMagnifier); // ver 2 field
+				if( version >= 4) {
+					DECODE_FIELD( contract.underConId);
+				}
 
 				m_pEWrapper->contractDetails( reqId, contract);
 				break;
@@ -2312,8 +2376,13 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				int version;
 				DECODE_FIELD( version);
 
-				int id;
-				DECODE_FIELD( id);
+				int reqId = -1;
+                if (version >= 7) {
+                	DECODE_FIELD(reqId);
+                }
+
+				int orderId;
+				DECODE_FIELD( orderId);
 
 				// decode contract fields
 				Contract contract;
@@ -2329,7 +2398,7 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 
 				// decode execution fields
 				Execution exec;
-				exec.orderId = id;
+				exec.orderId = orderId;
 				DECODE_FIELD( exec.execId);
 				DECODE_FIELD( exec.time);
 				DECODE_FIELD( exec.acctNumber);
@@ -2346,7 +2415,7 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 					DECODE_FIELD( exec.avgPrice);
 				}
 
-				m_pEWrapper->execDetails( id, contract, exec);
+				m_pEWrapper->execDetails( reqId, contract, exec);
 				break;
 			}
 
@@ -2624,6 +2693,58 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( reqId);
 
 				m_pEWrapper->contractDetailsEnd( reqId);
+				break;
+			}
+
+			case OPEN_ORDER_END:
+			{
+				int version;
+
+				DECODE_FIELD( version);
+
+				m_pEWrapper->openOrderEnd();
+				break;
+			}
+
+			case ACCT_DOWNLOAD_END:
+			{
+				int version;
+				CString account;
+
+				DECODE_FIELD( version);
+				DECODE_FIELD( account);
+
+				m_pEWrapper->accountDownloadEnd( account);
+				break;
+			}
+
+			case EXECUTION_DATA_END:
+			{
+				int version;
+				int reqId;
+
+				DECODE_FIELD( version);
+				DECODE_FIELD( reqId);
+
+				m_pEWrapper->execDetailsEnd( reqId);
+				break;
+			}
+
+			case DELTA_NEUTRAL_VALIDATION:
+			{
+				int version;
+				int reqId;
+
+				DECODE_FIELD( version);
+				DECODE_FIELD( reqId);
+
+				UnderComp underComp;
+
+				DECODE_FIELD( underComp.conId);
+				DECODE_FIELD( underComp.delta);
+				DECODE_FIELD( underComp.price);
+
+				m_pEWrapper->deltaNeutralValidation( reqId, underComp);
 				break;
 			}
 

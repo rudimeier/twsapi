@@ -76,10 +76,6 @@ public class Contract implements Cloneable {
         	return false;
         }
 
-        if (m_comboLegs.size() != l_theOther.m_comboLegs.size()) {
-            return false;
-        }
-
         if (Util.StringCompare(m_secType, l_theOther.m_secType) != 0) {
         	return false;
         }
@@ -105,28 +101,9 @@ public class Contract implements Cloneable {
         	}
         }
 
-        if (m_comboLegs.size() > 0) {
-
-        	// compare the combo legs
-        	int comboLegsSize = m_comboLegs.size();
-        	boolean[] alreadyMatchedSecondLeg = new boolean[comboLegsSize];
-        	for (int ctr1 = 0; ctr1 < comboLegsSize; ++ctr1) {
-        		ComboLeg l_thisComboLeg = (ComboLeg) m_comboLegs.get(ctr1);
-        		int ctr2 = 0;
-        		for (; ctr2 < comboLegsSize; ++ctr2) {
-        			if (alreadyMatchedSecondLeg[ctr2]) {
-        				continue;
-        			}
-        			if (l_thisComboLeg.equals(l_theOther.m_comboLegs.get(ctr2))) {
-        				alreadyMatchedSecondLeg[ctr2] = true;
-        				break;
-        			}
-        		}
-        		if (ctr2 >= comboLegsSize) {
-        			// no matching leg found
-        			return false;
-        		}
-        	}
+    	// compare combo legs
+        if (!Util.VectorEqualsUnordered(m_comboLegs, l_theOther.m_comboLegs)) {
+        	return false;
         }
         
         if (m_underComp != l_theOther.m_underComp) {
