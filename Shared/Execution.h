@@ -10,6 +10,8 @@ struct Execution
       permId = 0;
       clientId = 0;
       orderId = 0;
+	  cumQty = 0;
+	  avgPrice = 0;
    }
 
    // main order fields
@@ -24,6 +26,8 @@ struct Execution
    long        clientId;
    long        orderId;
    int         liquidation;
+   int         cumQty;
+   double      avgPrice;
 };
 
 struct ExecutionFilter

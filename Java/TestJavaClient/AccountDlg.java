@@ -154,20 +154,24 @@ class PortfolioTable extends AbstractTableModel {
             case 4:
                 return "Right";
             case 5:
-                return "Currency";
+            	return "Multiplier";
             case 6:
-                return "Position";
+            	return "Exchange";
             case 7:
-                return "Market Price";
+                return "Currency";
             case 8:
-                return "Market Value";
+                return "Position";
             case 9:
-                return "Average Cost";
+                return "Market Price";
             case 10:
-                return "Unrealized P&L";
+                return "Market Value";
             case 11:
-                return "Realized P&L";
+                return "Average Cost";
             case 12:
+                return "Unrealized P&L";
+            case 13:
+                return "Realized P&L";
+            case 14:
                 return "Account Name";
             default:
                 return null;
@@ -210,20 +214,24 @@ class PortfolioTable extends AbstractTableModel {
                 case 4:
                     return (m_contract.m_right != null && m_contract.m_right.equals("???")) ? null : m_contract.m_right;
                 case 5:
-                    return m_contract.m_currency;
+                	return m_contract.m_multiplier;
                 case 6:
-                    return "" + m_position;
+                	return (m_contract.m_primaryExch != null ? m_contract.m_primaryExch : "");
                 case 7:
-                    return "" + m_marketPrice;
+                    return m_contract.m_currency;
                 case 8:
-                    return "" + m_marketValue;
+                    return "" + m_position;
                 case 9:
-                    return "" + m_averageCost;
+                    return "" + m_marketPrice;
                 case 10:
-                    return "" + m_unrealizedPNL;
+                    return "" + m_marketValue;
                 case 11:
-                    return "" + m_realizedPNL;
+                    return "" + m_averageCost;
                 case 12:
+                    return "" + m_unrealizedPNL;
+                case 13:
+                    return "" + m_realizedPNL;
+                case 14:
                     return m_accountName;
                 default:
                     return null;

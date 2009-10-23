@@ -22,6 +22,7 @@ import com.ib.client.EWrapperMsgGenerator;
 import com.ib.client.Execution;
 import com.ib.client.Order;
 import com.ib.client.OrderState;
+import com.ib.client.Util;
 
 class SampleFrame extends JFrame implements EWrapper {
     private static final int NOT_AN_FA_ACCOUNT_ERROR = 321 ;
@@ -340,7 +341,7 @@ class SampleFrame extends JFrame implements EWrapper {
         // cancel market data
         m_client.cancelRealTimeBars( m_orderDlg.m_id );        
     }
-    
+
     void onScanner() {
         m_scannerDlg.show();
         if (m_scannerDlg.m_userSelection == ScannerDlg.CANCEL_SELECTION) {
@@ -365,6 +366,15 @@ class SampleFrame extends JFrame implements EWrapper {
         if( !m_orderDlg.m_rc ) {
             return;
         }
+        
+        if( Util.StringCompare( m_orderDlg.m_whatToShow, "estimates" ) == 0 ||
+        	Util.StringCompare( m_orderDlg.m_whatToShow, "finstat"   ) == 0 ||
+        	Util.StringCompare( m_orderDlg.m_whatToShow, "snapshot"  ) == 0 ) {
+        	
+        	m_client.reqFundamentalData(m_orderDlg.m_id, m_orderDlg.m_contract,
+        			/* reportType */ m_orderDlg.m_whatToShow);
+        	return;
+        }
 
         // req historical data
         m_client.reqHistoricalData( m_orderDlg.m_id, m_orderDlg.m_contract,
@@ -379,6 +389,14 @@ class SampleFrame extends JFrame implements EWrapper {
         if( !m_orderDlg.m_rc ) {
             return;
         }
+        
+        if( Util.StringCompare( m_orderDlg.m_whatToShow, "estimates" ) == 0 ||
+           	Util.StringCompare( m_orderDlg.m_whatToShow, "finstat"   ) == 0 ||
+           	Util.StringCompare( m_orderDlg.m_whatToShow, "snapshot"  ) == 0 ) {
+            	
+           	m_client.cancelFundamentalData(m_orderDlg.m_id);
+           	return;
+        }
 
         // cancel historical data
         m_client.cancelHistoricalData( m_orderDlg.m_id );
@@ -392,7 +410,7 @@ class SampleFrame extends JFrame implements EWrapper {
         }
 
         // req mkt data
-        m_client.reqContractDetails( m_orderDlg.m_contract );
+        m_client.reqContractDetails( m_orderDlg.m_id, m_orderDlg.m_contract );
     }
 
     void onReqMktDepth() {
@@ -637,11 +655,16 @@ class SampleFrame extends JFrame implements EWrapper {
         m_TWS.add( msg) ;
     }
 
-    public void contractDetails(ContractDetails contractDetails)
+    public void contractDetails(int reqId, ContractDetails contractDetails)
     {
-    	String msg = EWrapperMsgGenerator.contractDetails(contractDetails);
+    	String msg = EWrapperMsgGenerator.contractDetails( reqId, contractDetails);
     	m_TWS.add(msg);
     }
+    
+	public void contractDetailsEnd(int reqId) {
+		String msg = EWrapperMsgGenerator.contractDetailsEnd(reqId);
+		m_TWS.add(msg);
+	}
 
     public void scannerData(int reqId, int rank, ContractDetails contractDetails,
                             String distance, String benchmark, String projection, String legsStr) {
@@ -655,9 +678,9 @@ class SampleFrame extends JFrame implements EWrapper {
     	m_tickers.add(msg);
     }
 
-    public void bondContractDetails(ContractDetails contractDetails)
+    public void bondContractDetails(int reqId, ContractDetails contractDetails)
     {
-    	String msg = EWrapperMsgGenerator.contractDetails(contractDetails);
+    	String msg = EWrapperMsgGenerator.contractDetails( reqId, contractDetails);
     	m_TWS.add(msg);
     }
 
@@ -759,6 +782,10 @@ class SampleFrame extends JFrame implements EWrapper {
 		String msg = EWrapperMsgGenerator.currentTime(time);
     	m_TWS.add(msg);
 	}
+	public void fundamentalData(int reqId, String data) {
+		String msg = EWrapperMsgGenerator.fundamentalData(reqId, data);
+		m_tickers.add(msg);
+	}
 
     void displayXML(String title, String xml) {
         m_TWS.add(title);
@@ -837,8 +864,8 @@ class SampleFrame extends JFrame implements EWrapper {
         destOrder.m_continuousUpdate = srcOrder.m_continuousUpdate;
         destOrder.m_referencePriceType = srcOrder.m_referencePriceType;
         destOrder.m_trailStopPrice = srcOrder.m_trailStopPrice;
-        destOrder.m_scaleNumComponents = srcOrder.m_scaleNumComponents;
-        destOrder.m_scaleComponentSize = srcOrder.m_scaleComponentSize;
+        destOrder.m_scaleInitLevelSize = srcOrder.m_scaleInitLevelSize;
+        destOrder.m_scaleSubsLevelSize = srcOrder.m_scaleSubsLevelSize;
         destOrder.m_scalePriceIncrement = srcOrder.m_scalePriceIncrement;
         destOrder.m_account = srcOrder.m_account;
         destOrder.m_settlingFirm = srcOrder.m_settlingFirm;

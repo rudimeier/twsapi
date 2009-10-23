@@ -15,6 +15,8 @@
 #include <sstream>
 #include <iomanip>
 
+#include <stdio.h>
+
 /////////////////////////////////////////////////////////////////////////////////
 // SOCKET CLIENT VERSION CHANGE LOG : Incremented when the format of incomming 
 //                                    server responses change 
@@ -58,8 +60,14 @@
 // 35 = can receive contId field for Contract objects
 // 36 = can receive outsideRth field for Order objects
 // 37 = can receive clearingAccount and clearingIntent for Order objects
+// 38 = can receive multipier and primaryExchange in portfolio updates
+//    ; can receive cumQty and avgPrice in execution
+//    ; can receive fundamental data
+//    ; can receive underComp for Contract objects
+//    ; can receive reqId and end marker in contractDetails/bondContractDetails
+//    ; can receive ScaleInitComponentSize and ScaleSubsComponentSize for Order objects
 
-const int CLIENT_VERSION    = 37;
+const int CLIENT_VERSION    = 38;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -91,6 +99,8 @@ const int CANCEL_HISTORICAL_DATA = 25;
 const int REQ_CURRENT_TIME = 49;
 const int REQ_REAL_TIME_BARS = 50;
 const int CANCEL_REAL_TIME_BARS = 51;
+const int REQ_FUNDAMENTAL_DATA = 52;
+const int CANCEL_FUNDAMENTAL_DATA = 53;
 
 //const int MIN_SERVER_VER_REAL_TIME_BARS = 34;
 //const int MIN_SERVER_VER_SCALE_ORDERS = 35;
@@ -99,6 +109,10 @@ const int CANCEL_REAL_TIME_BARS = 51;
 //const int MIN_SERVER_VER_WHAT_IF_ORDERS = 36;
 //const int MIN_SERVER_VER_CONTRACT_CONID = 37;
 const int MIN_SERVER_VER_PTA_ORDERS = 39;
+const int MIN_SERVER_VER_FUNDAMENTAL_DATA = 40;
+const int MIN_SERVER_VER_UNDER_COMP = 40;
+const int MIN_SERVER_VER_CONTRACT_DATA_CHAIN = 40;
+const int MIN_SERVER_VER_SCALE_ORDERS2 = 40;
 
 // incoming msg id's
 const int TICK_PRICE		= 1;
@@ -127,6 +141,8 @@ const int TICK_STRING = 46;
 const int TICK_EFP = 47;
 const int CURRENT_TIME = 49;
 const int REAL_TIME_BARS = 50;
+const int FUNDAMENTAL_DATA = 51;
+const int CONTRACT_DATA_END = 52;
 
 // TWS New Bulletins constants
 const int NEWS_MSG            = 1;    // standard IB news bulleting message
@@ -200,6 +216,14 @@ template<>
 void EClientSocket::EncodeField<bool>(std::ostream& os, bool boolValue)
 {
 	EncodeField<int>(os, boolValue ? 1 : 0);
+}
+
+template<>
+void EClientSocket::EncodeField<double>(std::ostream& os, double doubleValue)
+{
+	char str[128];
+	_snprintf(str, sizeof(str), "%.10g", doubleValue);
+	EncodeField<const char*>(os, str);
 }
 
 ///////////////////////////////////////////////////////////
@@ -448,10 +472,18 @@ void EClientSocket::reqMktData(TickerId tickerId, const Contract& contract,
 	//		"  It does not support snapshot market data requests.");
 	//	return;
 	//}
+	
+	if( m_serverVersion < MIN_SERVER_VER_UNDER_COMP) {
+		if( contract.underComp) {
+			m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support delta-neutral orders.");
+			return;
+		}
+	}
 
 	std::ostringstream msg;
 
-	const int VERSION = 7;
+	const int VERSION = 8;
 	
 	// send req mkt data msg
 	ENCODE_FIELD( REQ_MKT_DATA);
@@ -493,6 +525,19 @@ void EClientSocket::reqMktData(TickerId tickerId, const Contract& contract,
 			}
 		}
     }
+
+	if (m_serverVersion >= MIN_SERVER_VER_UNDER_COMP) {
+		if (contract.underComp) {
+			const UnderComp& underComp = *contract.underComp;
+			ENCODE_FIELD( true);
+			ENCODE_FIELD( underComp.conId);
+			ENCODE_FIELD( underComp.delta);
+			ENCODE_FIELD( underComp.price);
+		}
+		else {
+			ENCODE_FIELD( false);
+		}
+	}
 
 	ENCODE_FIELD( genericTicks); // srv v31 and above
 	ENCODE_FIELD( snapshot); // srv v35 and above
@@ -633,22 +678,25 @@ void EClientSocket::reqHistoricalData( TickerId tickerId, const Contract &contra
 	ENCODE_FIELD( whatToShow);
 	ENCODE_FIELD( formatDate); // srv v16 and above
 
-	if( !contract.comboLegs || contract.comboLegs->empty()) {
-		ENCODE_FIELD( 0);
-	}
-	else {
-		typedef Contract::ComboLegList ComboLegList;
-		const ComboLegList& comboLegs = *contract.comboLegs;
-		ENCODE_FIELD( (int)comboLegs.size());
-		ComboLegList::const_iterator iter = comboLegs.begin();
-		const ComboLegList::const_iterator iterEnd = comboLegs.end();
-		for( ; iter != iterEnd; ++iter) {
-			const ComboLeg* comboLeg = *iter;
-			ASSERT( comboLeg);
-			ENCODE_FIELD( comboLeg->conId);
-			ENCODE_FIELD( comboLeg->ratio);
-			ENCODE_FIELD( comboLeg->action);
-			ENCODE_FIELD( comboLeg->exchange);
+	// Send combo legs for BAG requests
+	if( contract.secType.CompareNoCase("BAG") == 0) {
+		if( !contract.comboLegs || contract.comboLegs->empty()) {
+			ENCODE_FIELD( 0);
+		}
+		else {
+			typedef Contract::ComboLegList ComboLegList;
+			const ComboLegList& comboLegs = *contract.comboLegs;
+			ENCODE_FIELD( (int)comboLegs.size());
+			ComboLegList::const_iterator iter = comboLegs.begin();
+			const ComboLegList::const_iterator iterEnd = comboLegs.end();
+			for( ; iter != iterEnd; ++iter) {
+				const ComboLeg* comboLeg = *iter;
+				ASSERT( comboLeg);
+				ENCODE_FIELD( comboLeg->conId);
+				ENCODE_FIELD( comboLeg->ratio);
+				ENCODE_FIELD( comboLeg->action);
+				ENCODE_FIELD( comboLeg->exchange);
+			}
 		}
 	}
 
@@ -851,7 +899,68 @@ void EClientSocket::cancelScannerSubscription(int tickerId)
 	bufferedSend( msg.str());
 }
 
-void EClientSocket::reqContractDetails(const Contract& contract)
+void EClientSocket::reqFundamentalData(TickerId reqId, const Contract& contract,
+									   const CString& reportType)
+{
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( reqId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if( m_serverVersion < MIN_SERVER_VER_FUNDAMENTAL_DATA) {
+		m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support fundamental data requests.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( REQ_FUNDAMENTAL_DATA);
+	ENCODE_FIELD( VERSION);
+	ENCODE_FIELD( reqId);
+
+	// send contract fields
+	ENCODE_FIELD( contract.symbol);
+	ENCODE_FIELD( contract.secType);
+	ENCODE_FIELD( contract.exchange);
+	ENCODE_FIELD( contract.primaryExchange);
+	ENCODE_FIELD( contract.currency);
+	ENCODE_FIELD( contract.localSymbol);
+
+	ENCODE_FIELD( reportType);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocket::cancelFundamentalData( TickerId reqId)
+{
+		// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( reqId, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if( m_serverVersion < MIN_SERVER_VER_FUNDAMENTAL_DATA) {
+		m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support fundamental data requests.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( CANCEL_FUNDAMENTAL_DATA);
+	ENCODE_FIELD( VERSION);
+	ENCODE_FIELD( reqId);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocket::reqContractDetails( int reqId, const Contract& contract)
 {
 	// not connected?
 	if( !m_connected) {
@@ -868,11 +977,15 @@ void EClientSocket::reqContractDetails(const Contract& contract)
 
 	std::ostringstream msg;
 
-	const int VERSION = 4;
+	const int VERSION = 5;
 	
 	// send req mkt data msg
 	ENCODE_FIELD( REQ_CONTRACT_DATA);
 	ENCODE_FIELD( VERSION);
+
+	if( m_serverVersion >= MIN_SERVER_VER_CONTRACT_DATA_CHAIN) {
+		ENCODE_FIELD( reqId);
+	}
 
 	// send contract fields
 	ENCODE_FIELD( contract.conId); // srv v37 and above
@@ -963,9 +1076,25 @@ void EClientSocket::placeOrder( OrderId id, const Contract &contract, const Orde
 	//	}
 	//}
 
+	if( m_serverVersion < MIN_SERVER_VER_UNDER_COMP) {
+		if( contract.underComp) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support delta-neutral orders.");
+			return;
+		}
+	}
+
+	if( m_serverVersion < MIN_SERVER_VER_SCALE_ORDERS2) {
+		if( order.scaleSubsLevelSize != UNSET_INTEGER) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support Subsequent Level Size for Scale orders.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 25;
+	const int VERSION = 26;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1124,14 +1253,35 @@ void EClientSocket::placeOrder( OrderId id, const Contract &contract, const Orde
 
 	ENCODE_FIELD_MAX( order.trailStopPrice); // srv v30 and above
 
-	// SCALE orders (srv v35 and above)
-	ENCODE_FIELD_MAX( order.scaleNumComponents);
-	ENCODE_FIELD_MAX( order.scaleComponentSize);
+	// SCALE orders
+	if (m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS2) {
+		ENCODE_FIELD_MAX( order.scaleInitLevelSize);
+		ENCODE_FIELD_MAX( order.scaleSubsLevelSize);
+	}
+	else {
+		// srv v35 and above)
+		ENCODE_FIELD( ""); // for not supported scaleNumComponents
+		ENCODE_FIELD_MAX( order.scaleInitLevelSize); // for scaleComponentSize
+	}
+
 	ENCODE_FIELD_MAX( order.scalePriceIncrement);
 
 	if (m_serverVersion >= MIN_SERVER_VER_PTA_ORDERS) {
 		ENCODE_FIELD( order.clearingAccount);
 		ENCODE_FIELD( order.clearingIntent);
+	}
+
+	if (m_serverVersion >= MIN_SERVER_VER_UNDER_COMP) {
+		if (contract.underComp) {
+			const UnderComp& underComp = *contract.underComp;
+			ENCODE_FIELD( true);
+			ENCODE_FIELD( underComp.conId);
+			ENCODE_FIELD( underComp.delta);
+			ENCODE_FIELD( underComp.price);
+		}
+		else {
+			ENCODE_FIELD( false);
+		}
 	}
 
 	ENCODE_FIELD( order.whatIf); // srv v36 and above
@@ -1946,12 +2096,32 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( order.basisPointsType); // ver 14 field
 				DECODE_FIELD( contract.comboLegsDescrip); // ver 14 field
 
-				DECODE_FIELD_MAX( order.scaleNumComponents); // ver 15 field
-				DECODE_FIELD_MAX( order.scaleComponentSize); // ver 15 field
+				if (version >= 20) {
+					DECODE_FIELD_MAX( order.scaleInitLevelSize);
+					DECODE_FIELD_MAX( order.scaleSubsLevelSize);
+				}
+				else {
+					// ver 15 fields
+					int notSuppScaleNumComponents = 0;
+					DECODE_FIELD_MAX( notSuppScaleNumComponents);
+					DECODE_FIELD_MAX( order.scaleInitLevelSize); // scaleComponectSize
+				}
 				DECODE_FIELD_MAX( order.scalePriceIncrement); // ver 15 field
 
 				DECODE_FIELD( order.clearingAccount); // ver 19 field
 				DECODE_FIELD( order.clearingIntent); // ver 19 field
+
+				UnderComp underComp;
+				if (version >= 20) {
+					bool underCompPresent = false;
+					DECODE_FIELD(underCompPresent);
+					if (underCompPresent){
+						DECODE_FIELD(underComp.conId);
+						DECODE_FIELD(underComp.delta);
+						DECODE_FIELD(underComp.price);
+						contract.underComp = &underComp;
+					}
+				}
 
 				OrderState orderState;
 
@@ -2003,6 +2173,12 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.expiry);
 				DECODE_FIELD( contract.strike);
 				DECODE_FIELD( contract.right);
+
+				if (version >= 7) {
+					DECODE_FIELD( contract.multiplier);
+					DECODE_FIELD( contract.primaryExchange);
+				}
+
 				DECODE_FIELD( contract.currency);
 				DECODE_FIELD( contract.localSymbol); // ver 2 field
 
@@ -2022,6 +2198,10 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 
 				CString accountName;
 				DECODE_FIELD( accountName); // ver 4 field
+
+				if (version == 6 && serverVersion() == 39) {
+					DECODE_FIELD( contract.primaryExchange);
+				}
 			             
 				m_pEWrapper->updatePortfolio( contract,
 					position, marketPrice, marketValue, averageCost,
@@ -2059,6 +2239,11 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				int version;
 				DECODE_FIELD( version);
 
+				int reqId = -1;
+				if( version >= 3) {
+					DECODE_FIELD( reqId);
+				}
+
 				ContractDetails contract;
 				DECODE_FIELD( contract.summary.symbol);
 				DECODE_FIELD( contract.summary.secType);
@@ -2077,7 +2262,7 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.validExchanges);
 				DECODE_FIELD( contract.priceMagnifier); // ver 2 field
 
-				m_pEWrapper->contractDetails( contract);
+				m_pEWrapper->contractDetails( reqId, contract);
 				break;
 			}
 
@@ -2085,6 +2270,11 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				DECODE_FIELD( version);
+
+				int reqId = -1;
+				if( version >= 3) {
+					DECODE_FIELD( reqId);
+				}
 
 				ContractDetails contract;
 				DECODE_FIELD( contract.summary.symbol);
@@ -2113,7 +2303,7 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.nextOptionPartial); // ver 2 field
 				DECODE_FIELD( contract.notes); // ver 2 field
 
-				m_pEWrapper->bondContractDetails(contract);
+				m_pEWrapper->bondContractDetails( reqId, contract);
 				break;
             }
 
@@ -2150,6 +2340,11 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( exec.permId); // ver 2 field
 				DECODE_FIELD( exec.clientId); // ver 3 field
 				DECODE_FIELD( exec.liquidation); // ver 4 field
+
+				if (version >= 6) {
+					DECODE_FIELD( exec.cumQty);
+					DECODE_FIELD( exec.avgPrice);
+				}
 
 				m_pEWrapper->execDetails( id, contract, exec);
 				break;
@@ -2406,9 +2601,37 @@ int EClientSocket::processMsg(const char*& beginPtr, const char* endPtr)
 				break;
 			}
 
+			case FUNDAMENTAL_DATA:
+			{
+				int version;
+				int reqId;
+				CString data;
+
+				DECODE_FIELD( version);
+				DECODE_FIELD( reqId);
+				DECODE_FIELD( data);
+
+				m_pEWrapper->fundamentalData( reqId, data);
+				break;
+			}
+
+			case CONTRACT_DATA_END:
+			{
+				int version;
+				int reqId;
+
+				DECODE_FIELD( version);
+				DECODE_FIELD( reqId);
+
+				m_pEWrapper->contractDetailsEnd( reqId);
+				break;
+			}
+
 			default:
 			{
 				m_pEWrapper->error( msgId, UNKNOWN_ID.code(), UNKNOWN_ID.msg());
+				eDisconnect();
+				m_pEWrapper->connectionClosed();
 				break;
 			}
 		}

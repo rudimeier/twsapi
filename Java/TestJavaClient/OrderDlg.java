@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 
 import com.ib.client.Contract;
 import com.ib.client.Order;
+import com.ib.client.UnderComp;
 
 public class OrderDlg extends JDialog {
 	final static String ALL_GENERIC_TICK_TAGS = "100,101,104,106,162,165,221,225,236";
@@ -45,6 +46,7 @@ public class OrderDlg extends JDialog {
     public String       m_whatToShow;
     public Contract 	m_contract = new Contract();
     public Order 		m_order = new Order();
+    public UnderComp	m_underComp = new UnderComp();
     public int          m_exerciseAction;
     public int          m_exerciseQuantity;
     public int          m_override;
@@ -84,6 +86,7 @@ public class OrderDlg extends JDialog {
 
     private JButton	    m_sharesAlloc = new JButton("FA Allocation Info...");
     private JButton 	m_comboLegs = new JButton( "Add Combination Order Legs...");
+    private JButton 	m_btnUnderComp = new JButton( "Delta Neutral");
     private JButton 	m_ok = new JButton( "OK");
     private JButton 	m_cancel = new JButton( "Cancel");
     private SampleFrame m_parent;
@@ -238,6 +241,7 @@ public class OrderDlg extends JDialog {
         pMidPanel.add( pBackfill, BorderLayout.CENTER);
         pMidPanel.add( m_sharesAlloc, BorderLayout.CENTER);
         pMidPanel.add( m_comboLegs, BorderLayout.CENTER);
+        pMidPanel.add( m_btnUnderComp, BorderLayout.CENTER);
 
         // create button panel
         JPanel buttonPanel = new JPanel();
@@ -254,6 +258,11 @@ public class OrderDlg extends JDialog {
         m_comboLegs.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
                 onAddComboLegs();
+            }
+        });
+        m_btnUnderComp.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onBtnUnderComp();
             }
         });
         m_ok.addActionListener( new ActionListener() {
@@ -302,6 +311,20 @@ public class OrderDlg extends JDialog {
         
         // show the combo leg dialog
         comboLegDlg.setVisible( true);
+    }
+    
+    void onBtnUnderComp() {
+    	
+        UnderCompDlg underCompDlg = new UnderCompDlg(m_underComp, this);
+        
+        // show delta neutral dialog
+        underCompDlg.setVisible( true);
+        if (underCompDlg.ok()) {
+        	m_contract.m_underComp = m_underComp;
+        }
+        else if (underCompDlg.reset()) {
+        	m_contract.m_underComp = null;
+        }
     }
 
     void onOk() {

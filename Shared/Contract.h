@@ -48,6 +48,19 @@ struct ComboLeg
 
 };
 
+struct UnderComp
+{
+	UnderComp()
+		: conId(0)
+		, delta(0)
+		, price(0)
+	{}
+
+	long	conId;
+	double	delta;
+	double	price;
+};
+
 struct Contract
 {
    Contract()
@@ -55,6 +68,7 @@ struct Contract
 	  , strike(0)
 	  , includeExpired(false)
 	  , comboLegs(NULL)
+	  , underComp(NULL)
    {
    }
 
@@ -76,6 +90,9 @@ struct Contract
 
    typedef std::vector<ComboLeg*> ComboLegList;
    ComboLegList* comboLegs;
+
+   // delta neutral
+   UnderComp* underComp;
 
 public:
 

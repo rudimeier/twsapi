@@ -27,8 +27,9 @@ public interface EWrapper extends AnyWrapper {
             double averageCost, double unrealizedPNL, double realizedPNL, String accountName);
     void updateAccountTime(String timeStamp);
     void nextValidId( int orderId);
-    void contractDetails(ContractDetails contractDetails);
-    void bondContractDetails(ContractDetails contractDetails);
+    void contractDetails(int reqId, ContractDetails contractDetails);
+    void bondContractDetails(int reqId, ContractDetails contractDetails);
+    void contractDetailsEnd(int reqId);
     void execDetails( int orderId, Contract contract, Execution execution);
     void updateMktDepth( int tickerId, int position, int operation, int side, double price, int size);
     void updateMktDepthL2( int tickerId, int position, String marketMaker, int operation,
@@ -44,4 +45,5 @@ public interface EWrapper extends AnyWrapper {
     void scannerDataEnd(int reqId);
     void realtimeBar(int reqId, long time, double open, double high, double low, double close, long volume, double wap, int count);
     void currentTime(long time);
+    void fundamentalData(int reqId, String data);
 }

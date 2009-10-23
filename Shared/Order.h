@@ -65,8 +65,8 @@ struct Order
       basisPointsType = UNSET_INTEGER;  // EFP orders only
 
 	  // SCALE ORDERS ONLY
-	  scaleNumComponents = UNSET_INTEGER;
-	  scaleComponentSize = UNSET_INTEGER;
+	  scaleInitLevelSize  = UNSET_INTEGER;
+	  scaleSubsLevelSize  = UNSET_INTEGER;
 	  scalePriceIncrement = UNSET_DOUBLE;
 
 	  // What-if
@@ -148,8 +148,8 @@ struct Order
    int      basisPointsType;  // EFP orders only
 
    // SCALE ORDERS ONLY
-   int    scaleNumComponents;
-   int    scaleComponentSize;
+   int    scaleInitLevelSize;
+   int    scaleSubsLevelSize;
    double scalePriceIncrement;
 
    // Clearing info

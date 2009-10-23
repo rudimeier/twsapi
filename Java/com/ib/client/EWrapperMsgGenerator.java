@@ -104,8 +104,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " continuousUpdate=" + order.m_continuousUpdate +
         " referencePriceType=" + order.m_referencePriceType +
         " trailStopPrice=" + order.m_trailStopPrice +
-        " scaleNumComponents=" + Util.IntMaxString(order.m_scaleNumComponents) +
-        " scaleComponentSize=" + Util.IntMaxString(order.m_scaleComponentSize) +
+        " scaleInitLevelSize=" + Util.IntMaxString(order.m_scaleInitLevelSize) +
+        " scaleSubsLevelSize=" + Util.IntMaxString(order.m_scaleSubsLevelSize) +
         " scalePriceIncrement=" + Util.DoubleMaxString(order.m_scalePriceIncrement) +
         " account=" + order.m_account +
         " settlingFirm=" + order.m_settlingFirm +
@@ -123,6 +123,14 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         		msg += " basisPointsType=" + order.m_basisPointsType;
         	}
         }
+        
+    	if (contract.m_underComp != null) {
+    		UnderComp underComp = contract.m_underComp;
+    		msg +=
+    			" underComp.conId =" + underComp.m_conId +
+    			" underComp.delta =" + underComp.m_delta +
+    			" underComp.price =" + underComp.m_price ;
+    	}
     
         String orderStateMsg =
         	" status=" + orderState.m_status
@@ -160,9 +168,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     	return "Next Valid Order ID: " + orderId;
     }
     
-    static public String contractDetails(ContractDetails contractDetails) {
+    static public String contractDetails(int reqId, ContractDetails contractDetails) {
     	Contract contract = contractDetails.m_summary;
-    	String msg = " ---- Contract Details begin ----\n"
+    	String msg = "reqId = " + reqId + " ===================================\n"
+    		+ " ---- Contract Details begin ----\n"
     		+ contractMsg(contract) + contractDetailsMsg(contractDetails)
     		+ " ---- Contract Details End ----\n";
     	return msg;
@@ -179,8 +188,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     }
     
 	static public String contractMsg(Contract contract) {
-    	String msg = " ---- Contract Details begin ----\n"
-        + "conid = " + contract.m_conId + "\n"
+    	String msg = "conid = " + contract.m_conId + "\n"
         + "symbol = " + contract.m_symbol + "\n"
         + "secType = " + contract.m_secType + "\n"
         + "expiry = " + contract.m_expiry + "\n"
@@ -188,14 +196,16 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "right = " + contract.m_right + "\n"
         + "multiplier = " + contract.m_multiplier + "\n"
         + "exchange = " + contract.m_exchange + "\n"
+        + "primaryExch = " + contract.m_primaryExch + "\n"
         + "currency = " + contract.m_currency + "\n"
         + "localSymbol = " + contract.m_localSymbol + "\n";
     	return msg;
     }
 	
-    static public String bondContractDetails(ContractDetails contractDetails) {
+    static public String bondContractDetails(int reqId, ContractDetails contractDetails) {
         Contract contract = contractDetails.m_summary;
-        String msg = " ---- Bond Contract Details begin ----\n"
+        String msg = "reqId = " + reqId + " ===================================\n"	
+        + " ---- Bond Contract Details begin ----\n"
         + "symbol = " + contract.m_symbol + "\n"
         + "secType = " + contract.m_secType + "\n"
         + "cusip = " + contractDetails.m_cusip + "\n"
@@ -225,6 +235,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         return msg;
     }
     
+    static public String contractDetailsEnd(int reqId) {
+    	return "reqId = " + reqId + " =============== end ===============";
+    }
+    
     static public String execDetails( int orderId, Contract contract, Execution execution) {
         String msg = " ---- Execution Details begin ----\n"
         + "orderId = " + Integer.toString(orderId) + "\n"
@@ -246,6 +260,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "price = " + execution.m_price + "\n"
         + "permId = " + execution.m_permId + "\n"
         + "liquidation = " + execution.m_liquidation + "\n"
+        + "cumQty = " + execution.m_cumQty + "\n"
+        + "avgPrice = " + execution.m_avgPrice + "\n"
         + " ---- Execution Details end ----\n";
         return msg;
     }
@@ -331,5 +347,9 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     static public String currentTime(long time) {
 		return "current time = " + time +
 		" (" + DateFormat.getDateTimeInstance().format(new Date(time * 1000)) + ")";
+    }
+
+    static public String fundamentalData(int reqId, String data) {
+		return "id  = " + reqId + " len = " + data.length() + '\n' + data;
     }
 }

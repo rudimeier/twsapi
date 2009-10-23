@@ -52,8 +52,14 @@ public class EClientSocket {
 	// 35 = can receive contId field for Contract objects
 	// 36 = can receive outsideRth field for Order objects
 	// 37 = can receive clearingAccount and clearingIntent for Order objects
+	// 38 = can receive multipier and primaryExchange in portfolio updates
+	//    ; can receive cumQty and avgPrice in execution
+	//    ; can receive fundamental data
+	//    ; can receive underComp for Contract objects
+	//    ; can receive reqId and end marker in contractDetails/bondContractDetails
+ 	//    ; can receive ScaleInitComponentSize and ScaleSubsComponentSize for Order objects
 	
-    private static final int CLIENT_VERSION = 37;
+    private static final int CLIENT_VERSION = 38;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -104,6 +110,8 @@ public class EClientSocket {
     private static final int REQ_CURRENT_TIME = 49;
     private static final int REQ_REAL_TIME_BARS = 50;
     private static final int CANCEL_REAL_TIME_BARS = 51;
+    private static final int REQ_FUNDAMENTAL_DATA = 52;
+    private static final int CANCEL_FUNDAMENTAL_DATA = 53;
     
 	private static final int MIN_SERVER_VER_REAL_TIME_BARS = 34;
 	private static final int MIN_SERVER_VER_SCALE_ORDERS = 35;
@@ -112,13 +120,16 @@ public class EClientSocket {
 	private static final int MIN_SERVER_VER_WHAT_IF_ORDERS = 36;
 	private static final int MIN_SERVER_VER_CONTRACT_CONID = 37;
 	private static final int MIN_SERVER_VER_PTA_ORDERS = 39;
+	private static final int MIN_SERVER_VER_FUNDAMENTAL_DATA = 40;
+	private static final int MIN_SERVER_VER_UNDER_COMP = 40;
+	private static final int MIN_SERVER_VER_CONTRACT_DATA_CHAIN = 40;
+	private static final int MIN_SERVER_VER_SCALE_ORDERS2 = 40;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
-    private Socket 			    m_socket;   // the socket
     private DataOutputStream 	m_dos;      // the socket output stream
     private boolean 			m_connected;// true if we are connected
     private EReader 			m_reader;   // thread which reads msgs from socket
-    private int 			    m_serverVersion =1;
+    private int 			    m_serverVersion = 0;
     private String              m_TwsTime;
 
     public int serverVersion()          { return m_serverVersion;   }
@@ -146,6 +157,7 @@ public class EClientSocket {
             eConnect(socket, clientId);
         }
         catch( Exception e) {
+        	eDisconnect();
             connectionError();
         }
     }
@@ -173,17 +185,16 @@ public class EClientSocket {
     }
 
     public synchronized void eConnect(Socket socket, int clientId) throws IOException {
-        m_socket = socket;
 
         // create io streams
-        DataInputStream dis = new DataInputStream( m_socket.getInputStream() );
-        m_dos = new DataOutputStream( m_socket.getOutputStream() );
+        m_dos = new DataOutputStream( socket.getOutputStream() );
 
         // set client version
         send( CLIENT_VERSION);
 
         // start reader thread
-        m_reader = createReader(this, dis); 
+        m_reader = createReader(this, new DataInputStream(
+        		socket.getInputStream())); 
 
         // check server version
         m_serverVersion = m_reader.readInt();
@@ -193,6 +204,7 @@ public class EClientSocket {
             System.out.println("TWS Time at connection:" + m_TwsTime);
         }
         if( m_serverVersion < SERVER_VERSION) {
+        	eDisconnect();
             m_anyWrapper.error( EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS.code(), EClientErrors.UPDATE_TWS.msg());
             return;
         }
@@ -210,25 +222,37 @@ public class EClientSocket {
 
     public synchronized void eDisconnect() {
         // not connected?
-        if( !m_connected) {
+        if( m_dos == null) {
             return;
         }
+        
+        m_connected = false;
+        m_serverVersion = 0;
+        m_TwsTime = "";
 
+        DataOutputStream dos = m_dos;
+        m_dos = null;
+
+        EReader reader = m_reader;
+        m_reader = null;
+        
         try {
             // stop reader thread
-            if( m_reader != null) {
-                m_reader.interrupt();
-            }
-
-            // close socket
-            if( m_socket != null) {
-                m_socket.close();
+            if( reader != null) {
+                reader.interrupt();
             }
         }
         catch( Exception e) {
         }
-
-        m_connected = false;
+        
+        try {
+            // close socket
+            if( dos != null) {
+                dos.close();
+            }
+        }
+        catch( Exception e) {
+        }
     }
 
     public synchronized void cancelScannerSubscription( int tickerId) {
@@ -348,8 +372,16 @@ public class EClientSocket {
         			"  It does not support snapshot market data requests.");
         	return;
         }
+        
+        if (m_serverVersion < MIN_SERVER_VER_UNDER_COMP) {
+        	if (contract.m_underComp != null) {
+        		error(tickerId, EClientErrors.UPDATE_TWS,
+        			"  It does not support delta-neutral orders.");
+        		return;
+        	}
+        }
 
-        final int VERSION = 7;
+        final int VERSION = 8;
 
         try {
             // send req mkt data msg
@@ -391,6 +423,20 @@ public class EClientSocket {
                     }
                 }
             }
+
+            if (m_serverVersion >= MIN_SERVER_VER_UNDER_COMP) {
+         	   if (contract.m_underComp != null) {
+         		   UnderComp underComp = contract.m_underComp;
+         		   send( true);
+         		   send( underComp.m_conId);
+         		   send( underComp.m_delta);
+         		   send( underComp.m_price);
+         	   }
+         	   else {
+         		   send( false);
+         	   }
+            }
+
             if (m_serverVersion >= 31) {
             	/*
             	 * Note: Even though SHORTABLE tick type supported only
@@ -579,7 +625,7 @@ public class EClientSocket {
 
     }
 
-    public synchronized void reqContractDetails(Contract contract)
+    public synchronized void reqContractDetails(int reqId, Contract contract)
     {
         // not connected?
         if( !m_connected) {
@@ -594,12 +640,16 @@ public class EClientSocket {
             return;
         }
 
-        final int VERSION = 4;
+        final int VERSION = 5;
 
         try {
             // send req mkt data msg
             send( REQ_CONTRACT_DATA);
             send( VERSION);
+            
+            if (m_serverVersion >= MIN_SERVER_VER_CONTRACT_DATA_CHAIN) {
+            	send( reqId);
+            }
 
             // send contract fields
             if (m_serverVersion >= MIN_SERVER_VER_CONTRACT_CONID) {
@@ -771,8 +821,7 @@ public class EClientSocket {
         }
         
         if (m_serverVersion < MIN_SERVER_VER_SCALE_ORDERS) {
-        	if (order.m_scaleNumComponents != Integer.MAX_VALUE ||
-        		order.m_scaleComponentSize != Integer.MAX_VALUE ||
+        	if (order.m_scaleInitLevelSize != Integer.MAX_VALUE ||
         		order.m_scalePriceIncrement != Double.MAX_VALUE) {
         		error(id, EClientErrors.UPDATE_TWS,
             		"  It does not support Scale orders.");
@@ -802,8 +851,24 @@ public class EClientSocket {
         		return;
         	}
         }
+        
+        if (m_serverVersion < MIN_SERVER_VER_UNDER_COMP) {
+        	if (contract.m_underComp != null) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support delta-neutral orders.");
+        		return;
+        	}
+        }
 
-        final int VERSION = 25;
+        if (m_serverVersion < MIN_SERVER_VER_SCALE_ORDERS2) {
+        	if (order.m_scaleSubsLevelSize != Integer.MAX_VALUE) {
+        		error(id, EClientErrors.UPDATE_TWS,
+            		"  It does not support Subsequent Level Size for Scale orders.");
+        		return;
+        	}
+        }
+  
+        final int VERSION = 26;
 
         // send place order msg
         try {
@@ -976,14 +1041,34 @@ public class EClientSocket {
            }
            
            if (m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS) {
-        	   sendMax (order.m_scaleNumComponents);
-        	   sendMax (order.m_scaleComponentSize);
+        	   if (m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS2) {
+        		   sendMax (order.m_scaleInitLevelSize);
+        		   sendMax (order.m_scaleSubsLevelSize);
+        	   }
+        	   else {
+        		   send ("");
+        		   sendMax (order.m_scaleInitLevelSize);
+        		   
+        	   }
         	   sendMax (order.m_scalePriceIncrement);
            }
            
            if (m_serverVersion >= MIN_SERVER_VER_PTA_ORDERS) {
         	   send (order.m_clearingAccount);
         	   send (order.m_clearingIntent);
+           }
+
+           if (m_serverVersion >= MIN_SERVER_VER_UNDER_COMP) {
+        	   if (contract.m_underComp != null) {
+        		   UnderComp underComp = contract.m_underComp;
+        		   send( true);
+        		   send( underComp.m_conId);
+        		   send( underComp.m_delta);
+        		   send( underComp.m_price);
+        	   }
+        	   else {
+        		   send( false);
+        	   }
            }
 
            if (m_serverVersion >= MIN_SERVER_VER_WHAT_IF_ORDERS) {
@@ -1319,6 +1404,69 @@ public class EClientSocket {
             close();
         }
     }
+    
+    public synchronized void reqFundamentalData(int reqId, Contract contract,
+    		String reportType) {
+        if( !m_connected) {
+            error( reqId, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+        
+        if( m_serverVersion < MIN_SERVER_VER_FUNDAMENTAL_DATA) {
+        	error( reqId, EClientErrors.UPDATE_TWS,
+        			"  It does not support fundamental data requests.");
+        	return;
+        }
+
+        final int VERSION = 1;
+
+        try {
+            // send req fund data msg
+            send( REQ_FUNDAMENTAL_DATA);
+            send( VERSION);
+            send( reqId);
+
+            // send contract fields
+            send( contract.m_symbol);
+            send( contract.m_secType);
+            send( contract.m_exchange);
+            send( contract.m_primaryExch);
+            send( contract.m_currency);
+            send( contract.m_localSymbol);
+            
+            send( reportType);
+        }
+        catch( Exception e) {
+            error( reqId, EClientErrors.FAIL_SEND_REQFUNDDATA, "" + e);
+            close();
+        }
+    }
+    
+    public synchronized void cancelFundamentalData(int reqId) {
+        if( !m_connected) {
+            error( reqId, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+        
+        if( m_serverVersion < MIN_SERVER_VER_FUNDAMENTAL_DATA) {
+        	error( reqId, EClientErrors.UPDATE_TWS,
+        			"  It does not support fundamental data requests.");
+        	return;
+        }
+
+        final int VERSION = 1;
+
+        try {
+            // send req mkt data msg
+            send( CANCEL_FUNDAMENTAL_DATA);
+            send( VERSION);
+            send( reqId);
+        }
+        catch( Exception e) {
+            error( reqId, EClientErrors.FAIL_SEND_CANFUNDDATA, "" + e);
+            close();
+        }
+    }
 
 
     protected synchronized void error( String err) {
@@ -1331,7 +1479,7 @@ public class EClientSocket {
 
     protected void close() {
         eDisconnect();
-        m_anyWrapper.connectionClosed();
+        wrapper().connectionClosed();
     }
 
     private static boolean is( String str) {

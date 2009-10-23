@@ -40,7 +40,7 @@ public:
    void reqExecutions(const ExecutionFilter& filter);
    void reqIds( int numIds);
    void checkMessages();
-   void reqContractDetails( const Contract &contract);
+   void reqContractDetails( int reqId, const Contract &contract);
    void reqMktDepth( TickerId tickerId, const Contract &contract, int numRows);
    void cancelMktDepth( TickerId tickerId);
    void reqNewsBulletins(bool allMsgs);
@@ -66,6 +66,8 @@ public:
    void reqScannerParameters();
    void reqScannerSubscription( int tickerId, const ScannerSubscription &subscription);
    void reqCurrentTime();
+   void reqFundamentalData( TickerId reqId, const Contract&, const CString& reportType);
+   void cancelFundamentalData( TickerId reqId);
 
 private:
 
@@ -103,6 +105,9 @@ private:
 
 	template<>
 	static void EncodeField<bool>(std::ostream& os, bool);
+
+	template<>
+	static void EncodeField<double>(std::ostream& os, double);
 
 	// "max" encoders
 	static void EncodeFieldMax(std::ostream& os, int);

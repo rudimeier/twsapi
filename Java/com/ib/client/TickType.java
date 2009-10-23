@@ -53,6 +53,7 @@ public class TickType {
     public static final int CLOSE_EFP_COMPUTATION = 44;
     public static final int LAST_TIMESTAMP = 45;
     public static final int SHORTABLE = 46;
+    public static final int FUNDAMENTAL_RATIOS = 47;
 
     public static String getField( int tickType) {
         switch( tickType) {
@@ -103,6 +104,7 @@ public class TickType {
             case CLOSE_EFP_COMPUTATION:       return "closeEFP";
             case LAST_TIMESTAMP:              return "lastTimestamp";
             case SHORTABLE:                   return "shortable";
+            case FUNDAMENTAL_RATIOS:          return "fundamentals";
             default:                          return "unknown";
         }
     }

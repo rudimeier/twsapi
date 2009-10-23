@@ -37,6 +37,8 @@ public class EReader extends Thread {
     static final int TICK_EFP = 47;
     static final int CURRENT_TIME = 49;
     static final int REAL_TIME_BARS = 50;
+    static final int FUNDAMENTAL_DATA = 51;
+    static final int CONTRACT_DATA_END = 52;
 
     private EClientSocket 	m_parent;
     private DataInputStream m_dis;
@@ -60,11 +62,13 @@ public class EReader extends Thread {
             while( !isInterrupted() && processMsg(readInt()));
         }
         catch ( Exception ex ) {
-            parent().wrapper().error( ex);
-            //parent().wrapper().connectionClosed();
-            // closed connection would be reported anyway by the line below
+        	if (parent().isConnected()) {
+        		eWrapper().error( ex);
+        	}
         }
-        m_parent.close();
+        if (parent().isConnected()) {
+        	m_parent.close();
+        }
     }
 
     /** Overridden in subclass. */
@@ -237,6 +241,10 @@ public class EReader extends Thread {
                 contract.m_expiry  = readStr();
                 contract.m_strike  = readDouble();
                 contract.m_right   = readStr();
+                if (version >= 7) {
+                	contract.m_multiplier = readStr();
+                	contract.m_primaryExch = readStr();
+                }
                 contract.m_currency = readStr();
                 if ( version >= 2 ) {
                     contract.m_localSymbol = readStr();
@@ -257,6 +265,10 @@ public class EReader extends Thread {
                 String accountName = null ;
                 if( version >= 4) {
                     accountName = readStr();
+                }
+                
+                if(version == 6 && m_parent.serverVersion() == 39) {
+                	contract.m_primaryExch = readStr();
                 }
 
                 eWrapper().updatePortfolio(contract, position, marketPrice, marketValue,
@@ -421,14 +433,30 @@ public class EReader extends Thread {
                 }
                 
                 if (version >= 15) {
-                	order.m_scaleNumComponents = readIntMax();
-                	order.m_scaleComponentSize = readIntMax();
+                	if (version >= 20) {
+                		order.m_scaleInitLevelSize = readIntMax();
+                		order.m_scaleSubsLevelSize = readIntMax();
+                	}
+                	else {
+                		/* int notSuppScaleNumComponents = */ readIntMax();
+                		order.m_scaleInitLevelSize = readIntMax();
+                	}
                 	order.m_scalePriceIncrement = readDoubleMax();
                 }
                 
                 if (version >= 19) {
                 	order.m_clearingAccount = readStr();
                 	order.m_clearingIntent = readStr();
+                }
+                
+                if (version >= 20) {
+                    if (readBoolFromInt()) {
+                        UnderComp underComp = new UnderComp();
+                        underComp.m_conId = readInt();
+                        underComp.m_delta = readDouble();
+                        underComp.m_price = readDouble();
+                        contract.m_underComp = underComp;
+                    }
                 }
                 
                 OrderState orderState = new OrderState();
@@ -495,6 +523,12 @@ public class EReader extends Thread {
 
             case CONTRACT_DATA: {
                 int version = readInt();
+                
+                int reqId = -1;
+                if (version >= 3) {
+                	reqId = readInt();
+                }
+
                 ContractDetails contract = new ContractDetails();
                 contract.m_summary.m_symbol = readStr();
                 contract.m_summary.m_secType = readStr();
@@ -514,11 +548,17 @@ public class EReader extends Thread {
                 if (version >= 2) {
                     contract.m_priceMagnifier = readInt();
                 }
-                eWrapper().contractDetails( contract);
+                eWrapper().contractDetails( reqId, contract);
                 break;
             }
             case BOND_CONTRACT_DATA: {
                 int version = readInt();
+                
+                int reqId = -1;
+                if (version >= 3) {
+                	reqId = readInt();
+                }
+                
                 ContractDetails contract = new ContractDetails();
 
                 contract.m_summary.m_symbol = readStr();
@@ -548,7 +588,7 @@ public class EReader extends Thread {
                 	contract.m_nextOptionPartial = readBoolFromInt();
                 	contract.m_notes = readStr();
                 }
-                eWrapper().bondContractDetails( contract);
+                eWrapper().bondContractDetails( reqId, contract);
                 break;
             }
             case EXECUTION_DATA: {
@@ -586,6 +626,10 @@ public class EReader extends Thread {
                 }
                 if ( version >= 4) {
                     exec.m_liquidation = readInt();
+                }
+                if (version >= 6) {
+                	exec.m_cumQty = readInt();
+                	exec.m_avgPrice = readDouble();
                 }
 
                 eWrapper().execDetails( orderId, contract, exec);
@@ -702,6 +746,19 @@ public class EReader extends Thread {
                 double wap = readDouble();
                 int count = readInt();
                 eWrapper().realtimeBar(reqId, time, open, high, low, close, volume, wap, count);
+                break;
+            }
+            case FUNDAMENTAL_DATA: {
+                /*int version =*/ readInt();
+                int reqId = readInt();
+                String data = readStr();
+                eWrapper().fundamentalData(reqId, data);
+                break;
+            }
+            case CONTRACT_DATA_END: {
+                /*int version =*/ readInt();
+                int reqId = readInt();
+                eWrapper().contractDetailsEnd(reqId);
                 break;
             }
             default: {

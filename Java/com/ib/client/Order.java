@@ -94,8 +94,8 @@ public class Order {
     public int      m_basisPointsType;  // EFP orders only
     
     // SCALE ORDERS ONLY
-    public int      m_scaleNumComponents;
-    public int      m_scaleComponentSize;
+    public int      m_scaleInitLevelSize;
+    public int      m_scaleSubsLevelSize;
     public double   m_scalePriceIncrement;
 
     // Clearing info
@@ -129,8 +129,8 @@ public class Order {
         m_trailStopPrice = Double.MAX_VALUE;
         m_basisPoints = Double.MAX_VALUE;
         m_basisPointsType = Integer.MAX_VALUE;
-        m_scaleNumComponents = Integer.MAX_VALUE;
-        m_scaleComponentSize = Integer.MAX_VALUE;
+        m_scaleInitLevelSize = Integer.MAX_VALUE;
+        m_scaleSubsLevelSize = Integer.MAX_VALUE;
         m_scalePriceIncrement = Double.MAX_VALUE;
         m_whatIf = false;
     }
@@ -187,8 +187,8 @@ public class Order {
         	m_deltaNeutralAuxPrice != l_theOther.m_deltaNeutralAuxPrice ||
         	m_basisPoints != l_theOther.m_basisPoints ||
         	m_basisPointsType != l_theOther.m_basisPointsType ||
-        	m_scaleNumComponents != l_theOther.m_scaleNumComponents ||
-        	m_scaleComponentSize != l_theOther.m_scaleComponentSize ||
+        	m_scaleInitLevelSize != l_theOther.m_scaleInitLevelSize ||
+        	m_scaleSubsLevelSize != l_theOther.m_scaleSubsLevelSize ||
         	m_scalePriceIncrement != l_theOther.m_scalePriceIncrement ||
         	m_whatIf != l_theOther.m_whatIf) {
         	return false;

@@ -25,6 +25,9 @@ public class Contract implements Cloneable {
     // COMBOS
     public String m_comboLegsDescrip; // received in open order version 14 and up for all combos
     public Vector m_comboLegs = new Vector();
+    
+    // delta neutral
+    public UnderComp m_underComp;
 
     public Contract() {
     	m_conId = 0;
@@ -123,6 +126,15 @@ public class Contract implements Cloneable {
         			// no matching leg found
         			return false;
         		}
+        	}
+        }
+        
+        if (m_underComp != l_theOther.m_underComp) {
+        	if (m_underComp == null || l_theOther.m_underComp == null) {
+        		return false;
+        	}
+        	if (!m_underComp.equals(l_theOther.m_underComp)) {
+        		return false;
         	}
         }
 

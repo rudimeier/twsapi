@@ -70,8 +70,8 @@ public class ExtOrdDlg extends JDialog {
     private JTextField  m_VOLReferencePriceType = new JTextField();
     private JTextField  m_trailStopPrice = new JTextField();
     
-    private JTextField 	m_scaleNumComponents = new JTextField();
-    private JTextField 	m_scaleComponentSize = new JTextField();
+    private JTextField 	m_scaleInitLevelSize = new JTextField();
+    private JTextField 	m_scaleSubsLevelSize = new JTextField();
     private JTextField 	m_scalePriceIncrement = new JTextField();
 
     private JButton 	m_ok = new JButton( "OK");
@@ -176,10 +176,10 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add(new JLabel("VOL: Reference Price Type (1 or 2)"));
         extOrderDetailsPanel.add(m_VOLReferencePriceType);
         
-        extOrderDetailsPanel.add(new JLabel("SCALE: Scale # Comps"));
-        extOrderDetailsPanel.add(m_scaleNumComponents);
-        extOrderDetailsPanel.add(new JLabel("SCALE: Scale Comp Size"));
-        extOrderDetailsPanel.add(m_scaleComponentSize);
+        extOrderDetailsPanel.add(new JLabel("SCALE: Scale Init Level Size"));
+        extOrderDetailsPanel.add(m_scaleInitLevelSize);
+        extOrderDetailsPanel.add(new JLabel("SCALE: Scale Subs Level Size"));
+        extOrderDetailsPanel.add(m_scaleSubsLevelSize);
         extOrderDetailsPanel.add(new JLabel("SCALE: Scale Price Increment"));
         extOrderDetailsPanel.add(m_scalePriceIncrement);
 
@@ -257,8 +257,8 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_referencePriceType = parseMaxInt(m_VOLReferencePriceType);
             m_order.m_trailStopPrice = parseMaxDouble(m_trailStopPrice);
             
-            m_order.m_scaleNumComponents = parseMaxInt(m_scaleNumComponents);
-            m_order.m_scaleComponentSize = parseMaxInt(m_scaleComponentSize);
+            m_order.m_scaleInitLevelSize = parseMaxInt(m_scaleInitLevelSize);
+            m_order.m_scaleSubsLevelSize = parseMaxInt(m_scaleSubsLevelSize);
             m_order.m_scalePriceIncrement = parseMaxDouble(m_scalePriceIncrement);
         }
         catch( Exception e) {

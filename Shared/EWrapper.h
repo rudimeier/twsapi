@@ -42,6 +42,7 @@ enum TickType { BID_SIZE, BID, ASK, ASK_SIZE, LAST, LAST_SIZE,
 				CLOSE_EFP_COMPUTATION,
 				LAST_TIMESTAMP,
 				SHORTABLE,
+				FUNDAMENTAL_RATIOS,
 				NOT_SET };
 
 inline bool isPrice( TickType tickType) {
@@ -78,8 +79,9 @@ public:
       double unrealizedPNL, double realizedPNL, const CString& accountName) = 0;
    virtual void updateAccountTime(const CString& timeStamp) = 0;
    virtual void nextValidId( OrderId orderId) = 0;
-   virtual void contractDetails( const ContractDetails& contractDetails) = 0;
-   virtual void bondContractDetails( const ContractDetails& contractDetails) = 0;
+   virtual void contractDetails( int reqId, const ContractDetails& contractDetails) = 0;
+   virtual void bondContractDetails( int reqId, const ContractDetails& contractDetails) = 0;
+   virtual void contractDetailsEnd( int reqId) = 0;
    virtual void execDetails( OrderId orderId, const Contract& contract, const Execution& execution) =0;
    virtual void error(const int id, const int errorCode, const CString errorString) = 0;
    virtual void updateMktDepth(TickerId id, int position, int operation, int side,
@@ -99,6 +101,7 @@ public:
    virtual void realtimeBar(TickerId reqId, long time, double open, double high, double low, double close,
 	   long volume, double wap, int count) = 0;
    virtual void currentTime(long time) = 0;
+   virtual void fundamentalData(TickerId reqId, const CString& data) = 0;
 };
 
 

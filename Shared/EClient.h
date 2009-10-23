@@ -26,7 +26,7 @@ public:
    virtual void reqExecutions(const ExecutionFilter& filter) = 0;
    virtual void reqIds( int numIds) = 0;
    virtual void checkMessages() = 0;
-   virtual void reqContractDetails( const Contract &contract) = 0;
+   virtual void reqContractDetails( int reqId, const Contract &contract) = 0;
    virtual void reqMktDepth( TickerId id, const Contract &contract, int numRows) = 0;
    virtual void cancelMktDepth( TickerId id) = 0;
    virtual void reqNewsBulletins( bool allMsgs) = 0;
@@ -50,6 +50,8 @@ public:
    virtual void reqScannerParameters() = 0;
    virtual void reqScannerSubscription( int tickerId, const ScannerSubscription &subscription) = 0;
    virtual void reqCurrentTime() = 0;
+   virtual void reqFundamentalData( TickerId reqId, const Contract&, const CString& reportType) = 0;
+   virtual void cancelFundamentalData( TickerId reqId) = 0;
 private:
 };
 
