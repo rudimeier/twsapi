@@ -2,6 +2,7 @@
 #define scanner_def
 
 #include <float.h>
+#include "IBString.h"
 
 #define UNSET_DOUBLE DBL_MAX
 #define UNSET_INTEGER INT_MAX
@@ -21,26 +22,26 @@ struct ScannerSubscription {
 		averageOptionVolumeAbove = 0;
 	}
     int numberOfRows;
-    CString instrument;
-    CString locationCode;
-    CString scanCode;
+    IBString instrument;
+    IBString locationCode;
+    IBString scanCode;
     double abovePrice;
     double belowPrice;
     int aboveVolume;
     double marketCapAbove;
     double marketCapBelow;
-    CString moodyRatingAbove;
-    CString moodyRatingBelow;
-    CString spRatingAbove;
-    CString spRatingBelow;
-    CString maturityDateAbove;
-    CString maturityDateBelow;
+    IBString moodyRatingAbove;
+    IBString moodyRatingBelow;
+    IBString spRatingAbove;
+    IBString spRatingBelow;
+    IBString maturityDateAbove;
+    IBString maturityDateBelow;
     double couponRateAbove;
     double couponRateBelow;
     int excludeConvertible;
 	int averageOptionVolumeAbove;
-	CString scannerSettingPairs;
-	CString stockTypeFilter;
+	IBString scannerSettingPairs;
+	IBString stockTypeFilter;
 };
 
 #endif

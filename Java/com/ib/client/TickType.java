@@ -54,6 +54,7 @@ public class TickType {
     public static final int LAST_TIMESTAMP = 45;
     public static final int SHORTABLE = 46;
     public static final int FUNDAMENTAL_RATIOS = 47;
+    public static final int RT_VOLUME = 48;
 
     public static String getField( int tickType) {
         switch( tickType) {
@@ -105,6 +106,7 @@ public class TickType {
             case LAST_TIMESTAMP:              return "lastTimestamp";
             case SHORTABLE:                   return "shortable";
             case FUNDAMENTAL_RATIOS:          return "fundamentals";
+            case RT_VOLUME:                   return "RTVolume";
             default:                          return "unknown";
         }
     }

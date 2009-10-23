@@ -1,7 +1,6 @@
 #ifndef ORDER_STATE_H__INCLUDED
 #define ORDER_STATE_H__INCLUDED
 
-#include <atlstr.h>
 #include "Order.h"
 
 struct OrderState {
@@ -13,18 +12,18 @@ struct OrderState {
 		maxCommission(UNSET_DOUBLE)
 	{}
 
-	CString status;
+	IBString status;
 
-	CString initMargin;
-	CString maintMargin;
-	CString equityWithLoan;
+	IBString initMargin;
+	IBString maintMargin;
+	IBString equityWithLoan;
 
 	double  commission;
 	double  minCommission;
 	double  maxCommission;
-	CString commissionCurrency;
-	
-	CString warningText;
+	IBString commissionCurrency;
+
+	IBString warningText;
 };
 
 #endif

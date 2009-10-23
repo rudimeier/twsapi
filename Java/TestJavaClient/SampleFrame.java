@@ -634,7 +634,12 @@ class SampleFrame extends JFrame implements EWrapper {
     	String msg = EWrapperMsgGenerator.tickString(tickerId, tickType, value);
         m_tickers.add( msg);
     }
-
+    
+    public void tickSnapshotEnd(int tickerId) {
+    	String msg = EWrapperMsgGenerator.tickSnapshotEnd(tickerId);
+    	m_tickers.add( msg) ;
+    }
+    
     public void tickEFP(int tickerId, int tickType, double basisPoints, String formattedBasisPoints,
     					double impliedFuture, int holdDays, String futureExpiry, double dividendImpact,
     					double dividendsToExpiry) {
@@ -668,8 +673,7 @@ class SampleFrame extends JFrame implements EWrapper {
         m_TWS.add( msg) ;
     }
 
-    public void contractDetails(int reqId, ContractDetails contractDetails)
-    {
+    public void contractDetails(int reqId, ContractDetails contractDetails) {
     	String msg = EWrapperMsgGenerator.contractDetails( reqId, contractDetails);
     	m_TWS.add(msg);
     }

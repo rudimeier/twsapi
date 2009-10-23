@@ -2,6 +2,7 @@
 #define contract_def
 
 #include <vector>
+#include "IBString.h"
 
 /*
     SAME_POS    = open/close leg value is same as combo
@@ -26,14 +27,14 @@ struct ComboLeg
 
    long    conId;
    long    ratio;
-   CString action; //BUY/SELL/SSHORT
+   IBString action; //BUY/SELL/SSHORT
 
-   CString exchange;
+   IBString exchange;
    long    openClose; // LegOpenClose enum values
 
    // for stock legs when doing short sale
    long    shortSaleSlot; // 1 = clearing broker, 2 = third party
-   CString designatedLocation;
+   IBString designatedLocation;
 
    bool operator==( const ComboLeg &other) const
    {
@@ -41,11 +42,10 @@ struct ComboLeg
          ratio == other.ratio &&
 		 openClose == other.openClose &&
 		 shortSaleSlot == other.shortSaleSlot &&
-         action.CompareNoCase(other.action) == 0 &&
-         exchange.CompareNoCase(other.exchange) == 0 &&
-		 designatedLocation.CompareNoCase(other.designatedLocation) == 0);
+		 (Compare(action, other.action) == 0) &&
+		 (Compare(exchange, other.exchange) == 0) &&
+		 (Compare(designatedLocation, other.designatedLocation) == 0));
    }
-
 };
 
 struct UnderComp
@@ -73,20 +73,20 @@ struct Contract
    }
 
    long    conId;
-   CString symbol;
-   CString secType;
-   CString expiry;
+   IBString symbol;
+   IBString secType;
+   IBString expiry;
    double  strike;
-   CString right;
-   CString multiplier;
-   CString exchange;
-   CString primaryExchange; // pick an actual (ie non-aggregate) exchange that the contract trades on.  DO NOT SET TO SMART.
-   CString currency;
-   CString localSymbol;
+   IBString right;
+   IBString multiplier;
+   IBString exchange;
+   IBString primaryExchange; // pick an actual (ie non-aggregate) exchange that the contract trades on.  DO NOT SET TO SMART.
+   IBString currency;
+   IBString localSymbol;
    bool includeExpired;
 
    // COMBOS
-   CString comboLegsDescrip; // received in open order 14 and up for all combos
+   IBString comboLegsDescrip; // received in open order 14 and up for all combos
 
    typedef std::vector<ComboLeg*> ComboLegList;
    ComboLegList* comboLegs;
@@ -117,30 +117,31 @@ struct ContractDetails
    }
 
    Contract	summary;
-   CString	marketName;
-   CString	tradingClass;
+   IBString	marketName;
+   IBString	tradingClass;
    double	minTick;
-   CString	orderTypes;
-   CString	validExchanges;
+   IBString	orderTypes;
+   IBString	validExchanges;
    long		priceMagnifier;
    int		underConId;
+   IBString	longName;
 
    // BOND values
-   CString cusip;
-   CString ratings;
-   CString descAppend;
-   CString bondType;
-   CString couponType;
+   IBString cusip;
+   IBString ratings;
+   IBString descAppend;
+   IBString bondType;
+   IBString couponType;
    bool callable;
    bool putable;
    double coupon;
    bool convertible;
-   CString maturity;
-   CString issueDate;
-   CString nextOptionDate;
-   CString nextOptionType;
+   IBString maturity;
+   IBString issueDate;
+   IBString nextOptionDate;
+   IBString nextOptionType;
    bool nextOptionPartial;
-   CString notes;
+   IBString notes;
 };
 
 inline void

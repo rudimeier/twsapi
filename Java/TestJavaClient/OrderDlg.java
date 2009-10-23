@@ -28,7 +28,7 @@ import com.ib.client.Order;
 import com.ib.client.UnderComp;
 
 public class OrderDlg extends JDialog {
-	final static String ALL_GENERIC_TICK_TAGS = "100,101,104,106,162,165,221,225,236";
+	final static String ALL_GENERIC_TICK_TAGS = "mdoff,100,101,104,105,106,107,165,221,225,233,236,258";
     final static int OPERATION_INSERT = 0;
     final static int OPERATION_UPDATE = 1;
     final static int OPERATION_DELETE = 2;

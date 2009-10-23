@@ -1,6 +1,8 @@
 #ifndef execution_def
 #define execution_def
 
+#include "IBString.h"
+
 struct Execution
 {
    Execution()
@@ -15,11 +17,11 @@ struct Execution
    }
 
    // main order fields
-   CString     execId;
-   CString     time;
-   CString     acctNumber;
-   CString     exchange;
-   CString     side;
+   IBString     execId;
+   IBString     time;
+   IBString     acctNumber;
+   IBString     exchange;
+   IBString     side;
    int         shares;
    double      price;
    int         permId;
@@ -39,12 +41,12 @@ struct ExecutionFilter
 
    // Filter fields
    long        m_clientId;
-   CString     m_acctCode;
-   CString     m_time;
-   CString     m_symbol;
-   CString     m_secType;
-   CString     m_exchange;
-   CString     m_side;
+   IBString     m_acctCode;
+   IBString     m_time;
+   IBString     m_symbol;
+   IBString     m_secType;
+   IBString     m_exchange;
+   IBString     m_side;
 };
 
 #endif // execution_def

@@ -37,13 +37,13 @@ int CHScrollListBox::GetTextLen(LPCTSTR lpszText)
 	ASSERT(AfxIsValidString(lpszText));
 
 	CDC *pDC = GetDC();
-    ASSERT(pDC);
+	ASSERT(pDC);
 	CSize size;
 
-    if ( pDC )
+	if ( pDC )
 	{
 		CFont* pOldFont = pDC->SelectObject(GetFont());
-		if ( pOldFont ) 
+		if ( pOldFont )
 		{
 			size = pDC->GetTextExtent(lpszText, (int) _tcslen(lpszText));
 			pDC->SelectObject(pOldFont);
@@ -77,7 +77,7 @@ void CHScrollListBox::ResetHExtent()
 
 void CHScrollListBox::SetNewHExtent(LPCTSTR lpszNewString)
 {
-    int iExt = GetTextLen(lpszNewString);
+	int iExt = GetTextLen(lpszNewString);
 	if ( iExt > GetHorizontalExtent())
 		SetHorizontalExtent(iExt);
 }
@@ -104,7 +104,7 @@ LRESULT CHScrollListBox::OnInsertString(WPARAM wParam, LPARAM lParam)
 LRESULT CHScrollListBox::OnDeleteString(WPARAM wParam, LPARAM lParam)
 {
 	LRESULT lResult = Default();
-    if ( !((lResult == LB_ERR) || (lResult == LB_ERRSPACE)) ) 
+	if ( !((lResult == LB_ERR) || (lResult == LB_ERRSPACE)) )
 		ResetHExtent();
 
 	return lResult;

@@ -112,6 +112,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " settlingFirm=" + order.m_settlingFirm +
         " clearingAccount=" + order.m_clearingAccount +
         " clearingIntent=" + order.m_clearingIntent +
+        " notHeld=" + order.m_notHeld +
         " whatIf=" + order.m_whatIf
         ;
 
@@ -209,7 +210,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "price magnifier = " + contractDetails.m_priceMagnifier + "\n"
         + "orderTypes = " + contractDetails.m_orderTypes + "\n"
         + "validExchanges = " + contractDetails.m_validExchanges + "\n"
-        + "underConId = " + contractDetails.m_underConId + "\n";
+        + "underConId = " + contractDetails.m_underConId + "\n"
+        + "longName = " + contractDetails.m_longName + "\n";
     	return msg;
     }
     
@@ -257,6 +259,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "nextOptionType = " + contractDetails.m_nextOptionType + "\n"
         + "nextOptionPartial = " + contractDetails.m_nextOptionPartial + "\n"
         + "notes = " + contractDetails.m_notes + "\n"
+        + "longName = " + contractDetails.m_longName + "\n"
         + " ---- Bond Contract Details End ----\n";
         return msg;
     }
@@ -389,5 +392,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     	+ " underComp.conId =" + underComp.m_conId
     	+ " underComp.delta =" + underComp.m_delta
     	+ " underComp.price =" + underComp.m_price;
+    }
+    static public String tickSnapshotEnd(int tickerId) {
+    	return "id=" + tickerId + " =============== end ===============";
     }
 }

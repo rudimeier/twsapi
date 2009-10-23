@@ -6,7 +6,7 @@ typedef long OrderId;
 
 enum faDataType { GROUPS=1, PROFILES, ALIASES } ;
 
-inline char * faDataTypeStr ( faDataType pFaDataType )
+inline const char* faDataTypeStr ( faDataType pFaDataType )
 {
 	switch (pFaDataType) {
 		case GROUPS:
@@ -19,7 +19,7 @@ inline char * faDataTypeStr ( faDataType pFaDataType )
 			return "ALIASES" ;
 			break ;
 	}
-	return NULL ;
+	return 0 ;
 }
 
 #endif /* common_defs_h_INCLUDED */

@@ -113,6 +113,9 @@ public class Order {
     // What-if
     public boolean  m_whatIf;
 
+    // Not Held
+    public boolean  m_notHeld;
+
     public Order() {
     	m_outsideRth = false;
         m_openClose	= "O";
@@ -139,6 +142,7 @@ public class Order {
         m_scaleSubsLevelSize = Integer.MAX_VALUE;
         m_scalePriceIncrement = Double.MAX_VALUE;
         m_whatIf = false;
+        m_notHeld = false;
     }
 
     public boolean equals(Object p_other) {
@@ -196,7 +200,8 @@ public class Order {
         	m_scaleInitLevelSize != l_theOther.m_scaleInitLevelSize ||
         	m_scaleSubsLevelSize != l_theOther.m_scaleSubsLevelSize ||
         	m_scalePriceIncrement != l_theOther.m_scalePriceIncrement ||
-        	m_whatIf != l_theOther.m_whatIf) {
+        	m_whatIf != l_theOther.m_whatIf ||
+        	m_notHeld != l_theOther.m_notHeld) {
         	return false;
         }
         

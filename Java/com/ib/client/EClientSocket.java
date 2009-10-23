@@ -64,8 +64,13 @@ public class EClientSocket {
 	//    ; can receive end marker for account download
 	//    ; can receive end marker for executions download
 	// 42 = can receive deltaNeutralValidation
+	// 43 = can receive longName(companyName)
+	//    ; can receive listingExchange
+	//    ; can receive RTVolume tick
+	// 44 = can receive end market for ticker snapshot
+	// 45 = can receive notHeld field in openOrder
 	
-    private static final int CLIENT_VERSION = 42;
+    private static final int CLIENT_VERSION = 45;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -132,6 +137,7 @@ public class EClientSocket {
 	private static final int MIN_SERVER_VER_SCALE_ORDERS2 = 40;
 	private static final int MIN_SERVER_VER_ALGO_ORDERS = 41;
 	private static final int MIN_SERVER_VER_EXECUTION_DATA_CHAIN = 42;
+	private static final int MIN_SERVER_VER_NOT_HELD = 44;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -883,9 +889,17 @@ public class EClientSocket {
         		return;
         	}
         }
-  
-        final int VERSION = 27;
 
+        if (m_serverVersion < MIN_SERVER_VER_NOT_HELD) {
+        	if (order.m_notHeld) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support notHeld parameter.");
+        		return;
+        	}
+        }
+        
+        final int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 28;
+        
         // send place order msg
         try {
             send( PLACE_ORDER);
@@ -1072,6 +1086,10 @@ public class EClientSocket {
            if (m_serverVersion >= MIN_SERVER_VER_PTA_ORDERS) {
         	   send (order.m_clearingAccount);
         	   send (order.m_clearingIntent);
+           }
+           
+           if (m_serverVersion >= MIN_SERVER_VER_NOT_HELD) {
+        	   send (order.m_notHeld);
            }
 
            if (m_serverVersion >= MIN_SERVER_VER_UNDER_COMP) {

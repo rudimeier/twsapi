@@ -50,4 +50,5 @@ public interface EWrapper extends AnyWrapper {
     void currentTime(long time);
     void fundamentalData(int reqId, String data);
     void deltaNeutralValidation(int reqId, UnderComp underComp);
+    void tickSnapshotEnd(int reqId);
 }

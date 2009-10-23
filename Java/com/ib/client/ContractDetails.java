@@ -13,6 +13,7 @@ public class ContractDetails {
     public String 	m_orderTypes;
     public String 	m_validExchanges;
     public int      m_underConId;
+    public String 	m_longName;
 
     // BOND values
     public String 	m_cusip;
@@ -38,7 +39,7 @@ public class ContractDetails {
     }
 
     public ContractDetails( Contract p_summary, String p_marketName, String p_tradingClass,
-    		double p_minTick, String p_orderTypes, String p_validExchanges, int p_underConId) {
+    		double p_minTick, String p_orderTypes, String p_validExchanges, int p_underConId, String p_longName) {
         m_summary = p_summary;
     	m_marketName = p_marketName;
     	m_tradingClass = p_tradingClass;
@@ -46,5 +47,6 @@ public class ContractDetails {
     	m_orderTypes = p_orderTypes;
     	m_validExchanges = p_validExchanges;
     	m_underConId = p_underConId;
+    	m_longName = p_longName;
     }
 }
