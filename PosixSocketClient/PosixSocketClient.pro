@@ -15,10 +15,21 @@ SOURCES += \
 HEADERS += \
   src/EPosixClientSocket.h \
   src/EPosixClientSocketPlatform.h\
+  ../Shared/CommonDefs.h \
+  ../Shared/Contract.h \
+  ../Shared/EClient.h \
   ../Shared/EClientSocketBase.h \
   ../Shared/EClientSocketBaseImpl.h \
-  ../Shared/TwsSocketClientErrors.h \
-  ../Shared/EWrapper.h
+  ../Shared/EClientSocket.h \
+  ../Shared/EWrapper.h \
+  ../Shared/Execution.h \
+  ../Shared/IBString.h \
+  ../Shared/MySocket.h \
+  ../Shared/Order.h \
+  ../Shared/OrderState.h \
+  ../Shared/ScannerSubscription.h \
+  ../Shared/shared_ptr.h \
+  ../Shared/TwsSocketClientErrors.h
 
 DEFINES += \
   IB_USE_STD_STRING
