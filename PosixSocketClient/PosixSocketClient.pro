@@ -39,3 +39,18 @@ INCLUDEPATH += \
 
 QMAKE_CXXFLAGS_WARN_ON += \
   -Wno-switch
+
+
+# install stuff
+INSTALLBASE = /home/rudi/usr/
+
+target.path = $${INSTALLBASE}/lib64
+headers.path = $${INSTALLBASE}/include/twsapi
+headers.files = $${HEADERS}
+headers.files -= \
+  ../Shared/EClientSocket.h \
+  ../Shared/EClientSocketBaseImpl.h \
+  ../Shared/MySocket.h \
+  ../Shared/TwsSocketClientErrors.h
+
+INSTALLS = target headers
