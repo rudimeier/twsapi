@@ -3,6 +3,7 @@
 
 #ifdef IB_USE_STD_STRING
 #include <string>
+#include <stdlib.h> //atof()
 typedef std::string IBString;
 #else
 #include <afxstr.h>
