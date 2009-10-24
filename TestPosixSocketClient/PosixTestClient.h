@@ -4,6 +4,7 @@
 #include "EWrapper.h"
 
 #include <memory>
+#include <stdio.h> //printf()
 
 class EPosixClientSocket;
 
