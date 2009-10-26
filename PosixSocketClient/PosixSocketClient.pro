@@ -44,7 +44,7 @@ QMAKE_CXXFLAGS_WARN_ON += \
 TARGET=ibtws
 
 # install stuff
-INSTALLBASE = /home/rudi/usr/
+INSTALLBASE = $$(HOME)/usr
 
 target.path = $${INSTALLBASE}/lib64
 headers.path = $${INSTALLBASE}/include/twsapi
