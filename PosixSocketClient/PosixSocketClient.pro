@@ -41,6 +41,8 @@ QMAKE_CXXFLAGS_WARN_ON += \
   -Wno-switch
 
 
+TARGET=ibtws
+
 # install stuff
 INSTALLBASE = /home/rudi/usr/
 

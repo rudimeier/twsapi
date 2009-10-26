@@ -26,4 +26,4 @@ QMAKE_CXXFLAGS_WARN_ON += \
 
 LIBS += \
   -L../PosixSocketClient \
-  -lPosixSocketClient
+  -libtws
