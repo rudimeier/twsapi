@@ -47,7 +47,7 @@ TARGET=ibtws
 INSTALLBASE = $$(HOME)/usr
 
 target.path = $${INSTALLBASE}/lib64
-headers.path = $${INSTALLBASE}/include/twsapi
+headers.path = $${INSTALLBASE}/include/$${TARGET}
 headers.files = $${HEADERS}
 headers.files -= \
   ../Shared/EClientSocket.h \
