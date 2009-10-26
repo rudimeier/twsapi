@@ -132,6 +132,8 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 		return -1;
 	}
 	if( nResult <= 0) {
+		//man 2 read: zero indicates EOF (e.g. socket disconnected)
+		onClose();
 		return 0;
 	}
 	return nResult;
