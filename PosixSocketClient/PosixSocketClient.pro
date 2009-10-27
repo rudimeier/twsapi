@@ -52,7 +52,6 @@ headers.files = $${HEADERS}
 headers.files -= \
   ../Shared/EClientSocket.h \
   ../Shared/EClientSocketBaseImpl.h \
-  ../Shared/MySocket.h \
-  ../Shared/TwsSocketClientErrors.h
+  ../Shared/MySocket.h
 
 INSTALLS = target headers
