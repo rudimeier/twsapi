@@ -20,11 +20,9 @@ HEADERS += \
   ../Shared/EClient.h \
   ../Shared/EClientSocketBase.h \
   ../Shared/EClientSocketBaseImpl.h \
-  ../Shared/EClientSocket.h \
   ../Shared/EWrapper.h \
   ../Shared/Execution.h \
   ../Shared/IBString.h \
-  ../Shared/MySocket.h \
   ../Shared/Order.h \
   ../Shared/OrderState.h \
   ../Shared/ScannerSubscription.h \
