@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 		++attempt;
 		printf( "Attempt %u of %u\n", attempt, MAX_ATTEMPTS);
 
-		PosixTestClient client;
+		IB::PosixTestClient client;
 
 		client.connect( host, port, clientId);
 

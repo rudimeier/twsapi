@@ -11,6 +11,8 @@
 #define UNSET_DOUBLE DBL_MAX
 #define UNSET_INTEGER INT_MAX
 
+namespace IB {
+
 enum Origin { CUSTOMER,
               FIRM,
               UNKNOWN };
@@ -208,4 +210,5 @@ struct Order
 	bool     notHeld;
 };
 
+} // namespace IB
 #endif

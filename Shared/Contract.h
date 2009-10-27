@@ -4,6 +4,8 @@
 #include <vector>
 #include "IBString.h"
 
+namespace IB {
+
 /*
     SAME_POS    = open/close leg value is same as combo
     OPEN_POS    = open
@@ -190,4 +192,5 @@ Contract::CleanupComboLegs(ComboLegList& legs)
 	legs.clear();
 }
 
+} // namespace IB
 #endif

@@ -6,6 +6,8 @@
 #include <memory>
 #include <stdio.h> //printf()
 
+namespace IB {
+
 class EPosixClientSocket;
 
 enum State {
@@ -102,5 +104,6 @@ private:
 	OrderId m_orderId;
 };
 
+}
 #endif
 

@@ -8,6 +8,8 @@
 #define UNSET_INTEGER INT_MAX
 #define NO_ROW_NUMBER_SPECIFIED -1;
 
+namespace IB {
+
 struct ScannerSubscription {
 	ScannerSubscription() {
 		numberOfRows = NO_ROW_NUMBER_SPECIFIED;
@@ -44,4 +46,5 @@ struct ScannerSubscription {
 	IBString stockTypeFilter;
 };
 
+} // namespace IB
 #endif

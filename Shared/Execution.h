@@ -3,6 +3,8 @@
 
 #include "IBString.h"
 
+namespace IB {
+
 struct Execution
 {
    Execution()
@@ -49,4 +51,5 @@ struct ExecutionFilter
    IBString     m_side;
 };
 
+} // namespace IB
 #endif // execution_def

@@ -12,6 +12,7 @@
 	#define EWOULDBLOCK WSAEWOULDBLOCK
 	#define ECONNREFUSED WSAECONNREFUSED
 
+	namespace IB {
 	// helpers
 	inline bool SocketsInit( void) {
 		WSADATA data;
@@ -19,6 +20,7 @@
 	};
 	inline bool SocketsDestroy() { return ( !WSACleanup()); };
 	inline int SocketClose(int sockfd) { return closesocket( sockfd); };
+	}
 
 #else
 	// LINUX
@@ -27,10 +29,12 @@
 	#include <errno.h>
 	#include <sys/select.h>
 
+	namespace IB {
 	// helpers
 	inline bool SocketsInit() { return true; };
 	inline bool SocketsDestroy() { return true; };
 	inline int SocketClose(int sockfd) { return close( sockfd); };
+	}
 
 #endif
 

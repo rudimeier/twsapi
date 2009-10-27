@@ -4,6 +4,8 @@
 #include "CommonDefs.h"
 #include "IBString.h"
 
+namespace IB {
+
 struct Contract;
 struct Order;
 struct ExecutionFilter;
@@ -56,4 +58,5 @@ public:
 private:
 };
 
+} // namespace IB
 #endif

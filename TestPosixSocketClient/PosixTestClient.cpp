@@ -6,6 +6,8 @@
 #include "Contract.h"
 #include "Order.h"
 
+namespace IB {
+
 const int PING_DEADLINE = 2; // seconds
 const int SLEEP_BETWEEN_PINGS = 30; // seconds
 
@@ -281,3 +283,4 @@ void PosixTestClient::fundamentalData(TickerId reqId, const IBString& data) {}
 void PosixTestClient::deltaNeutralValidation(int reqId, const UnderComp& underComp) {}
 void PosixTestClient::tickSnapshotEnd(int reqId) {}
 
+}

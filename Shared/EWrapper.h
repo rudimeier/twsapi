@@ -4,6 +4,8 @@
 #include "CommonDefs.h"
 #include "IBString.h"
 
+namespace IB {
+
 enum TickType { BID_SIZE, BID, ASK, ASK_SIZE, LAST, LAST_SIZE,
 				HIGH, LOW, VOLUME, CLOSE,
 				BID_OPTION_COMPUTATION, 
@@ -116,4 +118,5 @@ public:
 };
 
 
+} // namespace IB
 #endif

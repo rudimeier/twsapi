@@ -21,6 +21,8 @@
 #include <string.h> //memchr()
 #include <assert.h>
 
+namespace IB {
+
 /////////////////////////////////////////////////////////////////////////////////
 // SOCKET CLIENT VERSION CHANGE LOG : Incremented when the format of incomming
 //                                    server responses change
@@ -2840,4 +2842,5 @@ bool EClientSocketBase::isOutBufferEmpty() const
 	return m_outBuffer.empty();
 }
 
+} // namespace IB
 #endif
