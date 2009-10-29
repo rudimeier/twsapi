@@ -154,17 +154,11 @@ void EPosixClientSocket::onConnect()
 
 void EPosixClientSocket::onReceive()
 {
-	if( !handleSocketError())
-		return;
-
 	checkMessages();
 }
 
 void EPosixClientSocket::onSend()
 {
-	if( !handleSocketError())
-		return;
-
 	sendBufferedData();
 }
 
