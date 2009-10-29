@@ -9,6 +9,45 @@
 
 namespace IB {
 
+
+bool resolveHost( const char *host, sockaddr_in *sa )
+{
+	if (sa->sin_addr.s_addr != INADDR_NONE) {
+		/* No need to resolve it. */
+		return true;
+	}
+	
+	struct hostent hostbuf, *hp;
+	size_t hstbuflen;
+	char *tmphstbuf;
+	int res;
+	int herr;
+
+	hstbuflen = 1024;
+	/* Allocate buffer, remember to free it.  */
+	tmphstbuf = (char*) malloc (hstbuflen);
+	
+	while( (res = gethostbyname_r (host, &hostbuf, tmphstbuf, hstbuflen,
+		&hp, &herr)) == ERANGE ) {
+		/* Enlarge the buffer.  */
+		hstbuflen *= 2;
+		tmphstbuf = (char*) realloc (tmphstbuf, hstbuflen);
+	}
+	
+	/*  Check for errors.  */
+	if( res != 0 || hp == NULL) {
+		free( tmphstbuf );
+		return false;
+	} else {
+		memcpy((char*) &sa->sin_addr.s_addr, hp->h_addr, hp->h_length);
+		free( tmphstbuf );
+		return true;
+	}
+}
+
+
+
+
 ///////////////////////////////////////////////////////////
 // member funcs
 EPosixClientSocket::EPosixClientSocket( EWrapper *ptr) : EClientSocketBase( ptr)
