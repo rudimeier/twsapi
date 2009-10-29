@@ -217,6 +217,7 @@ bool EPosixClientSocket::handleSocketError()
 			SOCKET_EXCEPTION.msg() + strerror(errsv));
 		
 		eDisconnect();
+		getWrapper()->connectionClosed();
 		return false;
 	}
 }
