@@ -5,6 +5,7 @@
 #include "EWrapper.h"
 
 #include <string.h> //memset(), sterror()
+#include <assert.h>
 
 namespace IB {
 
@@ -117,6 +118,7 @@ int EPosixClientSocket::send(const char* buf, size_t sz)
 	if( nResult == -1 ) {
 		return handleSocketError() ? 0 : -1;
 	}
+	assert( nResult > 0 );
 	return nResult;
 }
 
@@ -135,6 +137,7 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 		onClose();
 		return -1;
 	}
+	assert( nResult > 0 );
 	return nResult;
 }
 
