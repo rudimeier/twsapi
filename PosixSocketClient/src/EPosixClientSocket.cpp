@@ -99,6 +99,12 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	sa.sin_port = htons( port);
 	sa.sin_addr.s_addr = inet_addr( host);
 
+	if( !resolveHost( host, &sa ) ) {
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
+			"Couldn't connect to TWS. Failed to resolve hostname.");
+		return false;
+	}
+
 	// try to connect
 	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
 		// error connecting
