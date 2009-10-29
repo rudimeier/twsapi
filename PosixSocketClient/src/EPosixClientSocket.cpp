@@ -146,9 +146,6 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 void EPosixClientSocket::onConnect()
 {
-	if( !handleSocketError())
-		return;
-
 	onConnectBase();
 }
 
