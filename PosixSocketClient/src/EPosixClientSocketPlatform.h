@@ -28,6 +28,7 @@
 	#include <arpa/inet.h>
 	#include <errno.h>
 	#include <sys/select.h>
+	#include <netdb.h>
 
 	namespace IB {
 	// helpers
