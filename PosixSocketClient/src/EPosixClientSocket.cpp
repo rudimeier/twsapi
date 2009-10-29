@@ -130,13 +130,13 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 	int nResult = ::recv( m_fd, buf, sz, 0);
 
-	if( nResult == -1 && !handleSocketError()) {
-		return -1;
+	if( nResult == -1 ) {
+		return handleSocketError() ? 0 : -1;
 	}
-	if( nResult <= 0) {
+	if( nResult == 0) {
 		//man 2 read: zero indicates EOF (e.g. socket disconnected)
 		onClose();
-		return 0;
+		return -1;
 	}
 	return nResult;
 }
