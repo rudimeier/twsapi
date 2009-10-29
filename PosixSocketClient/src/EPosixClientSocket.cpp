@@ -114,11 +114,8 @@ int EPosixClientSocket::send(const char* buf, size_t sz)
 
 	int nResult = ::send( m_fd, buf, sz, 0);
 
-	if( nResult == -1 && !handleSocketError()) {
-		return -1;
-	}
-	if( nResult <= 0) {
-		return 0;
+	if( nResult == -1 ) {
+		return handleSocketError() ? 0 : -1;
 	}
 	return nResult;
 }
