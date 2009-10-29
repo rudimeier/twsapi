@@ -204,29 +204,19 @@ void EPosixClientSocket::onSend()
 // helper
 bool EPosixClientSocket::handleSocketError()
 {
-	// no error
-	if( errno == 0)
-		return true;
-
-	// Socket is already connected
-	if( errno == EISCONN) {
-		return true;
-	}
-
-	if( errno == EWOULDBLOCK)
-		return false;
-
-	if( errno == ECONNREFUSED) {
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
-	}
-	else {
-		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + strerror(errno));
-	}
-	// reset errno
+	// save and reset errno
+	int errsv = errno;
 	errno = 0;
-	eDisconnect();
-	return false;
+	
+	if( errsv == 0 || errsv == EWOULDBLOCK ) {
+		return true;
+	} else {
+		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
+			SOCKET_EXCEPTION.msg() + strerror(errsv));
+		
+		eDisconnect();
+		return false;
+	}
 }
 
 } // namespace IB
