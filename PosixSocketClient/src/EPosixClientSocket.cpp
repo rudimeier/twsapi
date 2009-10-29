@@ -164,9 +164,6 @@ void EPosixClientSocket::onSend()
 
 void EPosixClientSocket::onClose()
 {
-	if( !handleSocketError())
-		return;
-
 	eDisconnect();
 	getWrapper()->connectionClosed();
 }
