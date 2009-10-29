@@ -179,6 +179,8 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 	}
 	if( nResult == 0) {
 		//man 2 read: zero indicates EOF (e.g. socket disconnected)
+		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
+			SOCKET_EXCEPTION.msg() + "The remote host closed the connection.");
 		eDisconnect();
 		getWrapper()->connectionClosed();
 		return -1;
