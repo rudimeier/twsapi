@@ -186,7 +186,7 @@ bool EPosixClientSocket::handleSocketError()
 		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
 			SOCKET_EXCEPTION.msg() + strerror(errsv));
 		
-		eDisconnect();
+		onClose();
 		return false;
 	}
 }
