@@ -9,7 +9,8 @@
 
 namespace IB {
 
-
+///////////////////////////////////////////////////////////
+// static helper
 bool resolveHost( const char *host, sockaddr_in *sa )
 {
 	if (sa->sin_addr.s_addr != INADDR_NONE) {
@@ -35,14 +36,12 @@ bool resolveHost( const char *host, sockaddr_in *sa )
 	}
 	
 	/*  Check for errors.  */
-	if( res != 0 || hp == NULL) {
-		free( tmphstbuf );
-		return false;
-	} else {
+	bool succ = (res == 0 && hp != NULL);
+	if( succ ) {
 		memcpy((char*) &sa->sin_addr.s_addr, hp->h_addr, hp->h_length);
-		free( tmphstbuf );
-		return true;
 	}
+	free( tmphstbuf );
+	return succ;
 }
 
 
