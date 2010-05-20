@@ -42,7 +42,7 @@ QMAKE_CXXFLAGS_WARN_ON += \
 TARGET=ibtws
 
 # install stuff
-INSTALLBASE = /usr/local
+INSTALLBASE = $$(HOME)/usr
 
 target.path = $${INSTALLBASE}/lib64
 headers.path = $${INSTALLBASE}/include/$${TARGET}
