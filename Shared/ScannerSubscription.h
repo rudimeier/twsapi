@@ -2,6 +2,8 @@
 #define scanner_def
 
 #include <float.h>
+#include <limits.h>
+
 #include "IBString.h"
 
 #define UNSET_DOUBLE DBL_MAX

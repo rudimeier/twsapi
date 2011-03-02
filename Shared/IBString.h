@@ -3,7 +3,6 @@
 
 #ifdef IB_USE_STD_STRING
 #include <string>
-#include <stdlib.h> //atof()
 namespace IB {
 typedef std::string IBString;
 }
@@ -13,6 +12,8 @@ namespace IB {
 typedef CString IBString;
 }
 #endif
+
+#include <stdlib.h>
 
 namespace IB {
 

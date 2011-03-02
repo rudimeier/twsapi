@@ -48,6 +48,10 @@ enum TickType { BID_SIZE, BID, ASK, ASK_SIZE, LAST, LAST_SIZE,
 				FUNDAMENTAL_RATIOS,
 				RT_VOLUME,
 				HALTED,
+				BID_YIELD,
+				ASK_YIELD,
+				LAST_YIELD,
+				CUST_OPTION_COMPUTATION,
 				NOT_SET };
 
 inline bool isPrice( TickType tickType) {
@@ -69,7 +73,7 @@ public:
    virtual void tickPrice( TickerId tickerId, TickType field, double price, int canAutoExecute) = 0;
    virtual void tickSize( TickerId tickerId, TickType field, int size) = 0;
    virtual void tickOptionComputation( TickerId tickerId, TickType tickType, double impliedVol, double delta,
-	   double modelPrice, double pvDividend) = 0;
+	   double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice) = 0;
    virtual void tickGeneric(TickerId tickerId, TickType tickType, double value) = 0;
    virtual void tickString(TickerId tickerId, TickType tickType, const IBString& value) = 0;
    virtual void tickEFP(TickerId tickerId, TickType tickType, double basisPoints, const IBString& formattedBasisPoints,

@@ -4,7 +4,7 @@
 #include "TwsSocketClientErrors.h"
 #include "EWrapper.h"
 
-#include <string.h> //memset(), sterror()
+#include <string.h>
 #include <assert.h>
 
 namespace IB {

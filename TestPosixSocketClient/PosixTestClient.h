@@ -48,7 +48,7 @@ public:
 	void tickPrice(TickerId tickerId, TickType field, double price, int canAutoExecute);
 	void tickSize(TickerId tickerId, TickType field, int size);
 	void tickOptionComputation( TickerId tickerId, TickType tickType, double impliedVol, double delta,
-		double modelPrice, double pvDividend);
+		double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice);
 	void tickGeneric(TickerId tickerId, TickType tickType, double value);
 	void tickString(TickerId tickerId, TickType tickType, const IBString& value);
 	void tickEFP(TickerId tickerId, TickType tickType, double basisPoints, const IBString& formattedBasisPoints,

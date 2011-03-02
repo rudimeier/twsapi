@@ -17,7 +17,7 @@
 #include <algorithm>
 
 #include <stdio.h>
-#include <string.h> //memchr()
+#include <string.h>
 #include <assert.h>
 
 namespace IB {
@@ -84,8 +84,8 @@ namespace IB {
 // 45 = can receive notHeld field in openOrder
 // 46 = can receive contractMonth, industry, category, subcategory fields in contractDetails
 //    ; can receive timeZoneId, tradingHours, liquidHours fields in contractDetails
-
-const int CLIENT_VERSION    = 46;
+// 47 = can receive gamma, vega, theta, undPrice fields in TICK_OPTION_COMPUTATION
+const int CLIENT_VERSION    = 47;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -119,6 +119,10 @@ const int REQ_REAL_TIME_BARS            = 50;
 const int CANCEL_REAL_TIME_BARS         = 51;
 const int REQ_FUNDAMENTAL_DATA          = 52;
 const int CANCEL_FUNDAMENTAL_DATA       = 53;
+const int REQ_CALC_IMPLIED_VOLAT        = 54;
+const int REQ_CALC_OPTION_PRICE         = 55;
+const int CANCEL_CALC_IMPLIED_VOLAT     = 56;
+const int CANCEL_CALC_OPTION_PRICE      = 57;
 
 //const int MIN_SERVER_VER_REAL_TIME_BARS       = 34;
 //const int MIN_SERVER_VER_SCALE_ORDERS         = 35;
@@ -135,6 +139,12 @@ const int MIN_SERVER_VER_ALGO_ORDERS            = 41;
 const int MIN_SERVER_VER_EXECUTION_DATA_CHAIN   = 42;
 const int MIN_SERVER_VER_NOT_HELD               = 44;
 const int MIN_SERVER_VER_SEC_ID_TYPE            = 45;
+const int MIN_SERVER_VER_PLACE_ORDER_CONID      = 46;
+const int MIN_SERVER_VER_REQ_MKT_DATA_CONID     = 47;
+const int MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT = 49;
+const int MIN_SERVER_VER_REQ_CALC_OPTION_PRICE  = 50;
+const int MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT = 50;
+const int MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE  = 50;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -169,7 +179,7 @@ const int OPEN_ORDER_END            = 53;
 const int ACCT_DOWNLOAD_END         = 54;
 const int EXECUTION_DATA_END        = 55;
 const int DELTA_NEUTRAL_VALIDATION  = 56;
-const int TICK_SNAPSHOT_END			= 57;
+const int TICK_SNAPSHOT_END         = 57;
 
 // TWS New Bulletins constants
 const int NEWS_MSG              = 1;    // standard IB news bulleting message
@@ -460,9 +470,17 @@ void EClientSocketBase::reqMktData(TickerId tickerId, const Contract& contract,
 		}
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_REQ_MKT_DATA_CONID) {
+		if( contract.conId > 0) {
+			m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support conId parameter.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 8;
+	const int VERSION = 9;
 
 	// send req mkt data msg
 	ENCODE_FIELD( REQ_MKT_DATA);
@@ -470,6 +488,9 @@ void EClientSocketBase::reqMktData(TickerId tickerId, const Contract& contract,
 	ENCODE_FIELD( tickerId);
 
 	// send contract fields
+	if( m_serverVersion >= MIN_SERVER_VER_REQ_MKT_DATA_CONID) {
+		ENCODE_FIELD( contract.conId);
+	}
 	ENCODE_FIELD( contract.symbol);
 	ENCODE_FIELD( contract.secType);
 	ENCODE_FIELD( contract.expiry);
@@ -483,7 +504,7 @@ void EClientSocketBase::reqMktData(TickerId tickerId, const Contract& contract,
 
 	ENCODE_FIELD( contract.localSymbol); // srv v2 and above
 
-    // Send combo legs for BAG requests (srv v8 and above)
+	// Send combo legs for BAG requests (srv v8 and above)
 	if( Compare(contract.secType, "BAG") == 0)
 	{
 		if( !contract.comboLegs || contract.comboLegs->empty()) {
@@ -504,7 +525,7 @@ void EClientSocketBase::reqMktData(TickerId tickerId, const Contract& contract,
 				ENCODE_FIELD( comboLeg->exchange);
 			}
 		}
-    }
+	}
 
 	if( m_serverVersion >= MIN_SERVER_VER_UNDER_COMP) {
 		if( contract.underComp) {
@@ -941,6 +962,138 @@ void EClientSocketBase::cancelFundamentalData( TickerId reqId)
 	bufferedSend( msg.str());
 }
 
+void EClientSocketBase::calculateImpliedVolatility(TickerId reqId, const Contract &contract, double optionPrice, double underPrice) {
+
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if (m_serverVersion < MIN_SERVER_VER_REQ_CALC_IMPLIED_VOLAT) {
+		m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support calculate implied volatility requests.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( REQ_CALC_IMPLIED_VOLAT);
+	ENCODE_FIELD( VERSION);
+	ENCODE_FIELD( reqId);
+
+	// send contract fields
+	ENCODE_FIELD( contract.conId);
+	ENCODE_FIELD( contract.symbol);
+	ENCODE_FIELD( contract.secType);
+	ENCODE_FIELD( contract.expiry);
+	ENCODE_FIELD( contract.strike);
+	ENCODE_FIELD( contract.right);
+	ENCODE_FIELD( contract.multiplier);
+	ENCODE_FIELD( contract.exchange);
+	ENCODE_FIELD( contract.primaryExchange);
+	ENCODE_FIELD( contract.currency);
+	ENCODE_FIELD( contract.localSymbol);
+
+	ENCODE_FIELD( optionPrice);
+	ENCODE_FIELD( underPrice);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocketBase::cancelCalculateImpliedVolatility(TickerId reqId) {
+
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if (m_serverVersion < MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT) {
+		m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support calculate implied volatility cancellation.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( CANCEL_CALC_IMPLIED_VOLAT);
+	ENCODE_FIELD( VERSION);
+	ENCODE_FIELD( reqId);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocketBase::calculateOptionPrice(TickerId reqId, const Contract &contract, double volatility, double underPrice) {
+
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if (m_serverVersion < MIN_SERVER_VER_REQ_CALC_OPTION_PRICE) {
+		m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support calculate option price requests.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( REQ_CALC_OPTION_PRICE);
+	ENCODE_FIELD( VERSION);
+	ENCODE_FIELD( reqId);
+
+	// send contract fields
+	ENCODE_FIELD( contract.conId);
+	ENCODE_FIELD( contract.symbol);
+	ENCODE_FIELD( contract.secType);
+	ENCODE_FIELD( contract.expiry);
+	ENCODE_FIELD( contract.strike);
+	ENCODE_FIELD( contract.right);
+	ENCODE_FIELD( contract.multiplier);
+	ENCODE_FIELD( contract.exchange);
+	ENCODE_FIELD( contract.primaryExchange);
+	ENCODE_FIELD( contract.currency);
+	ENCODE_FIELD( contract.localSymbol);
+
+	ENCODE_FIELD( volatility);
+	ENCODE_FIELD( underPrice);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocketBase::cancelCalculateOptionPrice(TickerId reqId) {
+
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if (m_serverVersion < MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE) {
+		m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support calculate option price cancellation.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( CANCEL_CALC_OPTION_PRICE);
+	ENCODE_FIELD( VERSION);
+	ENCODE_FIELD( reqId);
+
+	bufferedSend( msg.str());
+}
+
 void EClientSocketBase::reqContractDetails( int reqId, const Contract& contract)
 {
 	// not connected?
@@ -1106,13 +1259,21 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		if( !IsEmpty(contract.secIdType) || !IsEmpty(contract.secId)) {
 			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
      			"  It does not support secIdType and secId parameters.");
-     		return;
-     	}
-    }
-        
+			return;
+		}
+	}
+
+	if (m_serverVersion < MIN_SERVER_VER_PLACE_ORDER_CONID) {
+		if( contract.conId > 0) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+     			"  It does not support conId parameter.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 29;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 30;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1120,6 +1281,9 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	ENCODE_FIELD( id);
 
 	// send contract fields
+	if( m_serverVersion >= MIN_SERVER_VER_PLACE_ORDER_CONID) {
+		ENCODE_FIELD( contract.conId);
+	}
 	ENCODE_FIELD( contract.symbol);
 	ENCODE_FIELD( contract.secType);
 	ENCODE_FIELD( contract.expiry);
@@ -1192,9 +1356,9 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 
 				ENCODE_FIELD( comboLeg->shortSaleSlot); // srv v35 and above
 				ENCODE_FIELD( comboLeg->designatedLocation); // srv v35 and above
-            }
-        }
-    }
+			}
+		}
+	}
 
 	/////////////////////////////////////////////////////////////////////////////
 	// Send the shares allocation.
@@ -1876,8 +2040,13 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				double impliedVol;
 				double delta;
 
-				double modelPrice = DBL_MAX;
+				double optPrice = DBL_MAX;
 				double pvDividend = DBL_MAX;
+
+				double gamma = DBL_MAX;
+				double vega = DBL_MAX;
+				double theta = DBL_MAX;
+				double undPrice = DBL_MAX;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( tickerId);
@@ -1893,21 +2062,40 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 					delta = DBL_MAX;
 				}
 
-				if( tickTypeInt == MODEL_OPTION) { // introduced in version == 5
+				if( version >= 6 || tickTypeInt == MODEL_OPTION) { // introduced in version == 5
 
-					DECODE_FIELD( modelPrice);
+					DECODE_FIELD( optPrice);
 					DECODE_FIELD( pvDividend);
 
-					if( modelPrice < 0) { // -1 is the "not computed" indicator
-						modelPrice = DBL_MAX;
+					if( optPrice < 0) { // -1 is the "not computed" indicator
+						optPrice = DBL_MAX;
 					}
 					if( pvDividend < 0) { // -1 is the "not computed" indicator
 						pvDividend = DBL_MAX;
 					}
 				}
+				if( version >= 6) {
 
+					DECODE_FIELD( gamma);
+					DECODE_FIELD( vega);
+					DECODE_FIELD( theta);
+					DECODE_FIELD( undPrice);
+
+					if( gamma > 1 || gamma < -1) { // -2 is the "not yet computed" indicator
+						gamma = DBL_MAX;
+					}
+					if( vega > 1 || vega < -1) { // -2 is the "not yet computed" indicator
+						vega = DBL_MAX;
+					}
+					if( theta > 1 || theta < -1) { // -2 is the "not yet computed" indicator
+						theta = DBL_MAX;
+					}
+					if( undPrice < 0) { // -1 is the "not computed" indicator
+						undPrice = DBL_MAX;
+					}
+				}
 				m_pEWrapper->tickOptionComputation( tickerId, (TickType)tickTypeInt,
-					impliedVol, delta, modelPrice, pvDividend);
+					impliedVol, delta, optPrice, pvDividend, gamma, vega, theta, undPrice);
 
 				break;
 			}
@@ -2770,7 +2958,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				int reqId;
-				
+
 				DECODE_FIELD( version);
 				DECODE_FIELD( reqId);
 
