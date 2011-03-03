@@ -1,7 +1,6 @@
 #include "PosixTestClient.h"
 
 #include "EPosixClientSocket.h"
-#include "EPosixClientSocketPlatform.h"
 
 #include "Contract.h"
 #include "Order.h"
