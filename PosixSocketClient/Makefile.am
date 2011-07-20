@@ -22,6 +22,7 @@ header_HEADERS += ../Shared/OrderState.h
 header_HEADERS += ../Shared/ScannerSubscription.h
 header_HEADERS += ../Shared/shared_ptr.h
 header_HEADERS += src/EPosixClientSocket.h
+header_HEADERS += ../Shared/TwsSocketClientErrors.h
 noinst_HEADERS =
 noinst_HEADERS += ../Shared/EClientSocketBaseImpl.h
 noinst_HEADERS += ../Shared/TwsSocketClientErrors.h
