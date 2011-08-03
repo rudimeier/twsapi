@@ -5,47 +5,8 @@
 #include "EWrapper.h"
 
 #include <string.h>
-#include <assert.h>
 
 namespace IB {
-
-///////////////////////////////////////////////////////////
-// static helper
-bool resolveHost( const char *host, sockaddr_in *sa )
-{
-	if (sa->sin_addr.s_addr != INADDR_NONE) {
-		/* No need to resolve it. */
-		return true;
-	}
-	
-	struct hostent hostbuf, *hp;
-	size_t hstbuflen;
-	char *tmphstbuf;
-	int res;
-	int herr;
-
-	hstbuflen = 1024;
-	/* Allocate buffer, remember to free it.  */
-	tmphstbuf = (char*) malloc (hstbuflen);
-	
-	while( (res = gethostbyname_r (host, &hostbuf, tmphstbuf, hstbuflen,
-		&hp, &herr)) == ERANGE ) {
-		/* Enlarge the buffer.  */
-		hstbuflen *= 2;
-		tmphstbuf = (char*) realloc (tmphstbuf, hstbuflen);
-	}
-	
-	/*  Check for errors.  */
-	bool succ = (res == 0 && hp != NULL);
-	if( succ ) {
-		memcpy((char*) &sa->sin_addr.s_addr, hp->h_addr, hp->h_length);
-	}
-	free( tmphstbuf );
-	return succ;
-}
-
-
-
 
 ///////////////////////////////////////////////////////////
 // member funcs
@@ -97,12 +58,6 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	sa.sin_family = AF_INET;
 	sa.sin_port = htons( port);
 	sa.sin_addr.s_addr = inet_addr( host);
-
-	if( !resolveHost( host, &sa ) ) {
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
-			"Couldn't connect to TWS. Failed to resolve hostname.");
-		return false;
-	}
 
 	// try to connect
 	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
@@ -159,10 +114,12 @@ int EPosixClientSocket::send(const char* buf, size_t sz)
 
 	int nResult = ::send( m_fd, buf, sz, 0);
 
-	if( nResult == -1 ) {
-		return handleSocketError() ? 0 : -1;
+	if( nResult == -1 && !handleSocketError()) {
+		return -1;
 	}
-	assert( nResult > 0 );
+	if( nResult <= 0) {
+		return 0;
+	}
 	return nResult;
 }
 
@@ -173,17 +130,12 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 	int nResult = ::recv( m_fd, buf, sz, 0);
 
-	if( nResult == -1 ) {
-		return handleSocketError() ? 0 : -1;
-	}
-	if( nResult == 0) {
-		//man 2 read: zero indicates EOF (e.g. socket disconnected)
-		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + "The remote host closed the connection.");
-		onClose();
+	if( nResult == -1 && !handleSocketError()) {
 		return -1;
 	}
-	assert( nResult > 0 );
+	if( nResult <= 0) {
+		return 0;
+	}
 	return nResult;
 }
 
@@ -192,21 +144,33 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 void EPosixClientSocket::onConnect()
 {
+	if( !handleSocketError())
+		return;
+
 	onConnectBase();
 }
 
 void EPosixClientSocket::onReceive()
 {
+	if( !handleSocketError())
+		return;
+
 	checkMessages();
 }
 
 void EPosixClientSocket::onSend()
 {
+	if( !handleSocketError())
+		return;
+
 	sendBufferedData();
 }
 
 void EPosixClientSocket::onClose()
 {
+	if( !handleSocketError())
+		return;
+
 	eDisconnect();
 	getWrapper()->connectionClosed();
 }
@@ -220,19 +184,29 @@ void EPosixClientSocket::onError()
 // helper
 bool EPosixClientSocket::handleSocketError()
 {
-	// save and reset errno
-	int errsv = errno;
-	errno = 0;
-	
-	if( errsv == 0 || errsv == EWOULDBLOCK ) {
+	// no error
+	if( errno == 0)
 		return true;
-	} else {
-		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + strerror(errsv));
-		
-		onClose();
-		return false;
+
+	// Socket is already connected
+	if( errno == EISCONN) {
+		return true;
 	}
+
+	if( errno == EWOULDBLOCK)
+		return false;
+
+	if( errno == ECONNREFUSED) {
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
+	}
+	else {
+		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
+			SOCKET_EXCEPTION.msg() + strerror(errno));
+	}
+	// reset errno
+	errno = 0;
+	eDisconnect();
+	return false;
 }
 
 } // namespace IB
