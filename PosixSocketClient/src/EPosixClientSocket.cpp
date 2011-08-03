@@ -189,17 +189,11 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 void EPosixClientSocket::onReceive()
 {
-	if( !handleSocketError())
-		return;
-
 	checkMessages();
 }
 
 void EPosixClientSocket::onSend()
 {
-	if( !handleSocketError())
-		return;
-
 	sendBufferedData();
 }
 
