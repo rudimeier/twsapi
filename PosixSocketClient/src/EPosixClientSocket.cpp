@@ -187,14 +187,6 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 ///////////////////////////////////////////////////////////
 // callbacks from socket
 
-void EPosixClientSocket::onConnect()
-{
-	if( !handleSocketError())
-		return;
-
-	onConnectBase();
-}
-
 void EPosixClientSocket::onReceive()
 {
 	if( !handleSocketError())
@@ -209,15 +201,6 @@ void EPosixClientSocket::onSend()
 		return;
 
 	sendBufferedData();
-}
-
-void EPosixClientSocket::onClose()
-{
-	if( !handleSocketError())
-		return;
-
-	eDisconnect();
-	getWrapper()->connectionClosed();
 }
 
 void EPosixClientSocket::onError()

@@ -32,11 +32,6 @@ public:
 	void onSend();
 	void onError();
 
-private:
-
-	void onConnect();
-	void onClose();
-
 public:
 	// helper
 	bool handleSocketError();
