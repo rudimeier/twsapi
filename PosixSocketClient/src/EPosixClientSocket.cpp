@@ -203,11 +203,6 @@ void EPosixClientSocket::onSend()
 	sendBufferedData();
 }
 
-void EPosixClientSocket::onError()
-{
-	handleSocketError();
-}
-
 ///////////////////////////////////////////////////////////
 // helper
 bool EPosixClientSocket::handleSocketError()

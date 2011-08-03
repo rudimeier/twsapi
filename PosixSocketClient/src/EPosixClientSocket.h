@@ -30,7 +30,6 @@ public:
 	// callback from socket
 	void onReceive();
 	void onSend();
-	void onError();
 
 public:
 	// helper
