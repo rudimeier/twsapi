@@ -108,8 +108,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	// try to connect
 	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
 		// error connecting
-		// uninitialize Winsock DLL (only for Windows)
-		SocketsDestroy();
+		eDisconnect();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
 		return false;
 	}
@@ -121,8 +120,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 
 	while( isSocketOK() && !isConnected()) {
 		if ( !checkMessagesConnect()) {
-			// uninitialize Winsock DLL (only for Windows)
-			SocketsDestroy();
+			eDisconnect();
 			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
 			return false;
 		}
