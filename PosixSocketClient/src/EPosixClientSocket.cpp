@@ -189,40 +189,27 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 void EPosixClientSocket::onConnect()
 {
-	if( !handleSocketError())
-		return;
-
 	onConnectBase();
 }
 
 void EPosixClientSocket::onReceive()
 {
-	if( !handleSocketError())
-		return;
-
 	checkMessages();
 }
 
 void EPosixClientSocket::onSend()
 {
-	if( !handleSocketError())
-		return;
-
 	sendBufferedData();
 }
 
 void EPosixClientSocket::onClose()
 {
-	if( !handleSocketError())
-		return;
-
 	eDisconnect();
 	getWrapper()->connectionClosed();
 }
 
 void EPosixClientSocket::onError()
 {
-	handleSocketError();
 }
 
 ///////////////////////////////////////////////////////////
