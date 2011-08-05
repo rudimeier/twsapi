@@ -1926,16 +1926,10 @@ bool EClientSocketBase::checkMessages()
 	const char*	ptr = beginPtr;
 	const char*	endPtr = ptr + m_inBuffer.size();
 
-	try {
-		while( (m_connected ? processMsg( ptr, endPtr)
-			                : processConnectAck( ptr, endPtr)) > 0) {
-			if( (ptr - beginPtr) >= (int)m_inBuffer.size())
-				break;
-		}
-	}
-	catch (...) {
-		CleanupBuffer( m_inBuffer, (ptr - beginPtr));
-		throw;
+	while( (m_connected ? processMsg( ptr, endPtr)
+		                : processConnectAck( ptr, endPtr)) > 0) {
+		if( (ptr - beginPtr) >= (int)m_inBuffer.size())
+			break;
 	}
 
 	CleanupBuffer( m_inBuffer, (ptr - beginPtr));
