@@ -1942,8 +1942,6 @@ int EClientSocketBase::processConnectAck(const char*& beginPtr, const char* endP
 	// return number of bytes consumed
 	assert( beginPtr && beginPtr < endPtr);
 
-	try {
-
 		const char* ptr = beginPtr;
 
 		// check server version
@@ -1974,19 +1972,6 @@ int EClientSocketBase::processConnectAck(const char*& beginPtr, const char* endP
 		int processed = ptr - beginPtr;
 		beginPtr = ptr;
 		return processed;
-	}
-#ifdef _MSC_VER
-	catch( CException* e) {
-		m_pEWrapper->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + errMsg(e));
-	}
-#endif
-
-	catch(  std::exception e) {
-		m_pEWrapper->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + errMsg( e) );
-	}
-	return 0;
 }
 
 int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
@@ -1995,8 +1980,6 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 	// return number of bytes consumed
 
 	assert( beginPtr && beginPtr < endPtr);
-
-	try {
 
 		const char* ptr = beginPtr;
 
@@ -3014,20 +2997,6 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 		int processed = ptr - beginPtr;
 		beginPtr = ptr;
 		return processed;
-	}
-
-#ifdef _MSC_VER
-	catch( CException* e) {
-		m_pEWrapper->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + errMsg(e));
-	}
-#endif
-
-	catch( std::exception e) {
-		m_pEWrapper->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + errMsg(e));
-	}
-	return 0;
 }
 
 bool EClientSocketBase::isConnected() const
