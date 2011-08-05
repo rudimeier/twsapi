@@ -5,6 +5,7 @@
 #include "EWrapper.h"
 
 #include <string.h>
+#include <assert.h>
 
 namespace IB {
 
@@ -170,17 +171,10 @@ int EPosixClientSocket::send(const char* buf, size_t sz)
 
 int EPosixClientSocket::receive(char* buf, size_t sz)
 {
-	if( sz <= 0)
-		return 0;
+	assert( sz > 0 );
 
 	int nResult = ::recv( m_fd, buf, sz, 0);
 
-	if( nResult == -1 ) {
-		const char *err = strerror(errno);
-		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
-		eDisconnect();
-		getWrapper()->connectionClosed();
-	}
 	return nResult;
 }
 
