@@ -1926,10 +1926,16 @@ bool EClientSocketBase::checkMessages()
 	const char*	ptr = beginPtr;
 	const char*	endPtr = ptr + m_inBuffer.size();
 
-	while( (m_connected ? processMsg( ptr, endPtr)
-		                : processConnectAck( ptr, endPtr)) > 0) {
-		if( (ptr - beginPtr) >= (int)m_inBuffer.size())
-			break;
+	if( !m_connected ) {
+		/* We don't return false on error but the sockect would be left closed
+		   and we'll notice that. Note that connection process may not be
+		   finished here. In this case we will be called again. */
+		processConnectAck( ptr, endPtr);
+	} else {
+		while( processMsg( ptr, endPtr) > 0) {
+			if( (ptr - beginPtr) >= (int)m_inBuffer.size())
+				break;
+		}
 	}
 
 	CleanupBuffer( m_inBuffer, (ptr - beginPtr));
