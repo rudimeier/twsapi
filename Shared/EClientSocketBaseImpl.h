@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 namespace IB {
 
@@ -1915,12 +1916,10 @@ int EClientSocketBase::bufferedRead()
 
 bool EClientSocketBase::checkMessages()
 {
-	assert( m_connected );
-	
-	if( !isSocketOK())
-		return false;
+	assert( m_connected && isSocketOK() );
 
-	if( bufferedRead() <= 0) {;
+	errno = 0;
+	if( bufferedRead() <= 0) {
 		return false;
 	}
 
@@ -1928,9 +1927,14 @@ bool EClientSocketBase::checkMessages()
 	const char*	ptr = beginPtr;
 	const char*	endPtr = ptr + m_inBuffer.size();
 
-	while( processMsg( ptr, endPtr) > 0) {
-		if( (ptr - beginPtr) >= (int)m_inBuffer.size())
+	while( (ptr - beginPtr) < (int)m_inBuffer.size() ) {
+		int ret = processMsg( ptr, endPtr);
+		if( ret == 0 ) {
 			break;
+		} else if( ret < 0 ) {
+			errno = EPROTONOSUPPORT;
+			return false;
+		}
 	}
 
 	CleanupBuffer( m_inBuffer, (ptr - beginPtr));
@@ -3013,9 +3017,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			default:
 			{
 				m_pEWrapper->error( msgId, UNKNOWN_ID.code(), UNKNOWN_ID.msg());
-				eDisconnect();
-				m_pEWrapper->connectionClosed();
-				break;
+				return -1;
 			}
 		}
 

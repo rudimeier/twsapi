@@ -183,7 +183,13 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 void EPosixClientSocket::onReceive()
 {
-	checkMessages();
+	if( !checkMessages() ) {
+		const char * err = (errno != 0) ? strerror(errno)
+			: "The remote host closed the connection.";
+		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
+		eDisconnect();
+		getWrapper()->connectionClosed();
+	}
 }
 
 void EPosixClientSocket::onSend()
