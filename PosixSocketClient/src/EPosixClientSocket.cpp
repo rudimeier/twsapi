@@ -68,6 +68,9 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 
 	// initialize Winsock DLL (only for Windows)
 	if ( !SocketsInit())	{
+		// Does this set errno?
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
+			"Initializing Winsock DLL failed.");
 		return false;
 	}
 
@@ -76,9 +79,10 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 
 	// cannot create socket
 	if( m_fd < 0) {
+		const char *err = strerror(errno);
 		// uninitialize Winsock DLL (only for Windows)
 		SocketsDestroy();
-		getWrapper()->error( NO_VALID_ID, FAIL_CREATE_SOCK.code(), FAIL_CREATE_SOCK.msg());
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
 
@@ -104,8 +108,9 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	// try to connect
 	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
 		// error connecting
+		const char *err = strerror(errno);
 		eDisconnect();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
 
