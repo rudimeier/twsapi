@@ -118,6 +118,15 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	setClientId( clientId);
 
 	onConnectBase();
+	if( !isOutBufferEmpty() ) {
+		/* For now we consider it as error if it's not possible to send an
+		   integer string within a single tcp packet. Here we don't know weather
+		   ::send() really failed or not. */
+		eDisconnect();
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
+			"Sending client id failed.");
+		return false;
+	}
 
 	while( isSocketOK() && !isConnected()) {
 		if ( !checkMessagesConnect()) {
