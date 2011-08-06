@@ -1943,12 +1943,10 @@ bool EClientSocketBase::checkMessages()
 
 bool EClientSocketBase::checkMessagesConnect()
 {
-	assert( !m_connected );
-	
-	if( !isSocketOK())
-		return false;
+	assert( !m_connected  && isSocketOK() );
 
-	if( bufferedRead() <= 0) {;
+	errno = 0;
+	if( bufferedRead() <= 0) {
 		return false;
 	}
 
@@ -1956,11 +1954,17 @@ bool EClientSocketBase::checkMessagesConnect()
 	const char*	ptr = beginPtr;
 	const char*	endPtr = ptr + m_inBuffer.size();
 
-	/* We don't return false on error but the sockect would be left closed
-	   and we'll notice that. Note that connection process may not be
-	   finished here. In this case we will be called again. */
-	processConnectAck( ptr, endPtr);
-
+	int ret = processConnectAck( ptr, endPtr);
+	if( ret < 0 ) {
+		errno = ECONNABORTED;
+		return false;
+	} else if( ret == 0 ) {
+		/* For now we consider it an error if we couldn't parse m_serverVersion
+		   and m_TwsTime from a single tcp packet. */
+		errno = EPROTONOSUPPORT;
+		return false;
+	}
+	
 	CleanupBuffer( m_inBuffer, (ptr - beginPtr));
 	return true;
 }

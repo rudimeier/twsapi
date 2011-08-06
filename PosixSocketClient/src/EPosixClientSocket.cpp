@@ -128,10 +128,13 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		return false;
 	}
 
-	while( isSocketOK() && !isConnected()) {
+	while( !isConnected() ) {
+		assert( isSocketOK() ); // need to be handled if send() would destroy it
 		if ( !checkMessagesConnect()) {
+			const char *err = (errno != 0) ? strerror(errno)
+				: "The remote host closed the connection.";
 			eDisconnect();
-			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
+			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 			return false;
 		}
 	}
