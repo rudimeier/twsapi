@@ -60,14 +60,10 @@ EPosixClientSocket::~EPosixClientSocket()
 
 bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId)
 {
-	// reset errno
-	errno = 0;
-
 	// already connected?
 	if( m_fd >= 0) {
-		errno = EISCONN;
-		getWrapper()->error( NO_VALID_ID, ALREADY_CONNECTED.code(), ALREADY_CONNECTED.msg());
-		return false;
+		assert(false); // for now we don't allow that
+		return true;
 	}
 
 	// initialize Winsock DLL (only for Windows)
