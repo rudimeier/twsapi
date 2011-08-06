@@ -1956,7 +1956,6 @@ bool EClientSocketBase::checkMessagesConnect()
 
 	int ret = processConnectAck( ptr, endPtr);
 	if( ret < 0 ) {
-		errno = ECONNABORTED;
 		return false;
 	} else if( ret == 0 ) {
 		/* For now we consider it an error if we couldn't parse m_serverVersion
@@ -1986,6 +1985,7 @@ int EClientSocketBase::processConnectAck(const char*& beginPtr, const char* endP
 		if( m_serverVersion < SERVER_VERSION) {
 			eDisconnect();
 			m_pEWrapper->error( NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg());
+			errno = ECONNABORTED;
 			return -1;
 		}
 
@@ -1993,7 +1993,10 @@ int EClientSocketBase::processConnectAck(const char*& beginPtr, const char* endP
 		if( m_serverVersion >= 3) {
 			std::ostringstream msg;
 			ENCODE_FIELD( m_clientId);
-			bufferedSend( msg.str());
+			if( bufferedSend(msg.str()) < 0 ) {
+				// errno comes from ::send()
+				return -1;
+			}
 		}
 
 		m_connected = true;

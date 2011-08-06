@@ -166,17 +166,21 @@ int EPosixClientSocket::fd() const
 
 int EPosixClientSocket::send(const char* buf, size_t sz)
 {
-	if( sz <= 0)
-		return 0;
+	assert( sz > 0 );
 
 	int nResult = ::send( m_fd, buf, sz, 0);
 
 	if( nResult == -1 ) {
+		if( isConnected() ) {
 			const char *err = strerror(errno);
 			getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
 			eDisconnect();
 			getWrapper()->connectionClosed();
+		} else {
+			/* will be handled within eConnect() ... */
+		}
 	}
+
 	return nResult;
 }
 
