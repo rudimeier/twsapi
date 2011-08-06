@@ -187,11 +187,6 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 ///////////////////////////////////////////////////////////
 // callbacks from socket
 
-void EPosixClientSocket::onConnect()
-{
-	onConnectBase();
-}
-
 void EPosixClientSocket::onReceive()
 {
 	checkMessages();
@@ -202,43 +197,5 @@ void EPosixClientSocket::onSend()
 	sendBufferedData();
 }
 
-void EPosixClientSocket::onClose()
-{
-	eDisconnect();
-	getWrapper()->connectionClosed();
-}
-
-void EPosixClientSocket::onError()
-{
-}
-
-///////////////////////////////////////////////////////////
-// helper
-bool EPosixClientSocket::handleSocketError()
-{
-	// no error
-	if( errno == 0)
-		return true;
-
-	// Socket is already connected
-	if( errno == EISCONN) {
-		return true;
-	}
-
-	if( errno == EWOULDBLOCK)
-		return false;
-
-	if( errno == ECONNREFUSED) {
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
-	}
-	else {
-		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + strerror(errno));
-	}
-	// reset errno
-	errno = 0;
-	eDisconnect();
-	return false;
-}
 
 } // namespace IB
