@@ -119,7 +119,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	onConnectBase();
 
 	while( isSocketOK() && !isConnected()) {
-		if ( !checkMessages()) {
+		if ( !checkMessagesConnect()) {
 			// uninitialize Winsock DLL (only for Windows)
 			SocketsDestroy();
 			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());

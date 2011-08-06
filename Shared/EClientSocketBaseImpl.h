@@ -1915,6 +1915,8 @@ int EClientSocketBase::bufferedRead()
 
 bool EClientSocketBase::checkMessages()
 {
+	assert( m_connected );
+	
 	if( !isSocketOK())
 		return false;
 
@@ -1926,17 +1928,34 @@ bool EClientSocketBase::checkMessages()
 	const char*	ptr = beginPtr;
 	const char*	endPtr = ptr + m_inBuffer.size();
 
-	if( !m_connected ) {
-		/* We don't return false on error but the sockect would be left closed
-		   and we'll notice that. Note that connection process may not be
-		   finished here. In this case we will be called again. */
-		processConnectAck( ptr, endPtr);
-	} else {
-		while( processMsg( ptr, endPtr) > 0) {
-			if( (ptr - beginPtr) >= (int)m_inBuffer.size())
-				break;
-		}
+	while( processMsg( ptr, endPtr) > 0) {
+		if( (ptr - beginPtr) >= (int)m_inBuffer.size())
+			break;
 	}
+
+	CleanupBuffer( m_inBuffer, (ptr - beginPtr));
+	return true;
+}
+
+bool EClientSocketBase::checkMessagesConnect()
+{
+	assert( !m_connected );
+	
+	if( !isSocketOK())
+		return false;
+
+	if( bufferedRead() <= 0) {;
+		return false;
+	}
+
+	const char* beginPtr = &m_inBuffer[0];
+	const char*	ptr = beginPtr;
+	const char*	endPtr = ptr + m_inBuffer.size();
+
+	/* We don't return false on error but the sockect would be left closed
+	   and we'll notice that. Note that connection process may not be
+	   finished here. In this case we will be called again. */
+	processConnectAck( ptr, endPtr);
 
 	CleanupBuffer( m_inBuffer, (ptr - beginPtr));
 	return true;

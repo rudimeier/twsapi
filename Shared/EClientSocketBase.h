@@ -55,6 +55,7 @@ public:
 	void reqExecutions(int reqId, const ExecutionFilter& filter);
 	void reqIds(int numIds);
 	bool checkMessages();
+	bool checkMessagesConnect();
 	void reqContractDetails(int reqId, const Contract &contract);
 	void reqMktDepth(TickerId tickerId, const Contract &contract, int numRows);
 	void cancelMktDepth(TickerId tickerId);
