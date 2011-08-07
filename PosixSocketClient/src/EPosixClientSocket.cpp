@@ -168,14 +168,17 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	// set client id
 	setClientId( clientId);
 
+	errno = 0;
 	onConnectBase();
 	if( !isOutBufferEmpty() ) {
 		/* For now we consider it as error if it's not possible to send an
 		   integer string within a single tcp packet. Here we don't know weather
-		   ::send() really failed or not. */
+		   ::send() really failed or not. If so then we hopefully still have
+		   it's errno set. Seems that we even get ECONNREFUSED (O_NONBLOCK). */
+		const char *err = (errno != 0) ? strerror(errno)
+			: "Sending client id failed.";
 		eDisconnect();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
-			"Sending client id failed.");
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
 
