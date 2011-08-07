@@ -99,6 +99,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	sa.sin_addr.s_addr = inet_addr( host);
 
 	if( !resolveHost( host, &sa ) ) {
+		eDisconnect();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
 			"Couldn't connect to TWS. Failed to resolve hostname.");
 		return false;
@@ -180,7 +181,8 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 		//man 2 read: zero indicates EOF (e.g. socket disconnected)
 		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
 			SOCKET_EXCEPTION.msg() + "The remote host closed the connection.");
-		onClose();
+		eDisconnect();
+		getWrapper()->connectionClosed();
 		return -1;
 	}
 	assert( nResult > 0 );
@@ -190,11 +192,6 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 ///////////////////////////////////////////////////////////
 // callbacks from socket
 
-void EPosixClientSocket::onConnect()
-{
-	onConnectBase();
-}
-
 void EPosixClientSocket::onReceive()
 {
 	checkMessages();
@@ -203,17 +200,6 @@ void EPosixClientSocket::onReceive()
 void EPosixClientSocket::onSend()
 {
 	sendBufferedData();
-}
-
-void EPosixClientSocket::onClose()
-{
-	eDisconnect();
-	getWrapper()->connectionClosed();
-}
-
-void EPosixClientSocket::onError()
-{
-	handleSocketError();
 }
 
 ///////////////////////////////////////////////////////////
@@ -230,7 +216,8 @@ bool EPosixClientSocket::handleSocketError()
 		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
 			SOCKET_EXCEPTION.msg() + strerror(errsv));
 		
-		onClose();
+		eDisconnect();
+		getWrapper()->connectionClosed();
 		return false;
 	}
 }
