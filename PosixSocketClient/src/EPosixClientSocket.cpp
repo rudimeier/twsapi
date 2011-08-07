@@ -6,6 +6,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <fcntl.h>
 
 namespace IB {
 
@@ -120,6 +121,14 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		return false;
 	}
 
+	/* Set socket O_NONBLOCK. If wanted we could handle errors (portability!).
+	   We could even make O_NONBLOCK optional. */
+	int flags = fcntl( m_fd, F_GETFL, 0 );
+	assert( flags >= 0 );
+	if( fcntl(m_fd, F_SETFL, flags | O_NONBLOCK)  < 0 ) {
+		assert( false );
+	}
+
 	// use local machine if no host passed in
 	if ( !( host && *host)) {
 		host = "127.0.0.1";
@@ -142,7 +151,15 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	// try to connect
 	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
 		// error connecting
-		const char *err = strerror(errno);
+		if( errno != EINPROGRESS ) {
+			const char *err = strerror(errno);
+			eDisconnect();
+			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
+			return false;
+		}
+	}
+	if( wait_socket( WAIT_WRITE  ) <= 0 ) {
+		const char *err = (errno != 0) ? strerror(errno) : strerror(ETIMEDOUT);
 		eDisconnect();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
@@ -162,6 +179,13 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		return false;
 	}
 
+	if( wait_socket( WAIT_READ ) <= 0 ) {
+		const char *err = (errno != 0) ? strerror(errno) : strerror(ENODATA);
+		eDisconnect();
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
+		return false;
+	}
+
 	while( !isConnected() ) {
 		assert( isSocketOK() ); // need to be handled if send() would destroy it
 		if ( !checkMessagesConnect()) {
@@ -172,7 +196,6 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 			return false;
 		}
 	}
-
 	// successfully connected
 	return true;
 }
