@@ -30,16 +30,6 @@ public:
 	// callback from socket
 	void onReceive();
 	void onSend();
-	void onError();
-
-private:
-
-	void onConnect();
-	void onClose();
-
-public:
-	// helper
-	bool handleSocketError();
 
 private:
 

@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <errno.h>
 
 namespace IB {
 
@@ -1915,10 +1916,10 @@ int EClientSocketBase::bufferedRead()
 
 bool EClientSocketBase::checkMessages()
 {
-	if( !isSocketOK())
-		return false;
+	assert( m_connected && isSocketOK() );
 
-	if( bufferedRead() <= 0) {;
+	errno = 0;
+	if( bufferedRead() <= 0) {
 		return false;
 	}
 
@@ -1926,18 +1927,43 @@ bool EClientSocketBase::checkMessages()
 	const char*	ptr = beginPtr;
 	const char*	endPtr = ptr + m_inBuffer.size();
 
-	try {
-		while( (m_connected ? processMsg( ptr, endPtr)
-			                : processConnectAck( ptr, endPtr)) > 0) {
-			if( (ptr - beginPtr) >= (int)m_inBuffer.size())
-				break;
+	while( (ptr - beginPtr) < (int)m_inBuffer.size() ) {
+		int ret = processMsg( ptr, endPtr);
+		if( ret == 0 ) {
+			break;
+		} else if( ret < 0 ) {
+			errno = EPROTONOSUPPORT;
+			return false;
 		}
 	}
-	catch (...) {
-		CleanupBuffer( m_inBuffer, (ptr - beginPtr));
-		throw;
+
+	CleanupBuffer( m_inBuffer, (ptr - beginPtr));
+	return true;
+}
+
+bool EClientSocketBase::checkMessagesConnect()
+{
+	assert( !m_connected  && isSocketOK() );
+
+	errno = 0;
+	if( bufferedRead() <= 0) {
+		return false;
 	}
 
+	const char* beginPtr = &m_inBuffer[0];
+	const char*	ptr = beginPtr;
+	const char*	endPtr = ptr + m_inBuffer.size();
+
+	int ret = processConnectAck( ptr, endPtr);
+	if( ret < 0 ) {
+		return false;
+	} else if( ret == 0 ) {
+		/* For now we consider it an error if we couldn't parse m_serverVersion
+		   and m_TwsTime from a single tcp packet. */
+		errno = EPROTONOSUPPORT;
+		return false;
+	}
+	
 	CleanupBuffer( m_inBuffer, (ptr - beginPtr));
 	return true;
 }
@@ -1947,8 +1973,6 @@ int EClientSocketBase::processConnectAck(const char*& beginPtr, const char* endP
 	// process a connect Ack message from the buffer;
 	// return number of bytes consumed
 	assert( beginPtr && beginPtr < endPtr);
-
-	try {
 
 		const char* ptr = beginPtr;
 
@@ -1961,6 +1985,7 @@ int EClientSocketBase::processConnectAck(const char*& beginPtr, const char* endP
 		if( m_serverVersion < SERVER_VERSION) {
 			eDisconnect();
 			m_pEWrapper->error( NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg());
+			errno = ECONNABORTED;
 			return -1;
 		}
 
@@ -1968,7 +1993,10 @@ int EClientSocketBase::processConnectAck(const char*& beginPtr, const char* endP
 		if( m_serverVersion >= 3) {
 			std::ostringstream msg;
 			ENCODE_FIELD( m_clientId);
-			bufferedSend( msg.str());
+			if( bufferedSend(msg.str()) < 0 ) {
+				// errno comes from ::send()
+				return -1;
+			}
 		}
 
 		m_connected = true;
@@ -1980,19 +2008,6 @@ int EClientSocketBase::processConnectAck(const char*& beginPtr, const char* endP
 		int processed = ptr - beginPtr;
 		beginPtr = ptr;
 		return processed;
-	}
-#ifdef _MSC_VER
-	catch( CException* e) {
-		m_pEWrapper->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + errMsg(e));
-	}
-#endif
-
-	catch(  std::exception e) {
-		m_pEWrapper->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + errMsg( e) );
-	}
-	return 0;
 }
 
 int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
@@ -2001,8 +2016,6 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 	// return number of bytes consumed
 
 	assert( beginPtr && beginPtr < endPtr);
-
-	try {
 
 		const char* ptr = beginPtr;
 
@@ -3011,29 +3024,13 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			default:
 			{
 				m_pEWrapper->error( msgId, UNKNOWN_ID.code(), UNKNOWN_ID.msg());
-				eDisconnect();
-				m_pEWrapper->connectionClosed();
-				break;
+				return -1;
 			}
 		}
 
 		int processed = ptr - beginPtr;
 		beginPtr = ptr;
 		return processed;
-	}
-
-#ifdef _MSC_VER
-	catch( CException* e) {
-		m_pEWrapper->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + errMsg(e));
-	}
-#endif
-
-	catch( std::exception e) {
-		m_pEWrapper->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + errMsg(e));
-	}
-	return 0;
 }
 
 bool EClientSocketBase::isConnected() const

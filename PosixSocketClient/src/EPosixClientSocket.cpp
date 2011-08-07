@@ -5,6 +5,7 @@
 #include "EWrapper.h"
 
 #include <string.h>
+#include <assert.h>
 
 namespace IB {
 
@@ -59,18 +60,17 @@ EPosixClientSocket::~EPosixClientSocket()
 
 bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId)
 {
-	// reset errno
-	errno = 0;
-
 	// already connected?
 	if( m_fd >= 0) {
-		errno = EISCONN;
-		getWrapper()->error( NO_VALID_ID, ALREADY_CONNECTED.code(), ALREADY_CONNECTED.msg());
-		return false;
+		assert(false); // for now we don't allow that
+		return true;
 	}
 
 	// initialize Winsock DLL (only for Windows)
 	if ( !SocketsInit())	{
+		// Does this set errno?
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
+			"Initializing Winsock DLL failed.");
 		return false;
 	}
 
@@ -79,9 +79,10 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 
 	// cannot create socket
 	if( m_fd < 0) {
+		const char *err = strerror(errno);
 		// uninitialize Winsock DLL (only for Windows)
 		SocketsDestroy();
-		getWrapper()->error( NO_VALID_ID, FAIL_CREATE_SOCK.code(), FAIL_CREATE_SOCK.msg());
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
 
@@ -107,9 +108,9 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	// try to connect
 	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
 		// error connecting
-		// uninitialize Winsock DLL (only for Windows)
-		SocketsDestroy();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
+		const char *err = strerror(errno);
+		eDisconnect();
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
 
@@ -117,12 +118,23 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	setClientId( clientId);
 
 	onConnectBase();
+	if( !isOutBufferEmpty() ) {
+		/* For now we consider it as error if it's not possible to send an
+		   integer string within a single tcp packet. Here we don't know weather
+		   ::send() really failed or not. */
+		eDisconnect();
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
+			"Sending client id failed.");
+		return false;
+	}
 
-	while( isSocketOK() && !isConnected()) {
-		if ( !checkMessages()) {
-			// uninitialize Winsock DLL (only for Windows)
-			SocketsDestroy();
-			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
+	while( !isConnected() ) {
+		assert( isSocketOK() ); // need to be handled if send() would destroy it
+		if ( !checkMessagesConnect()) {
+			const char *err = (errno != 0) ? strerror(errno)
+				: "The remote host closed the connection.";
+			eDisconnect();
+			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 			return false;
 		}
 	}
@@ -154,104 +166,51 @@ int EPosixClientSocket::fd() const
 
 int EPosixClientSocket::send(const char* buf, size_t sz)
 {
-	if( sz <= 0)
-		return 0;
+	assert( sz > 0 );
 
 	int nResult = ::send( m_fd, buf, sz, 0);
 
-	if( nResult == -1 && !handleSocketError()) {
-		return -1;
+	if( nResult == -1 ) {
+		if( isConnected() ) {
+			const char *err = strerror(errno);
+			getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
+			eDisconnect();
+			getWrapper()->connectionClosed();
+		} else {
+			/* will be handled within eConnect() ... */
+		}
 	}
-	if( nResult <= 0) {
-		return 0;
-	}
+
 	return nResult;
 }
 
 int EPosixClientSocket::receive(char* buf, size_t sz)
 {
-	if( sz <= 0)
-		return 0;
+	assert( sz > 0 );
 
 	int nResult = ::recv( m_fd, buf, sz, 0);
 
-	if( nResult == -1 && !handleSocketError()) {
-		return -1;
-	}
-	if( nResult <= 0) {
-		return 0;
-	}
 	return nResult;
 }
 
 ///////////////////////////////////////////////////////////
 // callbacks from socket
 
-void EPosixClientSocket::onConnect()
-{
-	if( !handleSocketError())
-		return;
-
-	onConnectBase();
-}
-
 void EPosixClientSocket::onReceive()
 {
-	if( !handleSocketError())
-		return;
-
-	checkMessages();
+	if( !checkMessages() ) {
+		const char * err = (errno != 0) ? strerror(errno)
+			: "The remote host closed the connection.";
+		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
+		eDisconnect();
+		getWrapper()->connectionClosed();
+	}
 }
 
 void EPosixClientSocket::onSend()
 {
-	if( !handleSocketError())
-		return;
-
 	sendBufferedData();
 }
 
-void EPosixClientSocket::onClose()
-{
-	if( !handleSocketError())
-		return;
-
-	eDisconnect();
-	getWrapper()->connectionClosed();
-}
-
-void EPosixClientSocket::onError()
-{
-	handleSocketError();
-}
-
-///////////////////////////////////////////////////////////
-// helper
-bool EPosixClientSocket::handleSocketError()
-{
-	// no error
-	if( errno == 0)
-		return true;
-
-	// Socket is already connected
-	if( errno == EISCONN) {
-		return true;
-	}
-
-	if( errno == EWOULDBLOCK)
-		return false;
-
-	if( errno == ECONNREFUSED) {
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
-	}
-	else {
-		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + strerror(errno));
-	}
-	// reset errno
-	errno = 0;
-	eDisconnect();
-	return false;
-}
 
 } // namespace IB

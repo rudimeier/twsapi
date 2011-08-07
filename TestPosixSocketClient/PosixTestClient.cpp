@@ -54,7 +54,7 @@ bool PosixTestClient::isConnected() const
 
 void PosixTestClient::processMessages()
 {
-	fd_set readSet, writeSet, errorSet;
+	fd_set readSet, writeSet;
 
 	struct timeval tval;
 	tval.tv_usec = 0;
@@ -98,16 +98,14 @@ void PosixTestClient::processMessages()
 	if( m_pClient->fd() >= 0 ) {
 
 		FD_ZERO( &readSet);
-		errorSet = writeSet = readSet;
+		writeSet = readSet;
 
 		FD_SET( m_pClient->fd(), &readSet);
 
 		if( !m_pClient->isOutBufferEmpty())
 			FD_SET( m_pClient->fd(), &writeSet);
 
-		FD_CLR( m_pClient->fd(), &errorSet);
-
-		int ret = select( m_pClient->fd() + 1, &readSet, &writeSet, &errorSet, &tval);
+		int ret = select( m_pClient->fd() + 1, &readSet, &writeSet, NULL, &tval);
 
 		if( ret == 0) { // timeout
 			return;
@@ -117,17 +115,6 @@ void PosixTestClient::processMessages()
 			disconnect();
 			return;
 		}
-
-		if( m_pClient->fd() < 0)
-			return;
-
-		if( FD_ISSET( m_pClient->fd(), &errorSet)) {
-			// error on socket
-			m_pClient->onError();
-		}
-
-		if( m_pClient->fd() < 0)
-			return;
 
 		if( FD_ISSET( m_pClient->fd(), &writeSet)) {
 			// socket is ready for writing
