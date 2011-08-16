@@ -21,5 +21,6 @@ AC_SUBST([DEFAULT_CXXFLAGS])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([PosixSocketClient/Makefile])
 AC_CONFIG_FILES([TestPosixSocketClient/Makefile])
+AC_CONFIG_FILES([libtwsapi.pc])
 AC_OUTPUT
 

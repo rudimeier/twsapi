@@ -26,4 +26,5 @@ build
 =build
 .deps
 stamp-h1
+*.pc
 
