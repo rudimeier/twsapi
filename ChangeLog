@@ -1,0 +1,11 @@
+
+ChangeLog, twsapi for Interactive Brokers TWS
+=============================================
+
+
+
+0.3.0 - 2011-08-17  ------------------------------------------------------------
+
+This is the first published version.
+We are conform to IB's TWS API 9.65. For more details consult the README section
+"Changes of original IB API". 
