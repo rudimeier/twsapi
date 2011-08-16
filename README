@@ -1,13 +1,62 @@
 
-This README points out the most impotant things
-about our modified TWS API.
+twsapi for Interactive Brokers TWS
+==================================
+
+
+This twsapi is almost identical to the original IB C++ posix api. It contains
+several bugfixes, usage improvements and it's using the autotools build system.
+For more details read "Changes of original IB API" below.
+
+
+
+
+Installation
+------------
+
+ Building from source requires a c++ compiler (tested with gcc/g++).
+ Windows has been not be tested yet but using cygwin (or even mingw) should
+ work.
+
+ ./configure
+ make
+ make install
+
+ (Within git repo type "autoreconf -fi" before.)
+
+
+
+
+Repository layout
+-----------------
+
+Beside the usual master branch I keep two important branches:
+ - ib_orig: the original IB API code from upstream
+ - ib_orig_plus: the original IB API plus autotools build chain
+
+Both are used to commit upstream updates to be merged into master. 
+
+
+
+
+Changes of original IB API
+--------------------------
+
+Here I point out some of the most important things about our modified TWS API.
+(This documentation may not be entirely complete.)
+
+
+Generally the socket error handling is stable and reliable now. Error message
+callbacks with code SOCKET_EXCEPTION are using standard message strings
+(errno/strerror).
+
+Hostnames will be resolved.
 
 
 eConnect():
- 1. It's blocking and returns either connected or connected.
+ 1. It's blocking and returns either connected or disconnected.
  2. It may callback informative error messages only. No more checking of
     regular messages.
- 3. If any callback is fired then state will still be still "disconnected".
+ 3. If any callback is fired then state will still be  "disconnected".
     Return false in this case. There are no "positive callbacks".
  4. There can be multiple callbacks, for example "UPDATE_TWS" and then
     "CONNECT_FAIL" but 2. and 3. are always in place! The client programmer
@@ -40,14 +89,12 @@ Thus we know about callbacks:
 
 
 TODO: In oppsite to the statements above SOCKET_EXCEPTION may still be fired in
-      state connected if onReceive() or onSend() are called while disconnted
+      state connected if onReceive() or onSend() are called while disconnected
       (we could have known before). To be safe we could return early and send
       NOT_CONNECTED.
 
 
-
-
-### API implementation notes #############
+API internal implementation notes:
 
 bufferedRead()
  1. Behaves like ::recv() regarding errno and return value:
@@ -57,4 +104,20 @@ bufferedRead()
 
 
 
+
+License
+-------
+
+  95% of the source code comes from Interactive Brokers. Please read there
+  about any licensing issues:
+  http://www.interactivebrokers.com
+
+
+
+
+Contact Information
+-------------------
+
+  If you have questions, bug reports, patches etc., contact
+  Ruediger Meier <sweet_f_a@gmx.de> (in English or German).
 
