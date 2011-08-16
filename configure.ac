@@ -1,5 +1,5 @@
 AC_PREREQ([2.61])
-AC_INIT([ibtws], [0.3.0], [http://www.ga-group.nl/])
+AC_INIT([twsapi], [0.3.0], [http://www.ga-group.nl/])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_HEADER([./config.h])
 AC_CONFIG_SRCDIR([PosixSocketClient/])
@@ -21,5 +21,6 @@ AC_SUBST([DEFAULT_CXXFLAGS])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([PosixSocketClient/Makefile])
 AC_CONFIG_FILES([TestPosixSocketClient/Makefile])
+AC_CONFIG_FILES([libtwsapi.pc])
 AC_OUTPUT
 
