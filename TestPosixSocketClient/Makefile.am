@@ -1,7 +1,7 @@
 AM_CPPFLAGS = -DDEBUG -D_GNU_SOURCE
 AM_LDFLAGS =
 
-headerdir = $(includedir)/ibtws
+headerdir = $(includedir)/twsapi
 
 
 noinst_PROGRAMS =
@@ -14,7 +14,7 @@ noinst_HEADERS += PosixTestClient.h
 EXTRA_TestPosixSocketClient_SOURCES =
 TestPosixSocketClient_LDADD =
 TestPosixSocketClient_LDADD += -L../PosixSocketClient
-TestPosixSocketClient_LDADD += -libtws
+TestPosixSocketClient_LDADD += -ltwsapi
 TestPosixSocketClient_CPPFLAGS =
 TestPosixSocketClient_CPPFLAGS += $(AM_CPPFLAGS)
 TestPosixSocketClient_CPPFLAGS += -I../PosixSocketClient/src

@@ -1,14 +1,14 @@
 AM_CPPFLAGS = -DDEBUG -D_GNU_SOURCE
 AM_LDFLAGS =
 
-headerdir = $(includedir)/ibtws
+headerdir = $(includedir)/twsapi
 
 
 lib_LIBRARIES =
-lib_LIBRARIES += libibtws.a
-libibtws_a_SOURCES =
-libibtws_a_SOURCES += src/EClientSocketBase.cpp
-libibtws_a_SOURCES += src/EPosixClientSocket.cpp
+lib_LIBRARIES += libtwsapi.a
+libtwsapi_a_SOURCES =
+libtwsapi_a_SOURCES += src/EClientSocketBase.cpp
+libtwsapi_a_SOURCES += src/EPosixClientSocket.cpp
 header_HEADERS =
 header_HEADERS += ../Shared/CommonDefs.h
 header_HEADERS += ../Shared/Contract.h
@@ -28,16 +28,16 @@ noinst_HEADERS += ../Shared/EClientSocketBaseImpl.h
 noinst_HEADERS += ../Shared/TwsSocketClientErrors.h
 noinst_HEADERS += src/EPosixClientSocketPlatform.h
 
-EXTRA_libibtws_a_SOURCES =
-libibtws_a_LIBADD =
+EXTRA_libtwsapi_a_SOURCES =
+libtwsapi_a_LIBADD =
 
 
-libibtws_a_CPPFLAGS =
-libibtws_a_CPPFLAGS += $(AM_CPPFLAGS)
-libibtws_a_CPPFLAGS += -I../Shared
-libibtws_a_CXXFLAGS =
-libibtws_a_CXXFLAGS += $(DEFAULT_CXXFLAGS)
-libibtws_a_CXXFLAGS += -Wno-switch
+libtwsapi_a_CPPFLAGS =
+libtwsapi_a_CPPFLAGS += $(AM_CPPFLAGS)
+libtwsapi_a_CPPFLAGS += -I../Shared
+libtwsapi_a_CXXFLAGS =
+libtwsapi_a_CXXFLAGS += $(DEFAULT_CXXFLAGS)
+libtwsapi_a_CXXFLAGS += -Wno-switch
 
 CLEANFILES =
 CLEANFILES += *.s
