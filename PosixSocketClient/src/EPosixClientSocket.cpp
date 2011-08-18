@@ -18,7 +18,10 @@ bool resolveHost( const char *host, sockaddr_in *sa )
 		/* No need to resolve it. */
 		return true;
 	}
-	
+
+#ifdef __CYGWIN__
+	return false;
+#else
 	struct hostent hostbuf, *hp;
 	size_t hstbuflen;
 	char *tmphstbuf;
@@ -43,6 +46,7 @@ bool resolveHost( const char *host, sockaddr_in *sa )
 	}
 	free( tmphstbuf );
 	return succ;
+#endif
 }
 
 

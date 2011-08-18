@@ -14,8 +14,7 @@ Installation
 ------------
 
  Building from source requires a c++ compiler (tested with gcc/g++).
- Windows has been not be tested yet but using cygwin (or even mingw) should
- work.
+ Windows has been successfully tested using cygwin.
 
  ./configure
  make
@@ -49,7 +48,7 @@ Generally the socket error handling is stable and reliable now. Error message
 callbacks with code SOCKET_EXCEPTION are using standard message strings
 (errno/strerror).
 
-Hostnames will be resolved.
+Hostnames will be resolved (does not yet work on cygwin).
 
 
 eConnect():
