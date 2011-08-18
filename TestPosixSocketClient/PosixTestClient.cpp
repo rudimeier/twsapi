@@ -5,6 +5,9 @@
 #include "Contract.h"
 #include "Order.h"
 
+#include <time.h>
+#include <sys/time.h>
+
 namespace IB {
 
 const int PING_DEADLINE = 2; // seconds
