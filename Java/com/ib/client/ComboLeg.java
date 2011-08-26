@@ -33,6 +33,13 @@ public class ComboLeg {
     		/* shortSaleSlot */ 0, /* designatedLocation*/ null, /* exemptCode */ -1);
 
     }
+
+    public ComboLeg(int p_conId, int p_ratio, String p_action, String p_exchange, 
+    		int p_openClose, int p_shortSaleSlot, String p_designatedLocation) {
+    	this(p_conId, p_ratio, p_action, p_exchange, p_openClose, p_shortSaleSlot, p_designatedLocation, 
+    		/* exemptCode */ -1);
+
+    }
     
     public ComboLeg(int p_conId, int p_ratio, String p_action, String p_exchange,
     		int p_openClose, int p_shortSaleSlot, String p_designatedLocation, int p_exemptCode) {

@@ -255,6 +255,12 @@ class SampleFrame extends JFrame implements EWrapper {
                 onFinancialAdvisor();
             }
         });
+        JButton butGlobalCancel = new JButton( "Global Cancel");
+        butGlobalCancel.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onGlobalCancel();
+            }
+        });
         JButton butClear = new JButton( "Clear");
         butClear.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -307,6 +313,7 @@ class SampleFrame extends JFrame implements EWrapper {
         buttonPanel.add( butServerLogging );
         buttonPanel.add( butManagedAccts );
         buttonPanel.add( butFinancialAdvisor ) ;
+        buttonPanel.add( butGlobalCancel ) ;
 
         buttonPanel.add( new JPanel() );
         buttonPanel.add( butClear );
@@ -690,6 +697,10 @@ class SampleFrame extends JFrame implements EWrapper {
         }
 
         m_client.cancelCalculateOptionPrice( m_orderDlg.m_id);
+    }
+
+    void onGlobalCancel() {
+        m_client.reqGlobalCancel();
     }
     
     public void tickPrice( int tickerId, int field, double price, int canAutoExecute) {

@@ -109,7 +109,7 @@ public class Order {
     
     // ALGO ORDERS ONLY
     public String m_algoStrategy;
-    public Vector m_algoParams;
+    public Vector<TagValue> m_algoParams;
 
     // What-if
     public boolean  m_whatIf;

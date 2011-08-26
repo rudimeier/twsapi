@@ -33,7 +33,7 @@ public class ScannerDlg extends JDialog {
     private JTextField m_Id = new JTextField( "0");
     private JTextField m_numberOfRows = new JTextField("10");
     private JTextField m_instrument = new JTextField("STK");
-    private JTextField m_locationCode = new JTextField("STK.US");
+    private JTextField m_locationCode = new JTextField("STK.US.MAJOR");
     private JTextField m_scanCode = new JTextField("HIGH_OPT_VOLUME_PUT_CALL_RATIO");
     private JTextField m_abovePrice = new JTextField("3");
     private JTextField m_belowPrice = new JTextField();

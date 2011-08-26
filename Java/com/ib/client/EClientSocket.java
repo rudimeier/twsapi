@@ -131,6 +131,7 @@ public class EClientSocket {
     private static final int REQ_CALC_OPTION_PRICE = 55;
     private static final int CANCEL_CALC_IMPLIED_VOLAT = 56;
     private static final int CANCEL_CALC_OPTION_PRICE = 57;
+    private static final int REQ_GLOBAL_CANCEL = 58;
     
 	private static final int MIN_SERVER_VER_REAL_TIME_BARS = 34;
 	private static final int MIN_SERVER_VER_SCALE_ORDERS = 35;
@@ -155,6 +156,7 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE = 50;
     private static final int MIN_SERVER_VER_SSHORTX_OLD = 51;
     private static final int MIN_SERVER_VER_SSHORTX = 52;
+    private static final int MIN_SERVER_VER_REQ_GLOBAL_CANCEL = 53;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -1755,6 +1757,32 @@ public class EClientSocket {
             close();
         }
     }    
+    
+    public synchronized void reqGlobalCancel() {
+        // not connected?
+        if( !m_connected) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_REQ_GLOBAL_CANCEL) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS,
+                    "  It does not support globalCancel requests.");
+            return;
+        }
+        
+        final int VERSION = 1;
+
+        // send request global cancel msg
+        try {
+            send( REQ_GLOBAL_CANCEL);
+            send( VERSION);
+        }
+        catch( Exception e) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.FAIL_SEND_REQGLOBALCANCEL, "" + e);
+            close();
+        }
+    }
     
     protected synchronized void error( String err) {
         m_anyWrapper.error( err);

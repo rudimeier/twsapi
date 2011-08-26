@@ -63,6 +63,7 @@ public class TickType {
     public static final int TRADE_COUNT = 54;
     public static final int TRADE_RATE = 55;
     public static final int VOLUME_RATE = 56;
+    public static final int LAST_RTH_TRADE = 57;
 
     public static String getField( int tickType) {
         switch( tickType) {
@@ -123,6 +124,7 @@ public class TickType {
             case TRADE_COUNT:                 return "trades";
             case TRADE_RATE:                  return "trades/min";
             case VOLUME_RATE:                 return "volume/min";             
+            case LAST_RTH_TRADE:              return "lastRTHTrade";             
             default:                          return "unknown";
         }
     }
