@@ -101,6 +101,10 @@ public class Order {
     public int      m_scaleSubsLevelSize;
     public double   m_scalePriceIncrement;
 
+    // HEDGE ORDERS ONLY
+    public String   m_hedgeType; // 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
+    public String   m_hedgeParam; // beta value for beta hedge, ratio for pair hedge
+
     // Clearing info
     public String 	m_account; // IB account
     public String   m_settlingFirm;
@@ -207,7 +211,7 @@ public class Order {
         	m_exemptCode != l_theOther.m_exemptCode) {
         	return false;
         }
-        
+
         if (Util.StringCompare(m_action, l_theOther.m_action) != 0 ||
         	Util.StringCompare(m_orderType, l_theOther.m_orderType) != 0 ||
         	Util.StringCompare(m_tif, l_theOther.m_tif) != 0 ||
@@ -223,6 +227,8 @@ public class Order {
         	Util.StringCompare(m_openClose, l_theOther.m_openClose) != 0 ||
         	Util.StringCompare(m_designatedLocation, l_theOther.m_designatedLocation) != 0 ||
         	Util.StringCompare(m_deltaNeutralOrderType, l_theOther.m_deltaNeutralOrderType) != 0 ||
+        	Util.StringCompare(m_hedgeType, l_theOther.m_hedgeType) != 0 ||
+        	Util.StringCompare(m_hedgeParam, l_theOther.m_hedgeParam) != 0 ||
         	Util.StringCompare(m_account, l_theOther.m_account) != 0 ||
         	Util.StringCompare(m_settlingFirm, l_theOther.m_settlingFirm) != 0 ||
         	Util.StringCompare(m_clearingAccount, l_theOther.m_clearingAccount) != 0 ||
@@ -230,7 +236,7 @@ public class Order {
         	Util.StringCompare(m_algoStrategy, l_theOther.m_algoStrategy) != 0) {
         	return false;
         }
-        
+
         if (!Util.VectorEqualsUnordered(m_algoParams, l_theOther.m_algoParams)) {
         	return false;
         }

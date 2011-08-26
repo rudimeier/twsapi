@@ -19,6 +19,8 @@ public:
 	virtual bool eConnect(const char *host, unsigned int port, int clientId=0) = 0;
 	virtual void eDisconnect() = 0;
 
+	int clientId() const { return m_clientId; }
+
 protected:
 
 	void eConnectBase();

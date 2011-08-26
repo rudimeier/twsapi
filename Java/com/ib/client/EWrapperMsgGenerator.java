@@ -112,6 +112,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " scaleInitLevelSize=" + Util.IntMaxString(order.m_scaleInitLevelSize) +
         " scaleSubsLevelSize=" + Util.IntMaxString(order.m_scaleSubsLevelSize) +
         " scalePriceIncrement=" + Util.DoubleMaxString(order.m_scalePriceIncrement) +
+        " hedgeType=" + order.m_hedgeType +
+        " hedgeParam=" + order.m_hedgeParam +
         " account=" + order.m_account +
         " settlingFirm=" + order.m_settlingFirm +
         " clearingAccount=" + order.m_clearingAccount +

@@ -484,6 +484,13 @@ public class EReader extends Thread {
                 	order.m_scalePriceIncrement = readDoubleMax();
                 }
                 
+                if (version >= 24) {
+                	order.m_hedgeType = readStr();
+                	if (!Util.StringIsEmpty(order.m_hedgeType)) {
+                		order.m_hedgeParam = readStr();
+                	}
+                }
+
                 if (version >= 19) {
                 	order.m_clearingAccount = readStr();
                 	order.m_clearingIntent = readStr();

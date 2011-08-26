@@ -74,6 +74,9 @@ public class ExtOrdDlg extends JDialog {
     private JTextField 	m_scaleSubsLevelSize = new JTextField();
     private JTextField 	m_scalePriceIncrement = new JTextField();
 
+    private JTextField 	m_hedgeType = new JTextField();
+    private JTextField 	m_hedgeParam = new JTextField();
+
     private JButton 	m_ok = new JButton( "OK");
     private JButton 	m_cancel = new JButton( "Cancel");
 
@@ -185,6 +188,11 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add(new JLabel("SCALE: Scale Price Increment"));
         extOrderDetailsPanel.add(m_scalePriceIncrement);
 
+        extOrderDetailsPanel.add(new JLabel("HEDGE: Type"));
+        extOrderDetailsPanel.add(m_hedgeType);
+        extOrderDetailsPanel.add(new JLabel("HEDGE: Param"));
+        extOrderDetailsPanel.add(m_hedgeParam);
+
         // create button panel
         JPanel buttonPanel = new JPanel();
         buttonPanel.add( m_ok);
@@ -263,6 +271,8 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_scaleInitLevelSize = parseMaxInt(m_scaleInitLevelSize);
             m_order.m_scaleSubsLevelSize = parseMaxInt(m_scaleSubsLevelSize);
             m_order.m_scalePriceIncrement = parseMaxDouble(m_scalePriceIncrement);
+            m_order.m_hedgeType = m_hedgeType.getText().trim();
+            m_order.m_hedgeParam = m_hedgeParam.getText().trim();
         }
         catch( Exception e) {
             Main.inform( this, "Error - " + e);

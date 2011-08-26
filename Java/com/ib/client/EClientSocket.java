@@ -71,10 +71,11 @@ public class EClientSocket {
 	// 45 = can receive notHeld field in openOrder
 	// 46 = can receive contractMonth, industry, category, subcategory fields in contractDetails
 	//    ; can receive timeZoneId, tradingHours, liquidHours fields in contractDetails
-    // 47 = can receive gamma, vega, theta, undPrice fields in TICK_OPTION_COMPUTATION
+	// 47 = can receive gamma, vega, theta, undPrice fields in TICK_OPTION_COMPUTATION
 	// 48 = can receive exemptCode in openOrder
+	// 49 = can receive hedgeType and hedgeParam in openOrder
 
-    private static final int CLIENT_VERSION = 48;
+    private static final int CLIENT_VERSION = 49;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -157,6 +158,7 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_SSHORTX_OLD = 51;
     private static final int MIN_SERVER_VER_SSHORTX = 52;
     private static final int MIN_SERVER_VER_REQ_GLOBAL_CANCEL = 53;
+    private static final int MIN_SERVER_VER_HEDGE_ORDERS = 54;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -960,7 +962,7 @@ public class EClientSocket {
         if (m_serverVersion < MIN_SERVER_VER_SSHORTX) {
         	if (order.m_exemptCode != -1) {
         		error(id, EClientErrors.UPDATE_TWS,
-            		"  It does not support exemptCode parameter.");
+        			"  It does not support exemptCode parameter.");
         		return;
         	}
         }
@@ -978,8 +980,16 @@ public class EClientSocket {
                 }
         	}
         }
+
+        if (m_serverVersion < MIN_SERVER_VER_HEDGE_ORDERS) {
+        	if (!IsEmpty(order.m_hedgeType)) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support hedge orders.");
+        		return;
+        	}
+        }
         
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 31;
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 32;
         
         // send place order msg
         try {
@@ -1175,6 +1185,13 @@ public class EClientSocket {
         		   
         	   }
         	   sendMax (order.m_scalePriceIncrement);
+           }
+
+           if (m_serverVersion >= MIN_SERVER_VER_HEDGE_ORDERS) {
+        	   send (order.m_hedgeType);
+        	   if (!IsEmpty(order.m_hedgeType)) {
+        		   send (order.m_hedgeParam);
+        	   }
            }
            
            if (m_serverVersion >= MIN_SERVER_VER_PTA_ORDERS) {

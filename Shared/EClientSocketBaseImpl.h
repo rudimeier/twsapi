@@ -85,7 +85,8 @@
 //    ; can receive timeZoneId, tradingHours, liquidHours fields in contractDetails
 // 47 = can receive gamma, vega, theta, undPrice fields in TICK_OPTION_COMPUTATION
 // 48 = can receive exemptCode in openOrder
-const int CLIENT_VERSION    = 48;
+// 49 = can receive hedgeType and hedgeParam in openOrder
+const int CLIENT_VERSION    = 49;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -149,6 +150,7 @@ const int MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE  = 50;
 const int MIN_SERVER_VER_SSHORTX_OLD            = 51;
 const int MIN_SERVER_VER_SSHORTX                = 52;
 const int MIN_SERVER_VER_REQ_GLOBAL_CANCEL      = 53;
+const int MIN_SERVER_VER_HEDGE_ORDERS			= 54;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -1301,9 +1303,17 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		}
 	}
 
+	if( m_serverVersion < MIN_SERVER_VER_HEDGE_ORDERS) {
+		if( !IsEmpty(order.hedgeType)) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+     			"  It does not support hedge orders.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 31;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 32;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1490,6 +1500,14 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	}
 
 	ENCODE_FIELD_MAX( order.scalePriceIncrement);
+
+	// HEDGE orders
+	if( m_serverVersion >= MIN_SERVER_VER_HEDGE_ORDERS) {
+		ENCODE_FIELD( order.hedgeType);
+		if ( !IsEmpty(order.hedgeType)) {
+			ENCODE_FIELD( order.hedgeParam);
+		}
+	}
 
 	if( m_serverVersion >= MIN_SERVER_VER_PTA_ORDERS) {
 		ENCODE_FIELD( order.clearingAccount);
@@ -2402,6 +2420,13 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 					DECODE_FIELD_MAX( order.scaleInitLevelSize); // scaleComponectSize
 				}
 				DECODE_FIELD_MAX( order.scalePriceIncrement); // ver 15 field
+
+				if( version >= 24) {
+					DECODE_FIELD( order.hedgeType);
+					if( !IsEmpty(order.hedgeType)) {
+						DECODE_FIELD( order.hedgeParam);
+					}
+				}
 
 				DECODE_FIELD( order.clearingAccount); // ver 19 field
 				DECODE_FIELD( order.clearingIntent); // ver 19 field

@@ -190,6 +190,10 @@ struct Order
 	int      scaleSubsLevelSize;
 	double   scalePriceIncrement;
 
+	// HEDGE ORDERS
+	IBString hedgeType;  // 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
+	IBString hedgeParam; // 'beta=X' value for beta hedge, 'ratio=Y' for pair hedge
+
 	// Clearing info
 	IBString account; // IB account
 	IBString settlingFirm;

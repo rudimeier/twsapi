@@ -1021,6 +1021,8 @@ class SampleFrame extends JFrame implements EWrapper {
         destOrder.m_scaleInitLevelSize = srcOrder.m_scaleInitLevelSize;
         destOrder.m_scaleSubsLevelSize = srcOrder.m_scaleSubsLevelSize;
         destOrder.m_scalePriceIncrement = srcOrder.m_scalePriceIncrement;
+        destOrder.m_hedgeType = srcOrder.m_hedgeType;
+        destOrder.m_hedgeParam = srcOrder.m_hedgeParam;
         destOrder.m_account = srcOrder.m_account;
         destOrder.m_settlingFirm = srcOrder.m_settlingFirm;
         destOrder.m_clearingAccount = srcOrder.m_clearingAccount;
