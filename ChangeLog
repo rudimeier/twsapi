@@ -4,6 +4,16 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 
 
+0.3.1 - 2011-08-27
+------------------------------------------------------------
+
+Minor build fixes and update to (non beta) IB API 9.65
+
+  - Minor build fixes for cygwin and other platforms.
+  - Update to IB API 9.65 (0.3.0 was still at 9.65-beta)
+
+
+
 0.3.0 - 2011-08-17  ------------------------------------------------------------
 
 This is the first published version.
