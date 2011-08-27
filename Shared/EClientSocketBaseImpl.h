@@ -124,6 +124,7 @@ const int REQ_CALC_IMPLIED_VOLAT        = 54;
 const int REQ_CALC_OPTION_PRICE         = 55;
 const int CANCEL_CALC_IMPLIED_VOLAT     = 56;
 const int CANCEL_CALC_OPTION_PRICE      = 57;
+const int REQ_GLOBAL_CANCEL             = 58;
 
 //const int MIN_SERVER_VER_REAL_TIME_BARS       = 34;
 //const int MIN_SERVER_VER_SCALE_ORDERS         = 35;
@@ -148,6 +149,7 @@ const int MIN_SERVER_VER_CANCEL_CALC_IMPLIED_VOLAT = 50;
 const int MIN_SERVER_VER_CANCEL_CALC_OPTION_PRICE  = 50;
 const int MIN_SERVER_VER_SSHORTX_OLD            = 51;
 const int MIN_SERVER_VER_SSHORTX                = 52;
+const int MIN_SERVER_VER_REQ_GLOBAL_CANCEL      = 53;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -1859,6 +1861,31 @@ void EClientSocketBase::exerciseOptions( TickerId tickerId, const Contract &cont
 	ENCODE_FIELD( exerciseQuantity);
 	ENCODE_FIELD( account);
 	ENCODE_FIELD( override);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocketBase::reqGlobalCancel()
+{
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if (m_serverVersion < MIN_SERVER_VER_REQ_GLOBAL_CANCEL) {
+		m_pEWrapper->error( NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support globalCancel requests.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	// send current time req
+	ENCODE_FIELD( REQ_GLOBAL_CANCEL);
+	ENCODE_FIELD( VERSION);
 
 	bufferedSend( msg.str());
 }
