@@ -18,30 +18,34 @@ bool resolveHost( const char *host, sockaddr_in *sa )
 		/* No need to resolve it. */
 		return true;
 	}
-	
-	struct hostent hostbuf, *hp;
-	size_t hstbuflen;
-	char *tmphstbuf;
-	int res;
-	int herr;
 
-	hstbuflen = 1024;
-	/* Allocate buffer, remember to free it.  */
-	tmphstbuf = (char*) malloc (hstbuflen);
-	
-	while( (res = gethostbyname_r (host, &hostbuf, tmphstbuf, hstbuflen,
-		&hp, &herr)) == ERANGE ) {
-		/* Enlarge the buffer.  */
-		hstbuflen *= 2;
-		tmphstbuf = (char*) realloc (tmphstbuf, hstbuflen);
+	struct addrinfo hints;
+	struct addrinfo *result;
+
+	memset(&hints, 0, sizeof(struct addrinfo));
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_flags = AI_V4MAPPED | AI_ADDRCONFIG;
+	hints.ai_protocol = 0; 
+
+	int s = getaddrinfo(host, NULL, &hints, &result);
+	if( s != 0 ) {
+		return false;
 	}
-	
-	/*  Check for errors.  */
-	bool succ = (res == 0 && hp != NULL);
-	if( succ ) {
-		memcpy((char*) &sa->sin_addr.s_addr, hp->h_addr, hp->h_length);
+
+	bool succ = false;
+	for( struct addrinfo *rp = result; rp != NULL; rp = rp->ai_next ) {
+		/* for now we are just using the first ipv4 address but we should
+			try all adresses and maybe add ipv6 support */
+		if( rp->ai_family == AF_INET ) {
+			void *addr = &(((struct sockaddr_in*)rp->ai_addr)->sin_addr);
+			memcpy((char*) &sa->sin_addr.s_addr, addr, rp->ai_addrlen);
+			succ = true;
+			break;
+		}
 	}
-	free( tmphstbuf );
+
+	freeaddrinfo(result);
 	return succ;
 }
 
