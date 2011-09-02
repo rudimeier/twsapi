@@ -1,9 +1,21 @@
 #ifndef eposixclientsocketcommon_def
 #define eposixclientsocketcommon_def
 
+#include "config.h"
+
 #ifdef _WIN32
 	// Windows
 	// includes
+	#ifdef NEED_WINVER_XP
+		#define WINVER 0x0501
+	#endif
+	# ifdef HAVE_WS2TCPIP_H
+		#include <ws2tcpip.h>
+	# endif
+	# ifdef HAVE_WSPIAPI_H
+		#include <wspiapi.h>
+	# endif
+
 	#include <winsock2.h>
 	#include <time.h>
 
