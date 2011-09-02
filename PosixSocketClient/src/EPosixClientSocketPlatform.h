@@ -4,7 +4,7 @@
 #ifdef _WIN32
 	// Windows
 	// includes
-	#include <WinSock2.h>
+	#include <winsock2.h>
 	#include <time.h>
 
 	// defines
