@@ -14,13 +14,15 @@
 
 namespace IB {
 
-///////////////////////////////////////////////////////////
-// static helper
-bool resolveHost( const char *host, sockaddr_in *sa )
+/**
+ * Resolve host names.
+ * Return 0 on success or EAI_* errcode to be used with gai_strerror().
+ */
+int resolveHost( const char *host, sockaddr_in *sa )
 {
 	if (sa->sin_addr.s_addr != INADDR_NONE) {
 		/* No need to resolve it. */
-		return true;
+		return 0;
 	}
 
 	struct addrinfo hints;
@@ -34,13 +36,10 @@ bool resolveHost( const char *host, sockaddr_in *sa )
 
 	int s = getaddrinfo(host, NULL, &hints, &result);
 	if( s != 0 ) {
-#ifdef TWS_DEBUG
-		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-#endif
-		return false;
+		return s;
 	}
 
-	bool succ = false;
+	s = EAI_FAMILY;
 	for( struct addrinfo *rp = result; rp != NULL; rp = rp->ai_next ) {
 		/* for now we are just using the first ipv4 address but we should
 			try all adresses and maybe add ipv6 support */
@@ -53,7 +52,7 @@ bool resolveHost( const char *host, sockaddr_in *sa )
 			fprintf(stderr, "resolved: %s\n", addr_str);
 #endif
 			memcpy((char*) &sa->sin_addr.s_addr, addr, rp->ai_addrlen);
-			succ = true;
+			s = 0;
 			break;
 #ifdef TWS_DEBUG
 		} else if( rp->ai_family == AF_INET6 ) {
@@ -68,7 +67,7 @@ bool resolveHost( const char *host, sockaddr_in *sa )
 	}
 
 	freeaddrinfo(result);
-	return succ;
+	return s;
 }
 
 
@@ -167,10 +166,10 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	sa.sin_port = htons( port);
 	sa.sin_addr.s_addr = inet_addr( host);
 
-	if( !resolveHost( host, &sa ) ) {
+	int s = resolveHost( host, &sa );
+	if( s != 0 ) {
 		eDisconnect();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
-			"Couldn't connect to TWS. Failed to resolve hostname.");
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), gai_strerror(s));
 		return false;
 	}
 
