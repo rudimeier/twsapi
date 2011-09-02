@@ -1,5 +1,6 @@
 #include "EPosixClientSocket.h"
 
+#include "config.h"
 #include "EPosixClientSocketPlatform.h"
 #include "TwsSocketClientErrors.h"
 #include "EWrapper.h"
@@ -24,6 +25,7 @@ int resolveHost( const char *host, sockaddr_in *sa )
 		return 0;
 	}
 
+#ifdef HAVE_GETADDRINFO
 	struct addrinfo hints;
 	struct addrinfo *result;
 
@@ -73,6 +75,14 @@ int resolveHost( const char *host, sockaddr_in *sa )
 
 	freeaddrinfo(result);
 	return s;
+#else
+	/* resolving at least localhost */
+	if( strcasecmp(host, "localhost") == 0 ) {
+		sa->sin_addr.s_addr = inet_addr( "127.0.0.1");
+		return 0;
+	}
+	return -1;
+#endif // HAVE_GETADDRINFO
 }
 
 
@@ -171,7 +181,13 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	int s = resolveHost( host, &sa );
 	if( s != 0 ) {
 		eDisconnect();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), gai_strerror(s));
+		const char *err;
+#ifdef HAVE_GETADDRINFO
+		err = gai_strerror(s);
+#else
+		err = "Invalid address, hostname resolving not supported.";
+#endif
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
 
