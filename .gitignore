@@ -1,7 +1,9 @@
 .gitignore
 *~
 *.o
+*.lo
 *.a
+*.la
 *.kdevelop
 *.kdevelop.pcs
 *.kdevses
@@ -19,12 +21,19 @@ config.log
 depcomp
 install-sh
 missing
+config.guess
 config.h
 config.h.in
 config.status
-build
-=build
+config.sub
+build*
+=build*
 .deps
+include
+lib
+.libs
+libtool
+ltmain.sh
 stamp-h1
 *.pc
 
