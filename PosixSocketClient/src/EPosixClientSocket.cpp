@@ -31,7 +31,13 @@ int resolveHost( const char *host, sockaddr_in *sa )
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_flags = AI_V4MAPPED | AI_ADDRCONFIG;
+	hints.ai_flags = 0;
+#if HAVE_DECL_AI_ADDRCONFIG
+	hints.ai_flags |= AI_ADDRCONFIG;
+#endif
+#if HAVE_DECL_AI_V4MAPPED
+	hints.ai_flags |= AI_V4MAPPED;
+#endif
 	hints.ai_protocol = 0; 
 
 	int s = getaddrinfo(host, NULL, &hints, &result);
