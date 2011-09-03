@@ -1,6 +1,9 @@
 #include "PosixTestClient.h"
 
 #include "EPosixClientSocket.h"
+/* In this example we just include the platform header to have select(). In real
+   life you should include the needed headers from your system. */
+#include "EPosixClientSocketPlatform.h"
 
 #include "Contract.h"
 #include "Order.h"
