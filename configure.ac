@@ -29,14 +29,11 @@ ac_includes_default="$ac_includes_default
 #endif
 #ifdef HAVE_WS2TCPIP_H
 # include <ws2tcpip.h>
-#endif
-#ifdef HAVE_WSPIAPI_H
-# include <wspiapi.h>
 #endif"
 
 
 dnl ** check for specific header (.h) files that we are interested in
-AC_CHECK_HEADERS([fcntl.h winsock2.h ws2tcpip.h wspiapi.h])
+AC_CHECK_HEADERS([fcntl.h winsock2.h ws2tcpip.h])
 AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 
 dnl --------------------------------------------------
