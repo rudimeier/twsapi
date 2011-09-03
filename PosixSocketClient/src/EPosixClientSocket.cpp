@@ -6,7 +6,6 @@
 
 #include <string.h>
 #include <assert.h>
-#include <fcntl.h>
 
 #ifdef TWS_DEBUG
 	#include <stdio.h>
@@ -154,11 +153,8 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 
 	/* Set socket O_NONBLOCK. If wanted we could handle errors (portability!).
 	   We could even make O_NONBLOCK optional. */
-	int flags = fcntl( m_fd, F_GETFL, 0 );
-	assert( flags >= 0 );
-	if( fcntl(m_fd, F_SETFL, flags | O_NONBLOCK)  < 0 ) {
-		assert( false );
-	}
+	int sn = set_socket_nonblock( m_fd );
+	assert( sn == 0 );
 
 	// use local machine if no host passed in
 	if ( !( host && *host)) {

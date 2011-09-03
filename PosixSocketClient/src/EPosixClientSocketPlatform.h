@@ -32,6 +32,15 @@
 	};
 	inline bool SocketsDestroy() { return ( !WSACleanup()); };
 	inline int SocketClose(int sockfd) { return closesocket( sockfd); };
+
+	static int set_socket_nonblock(int sockfd)
+		{
+			unsigned long non_zero = 123;
+			if( ioctlsocket( sockfd, FIONREAD,  &non_zero) == NO_ERROR ) {
+				return 0;
+			}
+			return -1;
+		}
 	}
 
 #else
@@ -41,12 +50,25 @@
 	#include <errno.h>
 	#include <sys/select.h>
 	#include <netdb.h>
+	#include <fcntl.h>
 
 	namespace IB {
 	// helpers
 	inline bool SocketsInit() { return true; };
 	inline bool SocketsDestroy() { return true; };
 	inline int SocketClose(int sockfd) { return close( sockfd); };
+
+	static int set_socket_nonblock(int sockfd)
+	{
+		int flags = fcntl( sockfd, F_GETFL, 0 );
+		if( flags < 0 ) {
+			return -1;
+		}
+		if( fcntl(sockfd, F_SETFL, flags | O_NONBLOCK)  < 0 ) {
+			return -1;
+		}
+		return 0;
+	}
 	}
 
 #endif
