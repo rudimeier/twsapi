@@ -19,10 +19,16 @@
 	#include <winsock2.h>
 	#include <time.h>
 
-	// defines
+	/* These errno re-defines are bad because we want to use strerror on them.
+	   We would need to rewrite strerror for _WIN32 but currently I just want
+	   to finish with that crap quick and dirty. */
 	#define EISCONN WSAEISCONN
 	#define EWOULDBLOCK WSAEWOULDBLOCK
 	#define ECONNREFUSED WSAECONNREFUSED
+
+	#define EINPROGRESS WSAEINPROGRESS
+	#define ETIMEDOUT WSAETIMEDOUT
+	#define ENODATA WSANO_DATA
 
 	namespace IB {
 	// helpers

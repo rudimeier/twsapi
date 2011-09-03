@@ -21,6 +21,13 @@
 #include <assert.h>
 #include <errno.h>
 
+#ifdef _WIN32
+	/* Bad bad, see comments in EPosixClientSocketPlatform.h about strerror */
+	#define EPROTONOSUPPORT EINVAL
+	#define ECONNABORTED EINVAL
+#endif
+
+
 namespace IB {
 
 /////////////////////////////////////////////////////////////////////////////////
