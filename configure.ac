@@ -40,9 +40,12 @@ AC_CHECK_HEADERS([fcntl.h winsock2.h ws2tcpip.h wspiapi.h])
 AC_CHECK_HEADERS([arpa/inet.h netdb.h])
 
 dnl --------------------------------------------------
-dnl * check for Windows networking libraries
+dnl * add required libs for test client and pkg-config and the checks below
 dnl --------------------------------------------------
-AC_CHECK_LIB(ws2_32, _head_libws2_32_a)
+if test "x$ac_cv_header_winsock2_h" = xyes; then
+	LIBS="-lws2_32"
+fi
+
 
 dnl --------------------------------------------------
 dnl * test for getaddrinfo
@@ -56,7 +59,7 @@ int testme(){ getaddrinfo; }]])],[AC_DEFINE([HAVE_GETADDRINFO], [1], [Define to 
 dnl Under mingw, we may need to set WINVER to 0x0501 to expose getaddrinfo.
 if test "x$ac_have_getaddrinfo" = x; then
   old_CFLAGS="$CFLAGS"
-  if test "z$ac_cv_lib_ws2_32__head_libws2_32_a" = zyes; then
+  if test "z$ac_cv_header_ws2tcpip_h" = zyes; then
     CFLAGS="-DWINVER=0x0501 $CFLAGS"
     AC_MSG_CHECKING(for getaddrinfo if WINVER is 0x0501)
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$ac_includes_default
@@ -74,15 +77,6 @@ AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
 
 
 
-case "$host" in
-	*-mingw32)
-		EXTRA_LIBS="-lws2_32"
-		;;
-	*)
-		EXTRA_LIBS=""
-		;;
-esac
-AC_SUBST([EXTRA_LIBS])
 
 
 ## output
