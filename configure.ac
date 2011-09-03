@@ -74,6 +74,16 @@ AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
 
 
 
+case "$host" in
+	*-mingw32)
+		EXTRA_LIBS="-lws2_32"
+		;;
+	*)
+		EXTRA_LIBS=""
+		;;
+esac
+AC_SUBST([EXTRA_LIBS])
+
 
 ## output
 AC_CONFIG_FILES([Makefile])

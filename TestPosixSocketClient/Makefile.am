@@ -15,6 +15,7 @@ EXTRA_TestPosixSocketClient_SOURCES =
 TestPosixSocketClient_LDADD =
 TestPosixSocketClient_LDADD += -L$(top_builddir)/PosixSocketClient
 TestPosixSocketClient_LDADD += -ltwsapi
+TestPosixSocketClient_LDADD += @EXTRA_LIBS@
 TestPosixSocketClient_CPPFLAGS =
 TestPosixSocketClient_CPPFLAGS += $(AM_CPPFLAGS)
 TestPosixSocketClient_CPPFLAGS += -I$(top_srcdir)/PosixSocketClient/src
