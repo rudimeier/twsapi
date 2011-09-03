@@ -17,6 +17,64 @@ CXXFLAGS=""
 DEFAULT_CXXFLAGS="-g -Wall -W"
 AC_SUBST([DEFAULT_CXXFLAGS])
 
+
+
+
+ac_includes_default="$ac_includes_default
+#ifdef HAVE_NETDB_H
+# include <netdb.h>
+#endif
+#ifdef HAVE_WINSOCK2_H
+# include <winsock2.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <ws2tcpip.h>
+#endif
+#ifdef HAVE_WSPIAPI_H
+# include <wspiapi.h>
+#endif"
+
+
+dnl ** check for specific header (.h) files that we are interested in
+AC_CHECK_HEADERS([fcntl.h winsock2.h ws2tcpip.h wspiapi.h])
+AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+
+dnl --------------------------------------------------
+dnl * check for Windows networking libraries
+dnl --------------------------------------------------
+AC_CHECK_LIB(ws2_32, _head_libws2_32_a)
+
+dnl --------------------------------------------------
+dnl * test for getaddrinfo
+dnl --------------------------------------------------
+AC_MSG_CHECKING(for getaddrinfo)
+dnl Can't use AC_CHECK_FUNC here, because it doesn't do the right
+dnl thing on Windows.
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$ac_includes_default
+int testme(){ getaddrinfo; }]])],[AC_DEFINE([HAVE_GETADDRINFO], [1], [Define to 1 if you have the `getaddrinfo' function.]) ac_have_getaddrinfo=yes; AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
+
+dnl Under mingw, we may need to set WINVER to 0x0501 to expose getaddrinfo.
+if test "x$ac_have_getaddrinfo" = x; then
+  old_CFLAGS="$CFLAGS"
+  if test "z$ac_cv_lib_ws2_32__head_libws2_32_a" = zyes; then
+    CFLAGS="-DWINVER=0x0501 $CFLAGS"
+    AC_MSG_CHECKING(for getaddrinfo if WINVER is 0x0501)
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$ac_includes_default
+    int testme(){ getaddrinfo; }]])],[AC_DEFINE([HAVE_GETADDRINFO], [1], [Define to 1 if you have the `getaddrinfo' function.]) AC_DEFINE([NEED_WINVER_XP], [1], [Define to 1 if the `getaddrinfo' function needs WINVER set.]) EXTRA_CPPFLAGS="-DWINVER=0x0501 $EXTRA_CPPFLAGS"; AC_MSG_RESULT(yes)],[CFLAGS="$old_CFLAGS"; AC_MSG_RESULT(no)])
+  fi
+fi
+
+dnl Missing under mingw, sigh.
+AC_CHECK_FUNCS(gai_strerror)
+
+dnl -------------------------------------------------------
+dnl * test for AI_* flags that not all implementations have
+dnl -------------------------------------------------------
+AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
+
+
+
+
 ## output
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([PosixSocketClient/Makefile])
