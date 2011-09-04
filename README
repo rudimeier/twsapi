@@ -7,20 +7,23 @@ This twsapi is almost identical to the original IB C++ posix api. It contains
 several bugfixes, usage improvements and it's using the autotools build system.
 For more details read "Changes of original IB API" below.
 
+Check out the latest version at https://github.com/rudimeier/twsapi
+
 
 
 
 Installation
 ------------
 
- Building from source requires a c++ compiler (tested with gcc/g++).
- Windows has been successfully tested using cygwin.
+ Building from source requires a C++ compiler (tested with gcc/g++).
+ Windows has been successfully tested using cygwin and mingw.
+
+ When building from git checkout you need the autotools and don't forget to
+ type "autoreconf -vfi" first.
 
  ./configure
  make
  make install
-
- (Within git repo type "autoreconf -fi" before.)
 
 
 
@@ -30,9 +33,12 @@ Repository layout
 
 Beside the usual master branch I keep two important branches:
  - ib_orig: the original IB API code from upstream
- - ib_orig_plus: the original IB API plus autotools build chain
+ - ib_orig_plus: the original IB API plus autotools build chain and namespace IB
 
 Both are used to commit upstream updates to be merged into master. 
+
+BTW don't blame me for the strange project layout. This comes original from IB
+and I don't change it for simply git merging upstream updates.
 
 
 

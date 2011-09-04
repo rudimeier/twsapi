@@ -4,8 +4,18 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 
 
-0.3.1 - 2011-08-27
-------------------------------------------------------------
+0.3.2 - not yet released -------------------------------------------------------
+
+Major build and portability fixes.
+
+  - Portability, use getaddrinfo instead of gethostbyname_r and build without
+    hostname resolving if it's missing.
+  - Use gai_strerror for nice resolver error messages.
+  - Experimental mingw support.
+
+
+
+0.3.1 - 2011-08-27  ------------------------------------------------------------
 
 Minor build fixes and update to (non beta) IB API 9.65
 
