@@ -1,6 +1,6 @@
 
-twsapi for Interactive Brokers TWS
-==================================
+Portable C++ API for Interactive Brokers TWS
+============================================
 
 
 This twsapi is almost identical to the original IB C++ posix api. It contains
