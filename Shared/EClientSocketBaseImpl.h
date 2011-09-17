@@ -416,22 +416,6 @@ void EClientSocketBase::CleanupBuffer(BytesVec& buffer, int processed)
 	}
 };
 
-///////////////////////////////////////////////////////////
-// utility funcs
-static IBString errMsg(std::exception e) {
-	// return the error associated with this exception
-	return IBString(e.what());
-}
-
-
-#ifdef _MSC_VER
-static IBString errMsg(CException *e) {
-	// return the error associated with this exception
-	char buf[1024];
-	e->GetErrorMessage( buf, sizeof buf);
-	return IBString( buf);
-}
-#endif
 
 ///////////////////////////////////////////////////////////
 // member funcs
