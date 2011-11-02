@@ -54,6 +54,7 @@
 	#include <sys/select.h>
 	#include <netdb.h>
 	#include <fcntl.h>
+	#include <unistd.h>
 
 	namespace IB {
 	// helpers
