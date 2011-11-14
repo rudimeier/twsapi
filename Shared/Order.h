@@ -75,6 +75,7 @@ struct Order
 		eTradeOnly       = true;
 		firmQuoteOnly    = true;
 		nbboPriceCap     = UNSET_DOUBLE;
+		optOutSmartRouting = false;
 
 		// BOX exchange orders only
 		auctionStrategy = AUCTION_UNSET;
@@ -162,6 +163,7 @@ struct Order
 	bool     eTradeOnly;
 	bool     firmQuoteOnly;
 	double   nbboPriceCap;
+	bool     optOutSmartRouting;
 
 	// BOX exchange orders only
 	int      auctionStrategy; // AUCTION_MATCH, AUCTION_IMPROVEMENT, AUCTION_TRANSPARENT
@@ -207,6 +209,7 @@ struct Order
 	typedef shared_ptr<TagValueList> TagValueListSPtr;
 
 	TagValueListSPtr algoParams;
+	TagValueListSPtr smartComboRoutingParams;
 
 	// What-if
 	bool     whatIf;

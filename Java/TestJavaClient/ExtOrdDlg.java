@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -76,6 +77,7 @@ public class ExtOrdDlg extends JDialog {
 
     private JTextField 	m_hedgeType = new JTextField();
     private JTextField 	m_hedgeParam = new JTextField();
+    private JCheckBox   m_optOutSmartRoutingCheckBox = new JCheckBox("Opting out of SMART routing", false);
 
     private JButton 	m_ok = new JButton( "OK");
     private JButton 	m_cancel = new JButton( "Cancel");
@@ -192,6 +194,7 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add(m_hedgeType);
         extOrderDetailsPanel.add(new JLabel("HEDGE: Param"));
         extOrderDetailsPanel.add(m_hedgeParam);
+        extOrderDetailsPanel.add(m_optOutSmartRoutingCheckBox) ;
 
         // create button panel
         JPanel buttonPanel = new JPanel();
@@ -254,6 +257,7 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_eTradeOnly = parseInt(m_eTradeOnly) != 0;
             m_order.m_firmQuoteOnly = parseInt(m_firmQuoteOnly) != 0;
             m_order.m_nbboPriceCap = parseMaxDouble(m_nbboPriceCap);
+            m_order.m_optOutSmartRouting = m_optOutSmartRoutingCheckBox.isSelected();
             m_order.m_auctionStrategy = parseInt(m_auctionStrategy);
             m_order.m_startingPrice = parseMaxDouble(m_startingPrice);
             m_order.m_stockRefPrice = parseMaxDouble(m_stockRefPrice);

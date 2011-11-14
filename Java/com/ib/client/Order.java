@@ -71,6 +71,7 @@ public class Order {
     public boolean  m_eTradeOnly;
     public boolean  m_firmQuoteOnly;
     public double   m_nbboPriceCap;
+    public boolean  m_optOutSmartRouting;
 
     // BOX or VOL ORDERS ONLY
     public int      m_auctionStrategy; // 1=AUCTION_MATCH, 2=AUCTION_IMPROVEMENT, 3=AUCTION_TRANSPARENT
@@ -121,6 +122,9 @@ public class Order {
     // Not Held
     public boolean  m_notHeld;
 
+    // Smart combo routing params
+    public Vector<TagValue> m_smartComboRoutingParams;
+    
     public Order() {
     	m_outsideRth = false;
         m_openClose	= "O";
@@ -131,6 +135,7 @@ public class Order {
         m_minQty = Integer.MAX_VALUE;
         m_percentOffset = Double.MAX_VALUE;
         m_nbboPriceCap = Double.MAX_VALUE;
+        m_optOutSmartRouting = false;
         m_startingPrice = Double.MAX_VALUE;
         m_stockRefPrice = Double.MAX_VALUE;
         m_delta = Double.MAX_VALUE;
@@ -190,6 +195,7 @@ public class Order {
         	m_eTradeOnly != l_theOther.m_eTradeOnly ||
         	m_firmQuoteOnly != l_theOther.m_firmQuoteOnly ||
         	m_nbboPriceCap != l_theOther.m_nbboPriceCap ||
+        	m_optOutSmartRouting != l_theOther.m_optOutSmartRouting ||
         	m_auctionStrategy != l_theOther.m_auctionStrategy ||
         	m_startingPrice != l_theOther.m_startingPrice ||
         	m_stockRefPrice != l_theOther.m_stockRefPrice ||
@@ -241,6 +247,10 @@ public class Order {
         	return false;
         }
 
+        if (!Util.VectorEqualsUnordered(m_smartComboRoutingParams, l_theOther.m_smartComboRoutingParams)) {
+        	return false;
+        }
+        
         return true;
     }
 }

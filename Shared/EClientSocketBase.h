@@ -88,6 +88,7 @@ public:
 	void cancelCalculateImpliedVolatility(TickerId reqId);
 	void cancelCalculateOptionPrice(TickerId reqId);
 	void reqGlobalCancel();
+	void reqMarketDataType(int marketDataType);
 
 private:
 

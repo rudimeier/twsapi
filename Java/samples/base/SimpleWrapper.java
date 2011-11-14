@@ -218,6 +218,10 @@ public class SimpleWrapper implements EWrapper {
       logIn("deltaNeutralValidation");    	
    }
 
+   public void marketDataType(int reqId, int marketDataType) {
+      logIn("marketDataType");
+   }
+   
    /* ***************************************************************
     * Helpers
     *****************************************************************/

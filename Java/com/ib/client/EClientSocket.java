@@ -74,8 +74,10 @@ public class EClientSocket {
 	// 47 = can receive gamma, vega, theta, undPrice fields in TICK_OPTION_COMPUTATION
 	// 48 = can receive exemptCode in openOrder
 	// 49 = can receive hedgeType and hedgeParam in openOrder
+	// 50 = can receive optOutSmartRouting field in openOrder
+	// 51 = can receive smartComboRoutingParams in openOrder
 
-    private static final int CLIENT_VERSION = 49;
+    private static final int CLIENT_VERSION = 51;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -133,6 +135,7 @@ public class EClientSocket {
     private static final int CANCEL_CALC_IMPLIED_VOLAT = 56;
     private static final int CANCEL_CALC_OPTION_PRICE = 57;
     private static final int REQ_GLOBAL_CANCEL = 58;
+    private static final int REQ_MARKET_DATA_TYPE = 59;
     
 	private static final int MIN_SERVER_VER_REAL_TIME_BARS = 34;
 	private static final int MIN_SERVER_VER_SCALE_ORDERS = 35;
@@ -159,6 +162,9 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_SSHORTX = 52;
     private static final int MIN_SERVER_VER_REQ_GLOBAL_CANCEL = 53;
     private static final int MIN_SERVER_VER_HEDGE_ORDERS = 54;
+    private static final int MIN_SERVER_VER_REQ_MARKET_DATA_TYPE = 55;
+    private static final int MIN_SERVER_VER_OPT_OUT_SMART_ROUTING = 56;
+    private static final int MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS = 57;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -989,7 +995,15 @@ public class EClientSocket {
         	}
         }
         
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 32;
+        if (m_serverVersion < MIN_SERVER_VER_OPT_OUT_SMART_ROUTING) {
+        	if (order.m_optOutSmartRouting) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support optOutSmartRouting parameter.");
+        		return;
+        	}
+        }
+        
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 34;
         
         // send place order msg
         try {
@@ -1083,6 +1097,19 @@ public class EClientSocket {
                         if (m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD) { 
                             send( comboLeg.m_exemptCode);
                         }
+                    }
+                }
+            }
+
+            if(m_serverVersion >= MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS && BAG_SEC_TYPE.equalsIgnoreCase(contract.m_secType)) {
+                java.util.Vector smartComboRoutingParams = order.m_smartComboRoutingParams;
+                int smartComboRoutingParamsCount = smartComboRoutingParams == null ? 0 : smartComboRoutingParams.size();
+                send( smartComboRoutingParamsCount);
+                if( smartComboRoutingParamsCount > 0) {
+                    for( int i = 0; i < smartComboRoutingParamsCount; ++i) {
+                        TagValue tagValue = (TagValue)smartComboRoutingParams.get(i);
+                        send( tagValue.m_tag);
+                        send( tagValue.m_value);
                     }
                 }
             }
@@ -1192,6 +1219,10 @@ public class EClientSocket {
         	   if (!IsEmpty(order.m_hedgeType)) {
         		   send (order.m_hedgeParam);
         	   }
+           }
+
+           if (m_serverVersion >= MIN_SERVER_VER_OPT_OUT_SMART_ROUTING) {
+               send (order.m_optOutSmartRouting);
            }
            
            if (m_serverVersion >= MIN_SERVER_VER_PTA_ORDERS) {
@@ -1797,6 +1828,33 @@ public class EClientSocket {
         }
         catch( Exception e) {
             error( EClientErrors.NO_VALID_ID, EClientErrors.FAIL_SEND_REQGLOBALCANCEL, "" + e);
+            close();
+        }
+    }
+    
+    public synchronized void reqMarketDataType(int marketDataType) {
+        // not connected?
+        if( !m_connected) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_REQ_MARKET_DATA_TYPE) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS,
+                    "  It does not support marketDataType requests.");
+            return;
+        }
+        
+        final int VERSION = 1;
+
+        // send the reqMarketDataType message
+        try {
+            send( REQ_MARKET_DATA_TYPE);
+            send( VERSION);
+            send( marketDataType);
+        }
+        catch( Exception e) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.FAIL_SEND_REQMARKETDATATYPE, "" + e);
             close();
         }
     }

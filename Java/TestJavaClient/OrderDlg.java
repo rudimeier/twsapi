@@ -21,11 +21,14 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
 
 import com.ib.client.Contract;
 import com.ib.client.Order;
 import com.ib.client.UnderComp;
+import com.ib.client.MarketDataType;
 
 public class OrderDlg extends JDialog {
     final static String ALL_GENERIC_TICK_TAGS = "100,101,104,105,106,107,165,221,225,233,236,258,293,294,295,318";
@@ -51,6 +54,7 @@ public class OrderDlg extends JDialog {
     public int          m_exerciseAction;
     public int          m_exerciseQuantity;
     public int          m_override;
+    public int          m_marketDataType;
 
     private JTextField	m_Id = new JTextField( "0");
     private JTextField	m_BackfillEndTime = new JTextField(22);
@@ -86,11 +90,13 @@ public class OrderDlg extends JDialog {
     private JTextField m_exerciseActionTextField = new JTextField("1");
     private JTextField m_exerciseQuantityTextField = new JTextField("1");
     private JTextField m_overrideTextField = new JTextField("0");
+    private JComboBox m_marketDataTypeCombo = new JComboBox(MarketDataType.getFields());
 
     private JButton	    m_sharesAlloc = new JButton("FA Allocation Info...");
     private JButton 	m_comboLegs = new JButton( "Combo Legs");
     private JButton 	m_btnUnderComp = new JButton( "Delta Neutral");
     private JButton 	m_btnAlgoParams = new JButton( "Algo Params");
+    private JButton 	m_btnSmartComboRoutingParams = new JButton( "Smart Combo Routing Params");
     
     private JButton 	m_ok = new JButton( "OK");
     private JButton 	m_cancel = new JButton( "Cancel");
@@ -239,6 +245,12 @@ public class OrderDlg extends JDialog {
         addGBComponent(pBackfill, new JLabel( "Date Format Style (1 or 2)"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE) ;
         addGBComponent(pBackfill, m_FormatDate, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER) ;
 
+        // create marketDataType panel
+        IBGridBagPanel pMarketDataType = new IBGridBagPanel();
+        pMarketDataType.setBorder( BorderFactory.createTitledBorder( "Market Data Type") );
+        addGBComponent(pMarketDataType, new JLabel( "Market Data Type"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE) ;
+        addGBComponent(pMarketDataType, m_marketDataTypeCombo, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER) ;
+        
         // create mid Panel
         JPanel pMidPanel = new JPanel();
         pMidPanel.setLayout( new BoxLayout( pMidPanel, BoxLayout.Y_AXIS) );
@@ -248,6 +260,7 @@ public class OrderDlg extends JDialog {
         pMidPanel.add( pMarketData, BorderLayout.CENTER);
         pMidPanel.add( pOptionsExercise, BorderLayout.CENTER);
         pMidPanel.add( pBackfill, BorderLayout.CENTER);
+        pMidPanel.add( pMarketDataType, BorderLayout.CENTER);
         
         // create order button panel
         JPanel pOrderButtonPanel = new JPanel();
@@ -255,6 +268,7 @@ public class OrderDlg extends JDialog {
         pOrderButtonPanel.add( m_comboLegs);
         pOrderButtonPanel.add( m_btnUnderComp);
         pOrderButtonPanel.add( m_btnAlgoParams);
+        pOrderButtonPanel.add( m_btnSmartComboRoutingParams);
         
         pMidPanel.add( pOrderButtonPanel, BorderLayout.CENTER);
 
@@ -285,6 +299,11 @@ public class OrderDlg extends JDialog {
                 onBtnAlgoParams();
             }
         });
+        m_btnSmartComboRoutingParams.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onBtnSmartComboRoutingParams();
+            }
+        });
         m_ok.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
                 onOk();
@@ -305,6 +324,9 @@ public class OrderDlg extends JDialog {
         // create dlg box
         getContentPane().add( topPanel, BorderLayout.CENTER);
         getContentPane().add( buttonPanel, BorderLayout.SOUTH);
+
+        JScrollPane scroller = new JScrollPane(topPanel);
+        this.add( scroller, BorderLayout.CENTER);
 
         pack();
     }
@@ -353,6 +375,14 @@ public class OrderDlg extends JDialog {
         
         // show delta neutral dialog
         algoParamsDlg.setVisible( true);
+    }
+
+    void onBtnSmartComboRoutingParams() {
+    	
+        SmartComboRoutingParamsDlg smartComboRoutingParamsDlg = new SmartComboRoutingParamsDlg(m_order, this);
+        
+        // show smart combo routing params dialog
+        smartComboRoutingParamsDlg.setVisible( true);
     }
 
     void onOk() {
@@ -413,6 +443,8 @@ public class OrderDlg extends JDialog {
             m_marketDepthRows = Integer.parseInt( m_marketDepthRowTextField.getText() );
             m_genericTicks = m_genericTicksTextField.getText();
             m_snapshotMktData = m_snapshotMktDataTextField.isSelected();
+            
+            m_marketDataType = m_marketDataTypeCombo.getSelectedIndex() + 1;
         }
         catch( Exception e) {
             Main.inform( this, "Error - " + e);

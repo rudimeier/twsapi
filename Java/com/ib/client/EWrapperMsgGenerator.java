@@ -96,6 +96,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " eTradeOnly=" + order.m_eTradeOnly +
         " firmQuoteOnly=" + order.m_firmQuoteOnly +
         " nbboPriceCap=" + order.m_nbboPriceCap +
+        " optOutSmartRouting=" + order.m_optOutSmartRouting +
         " auctionStrategy=" + order.m_auctionStrategy +
         " startingPrice=" + order.m_startingPrice +
         " stockRefPrice=" + order.m_stockRefPrice +
@@ -155,6 +156,21 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     		}
     		msg += "}";
     	}
+    	
+        if ("BAG".equals(contract.m_secType)) {
+        	msg += " smartComboRoutingParams={";
+        	if (order.m_smartComboRoutingParams != null) {
+        		Vector smartComboRoutingParams = order.m_smartComboRoutingParams;
+        		for (int i = 0; i < smartComboRoutingParams.size(); ++i) {
+        			TagValue param = (TagValue)smartComboRoutingParams.elementAt(i);
+        			if (i > 0) {
+        				msg += ",";
+        			}
+        			msg += param.m_tag + "=" + param.m_value;
+        		}
+        	}
+        	msg += "}";
+        }
     
         String orderStateMsg =
         	" status=" + orderState.m_status
@@ -408,5 +424,9 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     }
     static public String tickSnapshotEnd(int tickerId) {
     	return "id=" + tickerId + " =============== end ===============";
+    }
+    
+    static public String marketDataType(int reqId, int marketDataType){
+    	return "id=" + reqId + " marketDataType = " + MarketDataType.getField(marketDataType);
     }
 }

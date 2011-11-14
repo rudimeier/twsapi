@@ -45,6 +45,7 @@ public class EReader extends Thread {
     static final int EXECUTION_DATA_END = 55;
     static final int DELTA_NEUTRAL_VALIDATION = 56;
     static final int TICK_SNAPSHOT_END = 57;
+    static final int MARKET_DATA_TYPE = 58;
 
     private EClientSocket 	m_parent;
     private DataInputStream m_dis;
@@ -472,6 +473,19 @@ public class EReader extends Thread {
                 	contract.m_comboLegsDescrip = readStr();
                 }
                 
+                if (version >= 26) {
+                	int smartComboRoutingParamsCount = readInt();
+                	if (smartComboRoutingParamsCount > 0) {
+                		order.m_smartComboRoutingParams = new Vector(smartComboRoutingParamsCount);
+                		for (int i = 0; i < smartComboRoutingParamsCount; ++i) {
+                			TagValue tagValue = new TagValue();
+                			tagValue.m_tag = readStr();
+                			tagValue.m_value = readStr();
+                			order.m_smartComboRoutingParams.add(tagValue);
+                		}
+                	}
+                }
+
                 if (version >= 15) {
                 	if (version >= 20) {
                 		order.m_scaleInitLevelSize = readIntMax();
@@ -489,6 +503,10 @@ public class EReader extends Thread {
                 	if (!Util.StringIsEmpty(order.m_hedgeType)) {
                 		order.m_hedgeParam = readStr();
                 	}
+                }
+
+                if (version >= 25) {
+                	order.m_optOutSmartRouting = readBoolFromInt();
                 }
 
                 if (version >= 19) {
@@ -887,6 +905,14 @@ public class EReader extends Thread {
                 int reqId = readInt();
 
                 eWrapper().tickSnapshotEnd( reqId);
+                break;
+            }
+            case MARKET_DATA_TYPE: {
+                /*int version =*/ readInt();
+                int reqId = readInt();
+                int marketDataType = readInt();
+
+                eWrapper().marketDataType( reqId, marketDataType);
                 break;
             }
             

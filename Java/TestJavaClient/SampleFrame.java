@@ -261,6 +261,13 @@ class SampleFrame extends JFrame implements EWrapper {
                 onGlobalCancel();
             }
         });
+        JButton butReqMarketDataType = new JButton( "Req Market Data Type");
+        butReqMarketDataType.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onReqMarketDataType();
+            }
+        });
+        
         JButton butClear = new JButton( "Clear");
         butClear.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -314,6 +321,7 @@ class SampleFrame extends JFrame implements EWrapper {
         buttonPanel.add( butManagedAccts );
         buttonPanel.add( butFinancialAdvisor ) ;
         buttonPanel.add( butGlobalCancel ) ;
+        buttonPanel.add( butReqMarketDataType ) ;
 
         buttonPanel.add( new JPanel() );
         buttonPanel.add( butClear );
@@ -703,6 +711,17 @@ class SampleFrame extends JFrame implements EWrapper {
         m_client.reqGlobalCancel();
     }
     
+    void onReqMarketDataType() {
+        // run m_orderDlg
+        m_orderDlg.show();
+        if( !m_orderDlg.m_rc ) {
+            return;
+        }
+
+        // req mkt data type
+        m_client.reqMarketDataType( m_orderDlg.m_marketDataType);
+    }
+    
     public void tickPrice( int tickerId, int field, double price, int canAutoExecute) {
         // received price tick
     	String msg = EWrapperMsgGenerator.tickPrice( tickerId, field, price, canAutoExecute);
@@ -976,6 +995,11 @@ class SampleFrame extends JFrame implements EWrapper {
       }
     }
 
+    public void marketDataType(int reqId, int marketDataType) {
+        String msg = EWrapperMsgGenerator.marketDataType(reqId, marketDataType);
+        m_tickers.add(msg);
+    }
+
     private void copyExtendedOrderDetails( Order destOrder, Order srcOrder) {
         destOrder.m_tif = srcOrder.m_tif;
         destOrder.m_ocaGroup = srcOrder.m_ocaGroup;
@@ -1004,6 +1028,7 @@ class SampleFrame extends JFrame implements EWrapper {
         destOrder.m_eTradeOnly = srcOrder.m_eTradeOnly;
         destOrder.m_firmQuoteOnly = srcOrder.m_firmQuoteOnly;
         destOrder.m_nbboPriceCap = srcOrder.m_nbboPriceCap;
+        destOrder.m_optOutSmartRouting = srcOrder.m_optOutSmartRouting;
         destOrder.m_auctionStrategy = srcOrder.m_auctionStrategy;
         destOrder.m_startingPrice = srcOrder.m_startingPrice;
         destOrder.m_stockRefPrice = srcOrder.m_stockRefPrice;
