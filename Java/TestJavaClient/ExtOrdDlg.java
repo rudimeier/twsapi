@@ -16,6 +16,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import com.ib.client.Order;
@@ -67,6 +68,10 @@ public class ExtOrdDlg extends JDialog {
     private JTextField  m_VOLVolatilityType = new JTextField();
     private JTextField  m_VOLDeltaNeutralOrderType = new JTextField();
     private JTextField  m_VOLDeltaNeutralAuxPrice = new JTextField();
+    private JTextField  m_VOLDeltaNeutralConId = new JTextField();
+    private JTextField  m_VOLDeltaNeutralSettlingFirm = new JTextField();
+    private JTextField  m_VOLDeltaNeutralClearingAccount = new JTextField();
+    private JTextField  m_VOLDeltaNeutralClearingIntent = new JTextField();
     private JTextField  m_VOLContinuousUpdate = new JTextField();
     private JTextField  m_VOLReferencePriceType = new JTextField();
     private JTextField  m_trailStopPrice = new JTextField();
@@ -178,6 +183,14 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add(m_VOLDeltaNeutralOrderType);
         extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Aux Price"));
         extOrderDetailsPanel.add(m_VOLDeltaNeutralAuxPrice);
+        extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Contract Id"));
+        extOrderDetailsPanel.add(m_VOLDeltaNeutralConId);
+        extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Settling Firm"));
+        extOrderDetailsPanel.add(m_VOLDeltaNeutralSettlingFirm);
+        extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Clearing Account"));
+        extOrderDetailsPanel.add(m_VOLDeltaNeutralClearingAccount);
+        extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Clearing Intent"));
+        extOrderDetailsPanel.add(m_VOLDeltaNeutralClearingIntent);
         extOrderDetailsPanel.add(new JLabel("VOL: Continuously Update Price (0 or 1)"));
         extOrderDetailsPanel.add(m_VOLContinuousUpdate);
         extOrderDetailsPanel.add(new JLabel("VOL: Reference Price Type (1 or 2)"));
@@ -216,6 +229,10 @@ public class ExtOrdDlg extends JDialog {
         // create dlg box
         getContentPane().add( extOrderDetailsPanel, BorderLayout.CENTER);
         getContentPane().add( buttonPanel, BorderLayout.SOUTH);
+        
+        JScrollPane scroller = new JScrollPane(extOrderDetailsPanel);
+        this.add( scroller, BorderLayout.CENTER);
+        
         pack();
     }
 
@@ -268,6 +285,10 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_volatilityType = parseMaxInt(m_VOLVolatilityType);
             m_order.m_deltaNeutralOrderType = m_VOLDeltaNeutralOrderType.getText().trim();
             m_order.m_deltaNeutralAuxPrice = parseMaxDouble(m_VOLDeltaNeutralAuxPrice);
+            m_order.m_deltaNeutralConId = parseInt(m_VOLDeltaNeutralConId);
+            m_order.m_deltaNeutralSettlingFirm = m_VOLDeltaNeutralSettlingFirm.getText().trim();
+            m_order.m_deltaNeutralClearingAccount = m_VOLDeltaNeutralClearingAccount.getText().trim();
+            m_order.m_deltaNeutralClearingIntent = m_VOLDeltaNeutralClearingIntent.getText().trim();
             m_order.m_continuousUpdate = parseInt(m_VOLContinuousUpdate);
             m_order.m_referencePriceType = parseMaxInt(m_VOLReferencePriceType);
             m_order.m_trailStopPrice = parseMaxDouble(m_trailStopPrice);

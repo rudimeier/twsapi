@@ -88,7 +88,9 @@
 // 49 = can receive hedgeType and hedgeParam in openOrder
 // 50 = can receive optOutSmartRouting field in openOrder
 // 51 = can receive smartComboRoutingParams in openOrder
-const int CLIENT_VERSION    = 51;
+// 52 = can receive deltaNeutralConId, deltaNeutralSettlingFirm, deltaNeutralClearingAccount and deltaNeutralClearingIntent in openOrder
+// 53 = can receive orderRef in execution
+const int CLIENT_VERSION    = 53;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -157,6 +159,7 @@ const int MIN_SERVER_VER_HEDGE_ORDERS			= 54;
 const int MIN_SERVER_VER_REQ_MARKET_DATA_TYPE	= 55;
 const int MIN_SERVER_VER_OPT_OUT_SMART_ROUTING  = 56;
 const int MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS = 57;
+const int MIN_SERVER_VER_DELTA_NEUTRAL_CONID    = 58;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -1326,9 +1329,21 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		}
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL_CONID) {
+		if (order.deltaNeutralConId > 0 
+				|| !IsEmpty(order.deltaNeutralSettlingFirm)
+				|| !IsEmpty(order.deltaNeutralClearingAccount)
+				|| !IsEmpty(order.deltaNeutralClearingIntent)
+				) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support deltaNeutral parameters: ConId, SettlingFirm, ClearingAccount, ClearingIntent.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 34;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 35;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1503,6 +1518,14 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	//else {
 		ENCODE_FIELD( order.deltaNeutralOrderType); // srv v28 and above
 		ENCODE_FIELD_MAX( order.deltaNeutralAuxPrice); // srv v28 and above
+
+		if (m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL_CONID && !IsEmpty(order.deltaNeutralOrderType)){
+			ENCODE_FIELD( order.deltaNeutralConId);
+			ENCODE_FIELD( order.deltaNeutralSettlingFirm);
+			ENCODE_FIELD( order.deltaNeutralClearingAccount);
+			ENCODE_FIELD( order.deltaNeutralClearingIntent);
+		}
+
 	//}
 	ENCODE_FIELD( order.continuousUpdate);
 	//if( m_serverVersion == 26) {
@@ -2450,6 +2473,14 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( order.volatilityType); // ver 11 field
 				DECODE_FIELD( order.deltaNeutralOrderType); // ver 11 field (had a hack for ver 11)
 				DECODE_FIELD( order.deltaNeutralAuxPrice); // ver 12 field
+
+				if (version >= 27 && !IsEmpty(order.deltaNeutralOrderType)) {
+					DECODE_FIELD( order.deltaNeutralConId);
+					DECODE_FIELD( order.deltaNeutralSettlingFirm);
+					DECODE_FIELD( order.deltaNeutralClearingAccount);
+					DECODE_FIELD( order.deltaNeutralClearingIntent);
+				}
+
 				DECODE_FIELD( order.continuousUpdate); // ver 11 field
 
 				// will never happen
@@ -2789,6 +2820,10 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				if( version >= 6) {
 					DECODE_FIELD( exec.cumQty);
 					DECODE_FIELD( exec.avgPrice);
+				}
+
+				if( version >= 8) {
+					DECODE_FIELD( exec.orderRef);
 				}
 
 				m_pEWrapper->execDetails( reqId, contract, exec);

@@ -92,6 +92,10 @@ public class Order {
     public int      m_referencePriceType; // 1=Average, 2 = BidOrAsk
     public String   m_deltaNeutralOrderType;
     public double   m_deltaNeutralAuxPrice;
+    public int      m_deltaNeutralConId;
+    public String   m_deltaNeutralSettlingFirm;
+    public String   m_deltaNeutralClearingAccount;
+    public String   m_deltaNeutralClearingIntent;
 
     // COMBO ORDERS ONLY
     public double   m_basisPoints;      // EFP orders only
@@ -145,6 +149,10 @@ public class Order {
         m_volatilityType = Integer.MAX_VALUE;
         m_deltaNeutralOrderType = EMPTY_STR;
         m_deltaNeutralAuxPrice = Double.MAX_VALUE;
+        m_deltaNeutralConId = 0;
+        m_deltaNeutralSettlingFirm = EMPTY_STR;
+        m_deltaNeutralClearingAccount = EMPTY_STR;
+        m_deltaNeutralClearingIntent = EMPTY_STR;
         m_referencePriceType = Integer.MAX_VALUE;
         m_trailStopPrice = Double.MAX_VALUE;
         m_basisPoints = Double.MAX_VALUE;
@@ -207,6 +215,7 @@ public class Order {
         	m_continuousUpdate != l_theOther.m_continuousUpdate ||
         	m_referencePriceType != l_theOther.m_referencePriceType ||
         	m_deltaNeutralAuxPrice != l_theOther.m_deltaNeutralAuxPrice ||
+        	m_deltaNeutralConId != l_theOther.m_deltaNeutralConId ||
         	m_basisPoints != l_theOther.m_basisPoints ||
         	m_basisPointsType != l_theOther.m_basisPointsType ||
         	m_scaleInitLevelSize != l_theOther.m_scaleInitLevelSize ||
@@ -233,6 +242,9 @@ public class Order {
         	Util.StringCompare(m_openClose, l_theOther.m_openClose) != 0 ||
         	Util.StringCompare(m_designatedLocation, l_theOther.m_designatedLocation) != 0 ||
         	Util.StringCompare(m_deltaNeutralOrderType, l_theOther.m_deltaNeutralOrderType) != 0 ||
+        	Util.StringCompare(m_deltaNeutralSettlingFirm, l_theOther.m_deltaNeutralSettlingFirm) != 0 ||
+        	Util.StringCompare(m_deltaNeutralClearingAccount, l_theOther.m_deltaNeutralClearingAccount) != 0 ||
+        	Util.StringCompare(m_deltaNeutralClearingIntent, l_theOther.m_deltaNeutralClearingIntent) != 0 ||
         	Util.StringCompare(m_hedgeType, l_theOther.m_hedgeType) != 0 ||
         	Util.StringCompare(m_hedgeParam, l_theOther.m_hedgeParam) != 0 ||
         	Util.StringCompare(m_account, l_theOther.m_account) != 0 ||

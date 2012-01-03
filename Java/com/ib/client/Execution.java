@@ -18,6 +18,7 @@ public class Execution {
     public int         m_liquidation;
     public int		m_cumQty;
     public double	m_avgPrice;
+    public String   m_orderRef;
 
     public Execution() {
         m_orderId = 0;
@@ -33,7 +34,7 @@ public class Execution {
     public Execution( int p_orderId, int p_clientId, String p_execId, String p_time,
                       String p_acctNumber, String p_exchange, String p_side, int p_shares,
                       double p_price, int p_permId, int p_liquidation, int p_cumQty,
-                      double p_avgPrice) {
+                      double p_avgPrice, String p_orderRef) {
         m_orderId = p_orderId;
         m_clientId = p_clientId;
         m_execId = p_execId;
@@ -47,6 +48,7 @@ public class Execution {
         m_liquidation = p_liquidation;
         m_cumQty = p_cumQty;
         m_avgPrice = p_avgPrice;
+        m_orderRef = p_orderRef;
     }
 
     public boolean equals(Object p_other) {

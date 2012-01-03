@@ -76,8 +76,10 @@ public class EClientSocket {
 	// 49 = can receive hedgeType and hedgeParam in openOrder
 	// 50 = can receive optOutSmartRouting field in openOrder
 	// 51 = can receive smartComboRoutingParams in openOrder
+	// 52 = can receive deltaNeutralConId, deltaNeutralSettlingFirm, deltaNeutralClearingAccount and deltaNeutralClearingIntent in openOrder
+	// 53 = can receive orderRef in execution
 
-    private static final int CLIENT_VERSION = 51;
+    private static final int CLIENT_VERSION = 53;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -165,6 +167,7 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_REQ_MARKET_DATA_TYPE = 55;
     private static final int MIN_SERVER_VER_OPT_OUT_SMART_ROUTING = 56;
     private static final int MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS = 57;
+    private static final int MIN_SERVER_VER_DELTA_NEUTRAL_CONID = 58;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -1003,7 +1006,20 @@ public class EClientSocket {
         	}
         }
         
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 34;
+        if (m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL_CONID) {
+        	if (order.m_deltaNeutralConId > 0 
+        			|| !IsEmpty(order.m_deltaNeutralSettlingFirm)
+        			|| !IsEmpty(order.m_deltaNeutralClearingAccount)
+        			|| !IsEmpty(order.m_deltaNeutralClearingIntent)
+        			) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support deltaNeutral parameters: ConId, SettlingFirm, ClearingAccount, ClearingIntent");
+        		return;
+        	}
+        }
+        
+        
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 35;
         
         // send place order msg
         try {
@@ -1185,6 +1201,13 @@ public class EClientSocket {
                } else {
             	   send( order.m_deltaNeutralOrderType);
             	   sendMax( order.m_deltaNeutralAuxPrice);
+                   
+                   if (m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL_CONID && !IsEmpty(order.m_deltaNeutralOrderType)){
+                       send( order.m_deltaNeutralConId);
+                       send( order.m_deltaNeutralSettlingFirm);
+                       send( order.m_deltaNeutralClearingAccount);
+                       send( order.m_deltaNeutralClearingIntent);
+                   }
                }
                send( order.m_continuousUpdate);
                if (m_serverVersion == 26) {

@@ -454,6 +454,13 @@ public class EReader extends Thread {
                     } else { // version 12 and up
                     	order.m_deltaNeutralOrderType = readStr();
                     	order.m_deltaNeutralAuxPrice = readDouble();
+
+                        if (version >= 27 && !Util.StringIsEmpty(order.m_deltaNeutralOrderType)) {
+                            order.m_deltaNeutralConId = readInt();
+                            order.m_deltaNeutralSettlingFirm = readStr();
+                            order.m_deltaNeutralClearingAccount = readStr();
+                            order.m_deltaNeutralClearingIntent = readStr();
+                        }
                     }
                     order.m_continuousUpdate = readInt();
                     if (m_parent.serverVersion() == 26) {
@@ -741,7 +748,9 @@ public class EReader extends Thread {
                 	exec.m_cumQty = readInt();
                 	exec.m_avgPrice = readDouble();
                 }
-
+                if (version >= 8) {
+                    exec.m_orderRef = readStr();
+                }
                 eWrapper().execDetails( reqId, contract, exec);
                 break;
             }

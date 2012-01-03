@@ -107,6 +107,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " volatilityType=" + order.m_volatilityType +
         " deltaNeutralOrderType=" + order.m_deltaNeutralOrderType +
         " deltaNeutralAuxPrice=" + order.m_deltaNeutralAuxPrice +
+        " deltaNeutralConId=" + order.m_deltaNeutralConId +
+        " deltaNeutralSettlingFirm=" + order.m_deltaNeutralSettlingFirm +
+        " deltaNeutralClearingAccount=" + order.m_deltaNeutralClearingAccount +
+        " deltaNeutralClearingIntent=" + order.m_deltaNeutralClearingIntent +
         " continuousUpdate=" + order.m_continuousUpdate +
         " referencePriceType=" + order.m_referencePriceType +
         " trailStopPrice=" + order.m_trailStopPrice +
@@ -321,6 +325,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "liquidation = " + execution.m_liquidation + "\n"
         + "cumQty = " + execution.m_cumQty + "\n"
         + "avgPrice = " + execution.m_avgPrice + "\n"
+        + "orderRef = " + execution.m_orderRef + "\n"
         + " ---- Execution Details end ----\n";
         return msg;
     }

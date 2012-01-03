@@ -92,6 +92,10 @@ struct Order
 		volatilityType        = UNSET_INTEGER;     // 1=daily, 2=annual
 		deltaNeutralOrderType = "";
 		deltaNeutralAuxPrice  = UNSET_DOUBLE;
+		deltaNeutralConId     = 0;
+		deltaNeutralSettlingFirm = "";
+		deltaNeutralClearingAccount = "";
+		deltaNeutralClearingIntent = "";
 		continuousUpdate      = false;
 		referencePriceType    = UNSET_INTEGER; // 1=Average, 2 = BidOrAsk
 
@@ -180,6 +184,10 @@ struct Order
 	int      volatilityType;     // 1=daily, 2=annual
 	IBString deltaNeutralOrderType;
 	double   deltaNeutralAuxPrice;
+	long     deltaNeutralConId;
+	IBString deltaNeutralSettlingFirm;
+	IBString deltaNeutralClearingAccount;
+	IBString deltaNeutralClearingIntent;
 	bool     continuousUpdate;
 	int      referencePriceType; // 1=Average, 2 = BidOrAsk
 
