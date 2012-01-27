@@ -1,0 +1,55 @@
+#
+# spec file for package @PACKAGE@
+#
+
+
+Name:           @PACKAGE@
+Version:        @VERSION@
+Release:        1%{?dist}
+Summary:        Interactive Brokers CPP Library
+License:        Unknown
+Group:          System Environment/Libraries
+URL:            http://www.interactivebrokers.com/
+Source:         @PACKAGE@-%{version}.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
+
+%description
+Library for Interactive Brokers API
+
+%package devel
+Summary:        Headers for developing programs with @PACKAGE@ library
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+Requires:       pkgconfig
+
+%description devel
+This package contains the headers that programmers will need to
+develop applications which will use @PACKAGE@ Library.
+
+%prep
+%setup -q
+
+%build
+%configure
+%{__make}
+
+%install
+%{__rm} -rf %{buildroot}
+make DESTDIR=%{buildroot} install
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%clean
+%{__rm} -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+%doc %{_docdir}/%{name}/
+%{_libdir}/lib@PACKAGE@.a
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/pkgconfig/lib@PACKAGE@.pc
+%{_includedir}/@PACKAGE@/
