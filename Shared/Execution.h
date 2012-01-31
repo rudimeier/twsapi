@@ -32,6 +32,7 @@ struct Execution
    int         liquidation;
    int         cumQty;
    double      avgPrice;
+   IBString    orderRef;
 };
 
 struct ExecutionFilter

@@ -274,5 +274,6 @@ void PosixTestClient::realtimeBar(TickerId reqId, long time, double open, double
 void PosixTestClient::fundamentalData(TickerId reqId, const IBString& data) {}
 void PosixTestClient::deltaNeutralValidation(int reqId, const UnderComp& underComp) {}
 void PosixTestClient::tickSnapshotEnd(int reqId) {}
+void PosixTestClient::marketDataType(TickerId reqId, int marketDataType) {}
 
 }
