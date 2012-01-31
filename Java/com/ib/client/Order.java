@@ -105,6 +105,13 @@ public class Order {
     public int      m_scaleInitLevelSize;
     public int      m_scaleSubsLevelSize;
     public double   m_scalePriceIncrement;
+    public double   m_scalePriceAdjustValue;
+    public int      m_scalePriceAdjustInterval;
+    public double   m_scaleProfitOffset;
+    public boolean  m_scaleAutoReset;
+    public int      m_scaleInitPosition;
+    public int      m_scaleInitFillQty;
+    public boolean  m_scaleRandomPercent;
 
     // HEDGE ORDERS ONLY
     public String   m_hedgeType; // 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
@@ -160,6 +167,13 @@ public class Order {
         m_scaleInitLevelSize = Integer.MAX_VALUE;
         m_scaleSubsLevelSize = Integer.MAX_VALUE;
         m_scalePriceIncrement = Double.MAX_VALUE;
+        m_scalePriceAdjustValue = Double.MAX_VALUE;
+        m_scalePriceAdjustInterval = Integer.MAX_VALUE;
+        m_scaleProfitOffset = Double.MAX_VALUE;
+        m_scaleAutoReset = false;
+        m_scaleInitPosition = Integer.MAX_VALUE;
+        m_scaleInitFillQty = Integer.MAX_VALUE;
+        m_scaleRandomPercent = false;
         m_whatIf = false;
         m_notHeld = false;
     }
@@ -221,6 +235,13 @@ public class Order {
         	m_scaleInitLevelSize != l_theOther.m_scaleInitLevelSize ||
         	m_scaleSubsLevelSize != l_theOther.m_scaleSubsLevelSize ||
         	m_scalePriceIncrement != l_theOther.m_scalePriceIncrement ||
+        	m_scalePriceAdjustValue != l_theOther.m_scalePriceAdjustValue ||
+        	m_scalePriceAdjustInterval != l_theOther.m_scalePriceAdjustInterval ||
+        	m_scaleProfitOffset != l_theOther.m_scaleProfitOffset ||
+        	m_scaleAutoReset != l_theOther.m_scaleAutoReset ||
+        	m_scaleInitPosition != l_theOther.m_scaleInitPosition ||
+        	m_scaleInitFillQty != l_theOther.m_scaleInitFillQty ||
+        	m_scaleRandomPercent != l_theOther.m_scaleRandomPercent ||
         	m_whatIf != l_theOther.m_whatIf ||
         	m_notHeld != l_theOther.m_notHeld ||
         	m_exemptCode != l_theOther.m_exemptCode) {

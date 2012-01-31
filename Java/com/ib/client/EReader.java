@@ -409,7 +409,7 @@ public class EReader extends Thread {
 
                 if ( version >= 9) {
                     order.m_rule80A = readStr();
-                    order.m_percentOffset = readDouble();
+                    order.m_percentOffset = readDoubleMax();
                     order.m_settlingFirm = readStr();
                     order.m_shortSaleSlot = readInt();
                     order.m_designatedLocation = readStr();
@@ -420,11 +420,11 @@ public class EReader extends Thread {
                     	order.m_exemptCode = readInt();
                     }
                     order.m_auctionStrategy = readInt();
-                    order.m_startingPrice = readDouble();
-                    order.m_stockRefPrice = readDouble();
-                    order.m_delta = readDouble();
-                    order.m_stockRangeLower = readDouble();
-                    order.m_stockRangeUpper = readDouble();
+                    order.m_startingPrice = readDoubleMax();
+                    order.m_stockRefPrice = readDoubleMax();
+                    order.m_delta = readDoubleMax();
+                    order.m_stockRangeLower = readDoubleMax();
+                    order.m_stockRangeUpper = readDoubleMax();
                     order.m_displaySize = readInt();
                     if ( version < 18) {
                         // will never happen
@@ -433,11 +433,11 @@ public class EReader extends Thread {
                     order.m_blockOrder = readBoolFromInt();
                     order.m_sweepToFill = readBoolFromInt();
                     order.m_allOrNone = readBoolFromInt();
-                    order.m_minQty = readInt();
+                    order.m_minQty = readIntMax();
                     order.m_ocaType = readInt();
                     order.m_eTradeOnly = readBoolFromInt();
                     order.m_firmQuoteOnly = readBoolFromInt();
-                    order.m_nbboPriceCap = readDouble();
+                    order.m_nbboPriceCap = readDoubleMax();
                 }
 
                 if ( version >= 10) {
@@ -446,14 +446,14 @@ public class EReader extends Thread {
                 }
 
                 if (version >= 11) {
-                    order.m_volatility = readDouble();
+                    order.m_volatility = readDoubleMax();
                     order.m_volatilityType = readInt();
                     if (version == 11) {
                     	int receivedInt = readInt();
                     	order.m_deltaNeutralOrderType = ( (receivedInt == 0) ? "NONE" : "MKT" ); 
                     } else { // version 12 and up
                     	order.m_deltaNeutralOrderType = readStr();
-                    	order.m_deltaNeutralAuxPrice = readDouble();
+                    	order.m_deltaNeutralAuxPrice = readDoubleMax();
 
                         if (version >= 27 && !Util.StringIsEmpty(order.m_deltaNeutralOrderType)) {
                             order.m_deltaNeutralConId = readInt();
@@ -471,12 +471,12 @@ public class EReader extends Thread {
                 }
                 
                 if (version >= 13) {
-                	order.m_trailStopPrice = readDouble();
+                	order.m_trailStopPrice = readDoubleMax();
                 }
 
                 if (version >= 14) {
-                	order.m_basisPoints = readDouble();
-                	order.m_basisPointsType = readInt();
+                	order.m_basisPoints = readDoubleMax();
+                	order.m_basisPointsType = readIntMax();
                 	contract.m_comboLegsDescrip = readStr();
                 }
                 
@@ -503,6 +503,16 @@ public class EReader extends Thread {
                 		order.m_scaleInitLevelSize = readIntMax();
                 	}
                 	order.m_scalePriceIncrement = readDoubleMax();
+                }
+                
+                if (version >= 28 && order.m_scalePriceIncrement > 0.0 && order.m_scalePriceIncrement != Double.MAX_VALUE) {
+                    order.m_scalePriceAdjustValue = readDoubleMax();
+                    order.m_scalePriceAdjustInterval = readIntMax();
+                    order.m_scaleProfitOffset = readDoubleMax();
+                    order.m_scaleAutoReset = readBoolFromInt();
+                    order.m_scaleInitPosition = readIntMax();
+                    order.m_scaleInitFillQty = readIntMax();
+                    order.m_scaleRandomPercent = readBoolFromInt();
                 }
                 
                 if (version >= 24) {

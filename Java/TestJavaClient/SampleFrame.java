@@ -1050,6 +1050,13 @@ class SampleFrame extends JFrame implements EWrapper {
         destOrder.m_scaleInitLevelSize = srcOrder.m_scaleInitLevelSize;
         destOrder.m_scaleSubsLevelSize = srcOrder.m_scaleSubsLevelSize;
         destOrder.m_scalePriceIncrement = srcOrder.m_scalePriceIncrement;
+        destOrder.m_scalePriceAdjustValue = srcOrder.m_scalePriceAdjustValue;
+        destOrder.m_scalePriceAdjustInterval = srcOrder.m_scalePriceAdjustInterval;
+        destOrder.m_scaleProfitOffset = srcOrder.m_scaleProfitOffset;
+        destOrder.m_scaleAutoReset = srcOrder.m_scaleAutoReset;
+        destOrder.m_scaleInitPosition = srcOrder.m_scaleInitPosition;
+        destOrder.m_scaleInitFillQty = srcOrder.m_scaleInitFillQty;
+        destOrder.m_scaleRandomPercent = srcOrder.m_scaleRandomPercent;
         destOrder.m_hedgeType = srcOrder.m_hedgeType;
         destOrder.m_hedgeParam = srcOrder.m_hedgeParam;
         destOrder.m_account = srcOrder.m_account;

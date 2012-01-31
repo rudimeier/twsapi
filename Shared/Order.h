@@ -107,6 +107,13 @@ struct Order
 		scaleInitLevelSize  = UNSET_INTEGER;
 		scaleSubsLevelSize  = UNSET_INTEGER;
 		scalePriceIncrement = UNSET_DOUBLE;
+		scalePriceAdjustValue = UNSET_DOUBLE;
+		scalePriceAdjustInterval = UNSET_INTEGER;
+		scaleProfitOffset = UNSET_DOUBLE;
+		scaleAutoReset = false;
+		scaleInitPosition = UNSET_INTEGER;
+		scaleInitFillQty = UNSET_INTEGER;
+		scaleRandomPercent = false;
 
 		// What-if
 		whatIf = false;
@@ -199,6 +206,13 @@ struct Order
 	int      scaleInitLevelSize;
 	int      scaleSubsLevelSize;
 	double   scalePriceIncrement;
+	double   scalePriceAdjustValue;
+	int      scalePriceAdjustInterval;
+	double   scaleProfitOffset;
+	bool     scaleAutoReset;
+	int      scaleInitPosition;
+	int      scaleInitFillQty;
+	bool     scaleRandomPercent;
 
 	// HEDGE ORDERS
 	IBString hedgeType;  // 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair

@@ -78,8 +78,10 @@ public class EClientSocket {
 	// 51 = can receive smartComboRoutingParams in openOrder
 	// 52 = can receive deltaNeutralConId, deltaNeutralSettlingFirm, deltaNeutralClearingAccount and deltaNeutralClearingIntent in openOrder
 	// 53 = can receive orderRef in execution
+	// 54 = can receive scale order fields (PriceAdjustValue, PriceAdjustInterval, ProfitOffset, AutoReset, 
+	//      InitPosition, InitFillQty and RandomPercent) in openOrder
 
-    private static final int CLIENT_VERSION = 53;
+    private static final int CLIENT_VERSION = 54;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -168,6 +170,7 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_OPT_OUT_SMART_ROUTING = 56;
     private static final int MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS = 57;
     private static final int MIN_SERVER_VER_DELTA_NEUTRAL_CONID = 58;
+    private static final int MIN_SERVER_VER_SCALE_ORDERS3 = 60;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -1018,8 +1021,24 @@ public class EClientSocket {
         	}
         }
         
+        if (m_serverVersion < MIN_SERVER_VER_SCALE_ORDERS3) {
+        	if (order.m_scalePriceIncrement > 0 && order.m_scalePriceIncrement != Double.MAX_VALUE) {
+        		if (order.m_scalePriceAdjustValue != Double.MAX_VALUE ||
+        			order.m_scalePriceAdjustInterval != Integer.MAX_VALUE ||
+        			order.m_scaleProfitOffset != Double.MAX_VALUE ||
+        			order.m_scaleAutoReset ||
+        			order.m_scaleInitPosition != Integer.MAX_VALUE ||
+        			order.m_scaleInitFillQty != Integer.MAX_VALUE ||
+        			order.m_scaleRandomPercent) {
+        			error(id, EClientErrors.UPDATE_TWS,
+        				"  It does not support Scale order parameters: PriceAdjustValue, PriceAdjustInterval, " +
+        				"ProfitOffset, AutoReset, InitPosition, InitFillQty and RandomPercent");
+        			return;
+        		}
+        	}
+        }
         
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 35;
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 36;
         
         // send place order msg
         try {
@@ -1235,6 +1254,16 @@ public class EClientSocket {
         		   
         	   }
         	   sendMax (order.m_scalePriceIncrement);
+           }
+
+           if (m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS3 && order.m_scalePriceIncrement > 0.0 && order.m_scalePriceIncrement != Double.MAX_VALUE) {
+               sendMax (order.m_scalePriceAdjustValue);
+               sendMax (order.m_scalePriceAdjustInterval);
+               sendMax (order.m_scaleProfitOffset);
+               send (order.m_scaleAutoReset);
+               sendMax (order.m_scaleInitPosition);
+               sendMax (order.m_scaleInitFillQty);
+               send (order.m_scaleRandomPercent);
            }
 
            if (m_serverVersion >= MIN_SERVER_VER_HEDGE_ORDERS) {

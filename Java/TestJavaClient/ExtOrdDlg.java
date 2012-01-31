@@ -79,6 +79,13 @@ public class ExtOrdDlg extends JDialog {
     private JTextField 	m_scaleInitLevelSize = new JTextField();
     private JTextField 	m_scaleSubsLevelSize = new JTextField();
     private JTextField 	m_scalePriceIncrement = new JTextField();
+    private JTextField 	m_scalePriceAdjustValue = new JTextField();
+    private JTextField 	m_scalePriceAdjustInterval = new JTextField();
+    private JTextField 	m_scaleProfitOffset = new JTextField();
+    private JCheckBox   m_scaleAutoReset = new JCheckBox("SCALE: Auto Reset", false);
+    private JTextField 	m_scaleInitPosition = new JTextField();
+    private JTextField 	m_scaleInitFillQty = new JTextField();
+    private JCheckBox   m_scaleRandomPercent = new JCheckBox("SCALE: Random Percent", false);
 
     private JTextField 	m_hedgeType = new JTextField();
     private JTextField 	m_hedgeParam = new JTextField();
@@ -93,7 +100,7 @@ public class ExtOrdDlg extends JDialog {
         setTitle( "Sample");
 
         // create extended order attributes panel
-        JPanel extOrderDetailsPanel = new JPanel( new GridLayout( 0, 4, 10, 10) );
+        JPanel extOrderDetailsPanel = new JPanel( new GridLayout( 0, 4, 5, 5) );
         extOrderDetailsPanel.setBorder( BorderFactory.createTitledBorder( "Extended Order Info") );
         extOrderDetailsPanel.add( new JLabel( "TIF") );
         extOrderDetailsPanel.add( m_tif);
@@ -196,12 +203,26 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add(new JLabel("VOL: Reference Price Type (1 or 2)"));
         extOrderDetailsPanel.add(m_VOLReferencePriceType);
         
-        extOrderDetailsPanel.add(new JLabel("SCALE: Scale Init Level Size"));
+        extOrderDetailsPanel.add(new JLabel("SCALE: Init Level Size"));
         extOrderDetailsPanel.add(m_scaleInitLevelSize);
-        extOrderDetailsPanel.add(new JLabel("SCALE: Scale Subs Level Size"));
+        extOrderDetailsPanel.add(new JLabel("SCALE: Subs Level Size"));
         extOrderDetailsPanel.add(m_scaleSubsLevelSize);
-        extOrderDetailsPanel.add(new JLabel("SCALE: Scale Price Increment"));
+        extOrderDetailsPanel.add(new JLabel("SCALE: Price Increment"));
         extOrderDetailsPanel.add(m_scalePriceIncrement);
+        extOrderDetailsPanel.add(new JLabel("SCALE: Price Adjust Value"));
+        extOrderDetailsPanel.add(m_scalePriceAdjustValue);
+        extOrderDetailsPanel.add(new JLabel("SCALE: Price Adjust Interval"));
+        extOrderDetailsPanel.add(m_scalePriceAdjustInterval);
+        extOrderDetailsPanel.add(new JLabel("SCALE: Profit Offset"));
+        extOrderDetailsPanel.add(m_scaleProfitOffset);
+        extOrderDetailsPanel.add(m_scaleAutoReset);
+        extOrderDetailsPanel.add( new JLabel(""));
+        extOrderDetailsPanel.add(new JLabel("SCALE: Init Position"));
+        extOrderDetailsPanel.add(m_scaleInitPosition);
+        extOrderDetailsPanel.add(new JLabel("SCALE: Init Fill Qty"));
+        extOrderDetailsPanel.add(m_scaleInitFillQty);
+        extOrderDetailsPanel.add(m_scaleRandomPercent);
+        extOrderDetailsPanel.add( new JLabel(""));
 
         extOrderDetailsPanel.add(new JLabel("HEDGE: Type"));
         extOrderDetailsPanel.add(m_hedgeType);
@@ -296,6 +317,13 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_scaleInitLevelSize = parseMaxInt(m_scaleInitLevelSize);
             m_order.m_scaleSubsLevelSize = parseMaxInt(m_scaleSubsLevelSize);
             m_order.m_scalePriceIncrement = parseMaxDouble(m_scalePriceIncrement);
+            m_order.m_scalePriceAdjustValue = parseMaxDouble(m_scalePriceAdjustValue);
+            m_order.m_scalePriceAdjustInterval = parseMaxInt(m_scalePriceAdjustInterval);
+            m_order.m_scaleProfitOffset = parseMaxDouble(m_scaleProfitOffset);
+            m_order.m_scaleAutoReset = m_scaleAutoReset.isSelected();
+            m_order.m_scaleInitPosition = parseMaxInt(m_scaleInitPosition);
+            m_order.m_scaleInitFillQty = parseMaxInt(m_scaleInitFillQty);
+            m_order.m_scaleRandomPercent = m_scaleRandomPercent.isSelected();
             m_order.m_hedgeType = m_hedgeType.getText().trim();
             m_order.m_hedgeParam = m_hedgeParam.getText().trim();
         }

@@ -90,7 +90,9 @@
 // 51 = can receive smartComboRoutingParams in openOrder
 // 52 = can receive deltaNeutralConId, deltaNeutralSettlingFirm, deltaNeutralClearingAccount and deltaNeutralClearingIntent in openOrder
 // 53 = can receive orderRef in execution
-const int CLIENT_VERSION    = 53;
+// 54 = can receive scale order fields (PriceAdjustValue, PriceAdjustInterval, ProfitOffset, AutoReset, 
+//      InitPosition, InitFillQty and RandomPercent) in openOrder
+const int CLIENT_VERSION    = 54;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -160,6 +162,7 @@ const int MIN_SERVER_VER_REQ_MARKET_DATA_TYPE	= 55;
 const int MIN_SERVER_VER_OPT_OUT_SMART_ROUTING  = 56;
 const int MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS = 57;
 const int MIN_SERVER_VER_DELTA_NEUTRAL_CONID    = 58;
+const int MIN_SERVER_VER_SCALE_ORDERS3          = 60;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -1341,9 +1344,26 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		}
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_SCALE_ORDERS3) {
+		if (order.scalePriceIncrement > 0 && order.scalePriceIncrement != UNSET_DOUBLE) {
+			if (order.scalePriceAdjustValue != UNSET_DOUBLE 
+				|| order.scalePriceAdjustInterval != UNSET_INTEGER 
+				|| order.scaleProfitOffset != UNSET_DOUBLE 
+				|| order.scaleAutoReset 
+				|| order.scaleInitPosition != UNSET_INTEGER 
+				|| order.scaleInitFillQty != UNSET_INTEGER 
+				|| order.scaleRandomPercent) {
+				m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+						"  It does not support Scale order parameters: PriceAdjustValue, PriceAdjustInterval, " +
+						"ProfitOffset, AutoReset, InitPosition, InitFillQty and RandomPercent");
+				return;
+			}
+		}
+	}
+
 	std::ostringstream msg;
 
-	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 35;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 36;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1551,6 +1571,17 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	}
 
 	ENCODE_FIELD_MAX( order.scalePriceIncrement);
+
+	if( m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS3 
+		&& order.scalePriceIncrement > 0.0 && order.scalePriceIncrement != UNSET_DOUBLE) {
+		ENCODE_FIELD_MAX( order.scalePriceAdjustValue);
+		ENCODE_FIELD_MAX( order.scalePriceAdjustInterval);
+		ENCODE_FIELD_MAX( order.scaleProfitOffset);
+		ENCODE_FIELD( order.scaleAutoReset);
+		ENCODE_FIELD_MAX( order.scaleInitPosition);
+		ENCODE_FIELD_MAX( order.scaleInitFillQty);
+		ENCODE_FIELD( order.scaleRandomPercent);
+	}
 
 	// HEDGE orders
 	if( m_serverVersion >= MIN_SERVER_VER_HEDGE_ORDERS) {
@@ -2433,7 +2464,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( order.goodTillDate); // ver 8 field
 
 				DECODE_FIELD( order.rule80A); // ver 9 field
-				DECODE_FIELD( order.percentOffset); // ver 9 field
+				DECODE_FIELD_MAX( order.percentOffset); // ver 9 field
 				DECODE_FIELD( order.settlingFirm); // ver 9 field
 				DECODE_FIELD( order.shortSaleSlot); // ver 9 field
 				DECODE_FIELD( order.designatedLocation); // ver 9 field
@@ -2445,11 +2476,11 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 					DECODE_FIELD( order.exemptCode);
 				}
 				DECODE_FIELD( order.auctionStrategy); // ver 9 field
-				DECODE_FIELD( order.startingPrice); // ver 9 field
-				DECODE_FIELD( order.stockRefPrice); // ver 9 field
-				DECODE_FIELD( order.delta); // ver 9 field
-				DECODE_FIELD( order.stockRangeLower); // ver 9 field
-				DECODE_FIELD( order.stockRangeUpper); // ver 9 field
+				DECODE_FIELD_MAX( order.startingPrice); // ver 9 field
+				DECODE_FIELD_MAX( order.stockRefPrice); // ver 9 field
+				DECODE_FIELD_MAX( order.delta); // ver 9 field
+				DECODE_FIELD_MAX( order.stockRangeLower); // ver 9 field
+				DECODE_FIELD_MAX( order.stockRangeUpper); // ver 9 field
 				DECODE_FIELD( order.displaySize); // ver 9 field
 
 				//if( version < 18) {
@@ -2460,19 +2491,19 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( order.blockOrder); // ver 9 field
 				DECODE_FIELD( order.sweepToFill); // ver 9 field
 				DECODE_FIELD( order.allOrNone); // ver 9 field
-				DECODE_FIELD( order.minQty); // ver 9 field
+				DECODE_FIELD_MAX( order.minQty); // ver 9 field
 				DECODE_FIELD( order.ocaType); // ver 9 field
 				DECODE_FIELD( order.eTradeOnly); // ver 9 field
 				DECODE_FIELD( order.firmQuoteOnly); // ver 9 field
-				DECODE_FIELD( order.nbboPriceCap); // ver 9 field
+				DECODE_FIELD_MAX( order.nbboPriceCap); // ver 9 field
 
 				DECODE_FIELD( order.parentId); // ver 10 field
 				DECODE_FIELD( order.triggerMethod); // ver 10 field
 
-				DECODE_FIELD( order.volatility); // ver 11 field
+				DECODE_FIELD_MAX( order.volatility); // ver 11 field
 				DECODE_FIELD( order.volatilityType); // ver 11 field
 				DECODE_FIELD( order.deltaNeutralOrderType); // ver 11 field (had a hack for ver 11)
-				DECODE_FIELD( order.deltaNeutralAuxPrice); // ver 12 field
+				DECODE_FIELD_MAX( order.deltaNeutralAuxPrice); // ver 12 field
 
 				if (version >= 27 && !IsEmpty(order.deltaNeutralOrderType)) {
 					DECODE_FIELD( order.deltaNeutralConId);
@@ -2491,10 +2522,10 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 
 				DECODE_FIELD( order.referencePriceType); // ver 11 field
 
-				DECODE_FIELD( order.trailStopPrice); // ver 13 field
+				DECODE_FIELD_MAX( order.trailStopPrice); // ver 13 field
 
-				DECODE_FIELD( order.basisPoints); // ver 14 field
-				DECODE_FIELD( order.basisPointsType); // ver 14 field
+				DECODE_FIELD_MAX( order.basisPoints); // ver 14 field
+				DECODE_FIELD_MAX( order.basisPointsType); // ver 14 field
 				DECODE_FIELD( contract.comboLegsDescrip); // ver 14 field
 
 				if (version >= 26) {
@@ -2524,6 +2555,16 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 					DECODE_FIELD_MAX( order.scaleInitLevelSize); // scaleComponectSize
 				}
 				DECODE_FIELD_MAX( order.scalePriceIncrement); // ver 15 field
+
+				if (version >= 28 && order.scalePriceIncrement > 0.0 && order.scalePriceIncrement != UNSET_DOUBLE) {
+					DECODE_FIELD_MAX( order.scalePriceAdjustValue);
+					DECODE_FIELD_MAX( order.scalePriceAdjustInterval);
+					DECODE_FIELD_MAX( order.scaleProfitOffset);
+					DECODE_FIELD( order.scaleAutoReset);
+					DECODE_FIELD_MAX( order.scaleInitPosition);
+					DECODE_FIELD_MAX( order.scaleInitFillQty);
+					DECODE_FIELD( order.scaleRandomPercent);
+				}
 
 				if( version >= 24) {
 					DECODE_FIELD( order.hedgeType);

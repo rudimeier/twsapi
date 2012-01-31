@@ -77,6 +77,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " outsideRth=" + order.m_outsideRth +
         " hidden=" + order.m_hidden +
         " discretionaryAmt=" + order.m_discretionaryAmt +
+        " displaySize=" + order.m_displaySize +
         " triggerMethod=" + order.m_triggerMethod +
         " goodAfterTime=" + order.m_goodAfterTime +
         " goodTillDate=" + order.m_goodTillDate +
@@ -91,32 +92,39 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " ocaType=" + order.m_ocaType +
         " rule80A=" + order.m_rule80A +
         " allOrNone=" + order.m_allOrNone +
-        " minQty=" + order.m_minQty +
-        " percentOffset=" + order.m_percentOffset +
+        " minQty=" + Util.IntMaxString(order.m_minQty) +
+        " percentOffset=" + Util.DoubleMaxString(order.m_percentOffset) +
         " eTradeOnly=" + order.m_eTradeOnly +
         " firmQuoteOnly=" + order.m_firmQuoteOnly +
-        " nbboPriceCap=" + order.m_nbboPriceCap +
+        " nbboPriceCap=" + Util.DoubleMaxString(order.m_nbboPriceCap) +
         " optOutSmartRouting=" + order.m_optOutSmartRouting +
         " auctionStrategy=" + order.m_auctionStrategy +
-        " startingPrice=" + order.m_startingPrice +
-        " stockRefPrice=" + order.m_stockRefPrice +
-        " delta=" + order.m_delta +
-        " stockRangeLower=" + order.m_stockRangeLower +
-        " stockRangeUpper=" + order.m_stockRangeUpper +
-        " volatility=" + order.m_volatility +
+        " startingPrice=" + Util.DoubleMaxString(order.m_startingPrice) +
+        " stockRefPrice=" + Util.DoubleMaxString(order.m_stockRefPrice) +
+        " delta=" + Util.DoubleMaxString(order.m_delta) +
+        " stockRangeLower=" + Util.DoubleMaxString(order.m_stockRangeLower) +
+        " stockRangeUpper=" + Util.DoubleMaxString(order.m_stockRangeUpper) +
+        " volatility=" + Util.DoubleMaxString(order.m_volatility) +
         " volatilityType=" + order.m_volatilityType +
         " deltaNeutralOrderType=" + order.m_deltaNeutralOrderType +
-        " deltaNeutralAuxPrice=" + order.m_deltaNeutralAuxPrice +
+        " deltaNeutralAuxPrice=" + Util.DoubleMaxString(order.m_deltaNeutralAuxPrice) +
         " deltaNeutralConId=" + order.m_deltaNeutralConId +
         " deltaNeutralSettlingFirm=" + order.m_deltaNeutralSettlingFirm +
         " deltaNeutralClearingAccount=" + order.m_deltaNeutralClearingAccount +
         " deltaNeutralClearingIntent=" + order.m_deltaNeutralClearingIntent +
         " continuousUpdate=" + order.m_continuousUpdate +
         " referencePriceType=" + order.m_referencePriceType +
-        " trailStopPrice=" + order.m_trailStopPrice +
+        " trailStopPrice=" + Util.DoubleMaxString(order.m_trailStopPrice) +
         " scaleInitLevelSize=" + Util.IntMaxString(order.m_scaleInitLevelSize) +
         " scaleSubsLevelSize=" + Util.IntMaxString(order.m_scaleSubsLevelSize) +
         " scalePriceIncrement=" + Util.DoubleMaxString(order.m_scalePriceIncrement) +
+        " scalePriceAdjustValue=" + Util.DoubleMaxString(order.m_scalePriceAdjustValue) +
+        " scalePriceAdjustInterval=" + Util.IntMaxString(order.m_scalePriceAdjustInterval) +
+        " scaleProfitOffset=" + Util.DoubleMaxString(order.m_scaleProfitOffset) +
+        " scaleAutoReset=" + order.m_scaleAutoReset +
+        " scaleInitPosition=" + Util.IntMaxString(order.m_scaleInitPosition) +
+        " scaleInitFillQty=" + Util.IntMaxString(order.m_scaleInitFillQty) +
+        " scaleRandomPercent=" + order.m_scaleRandomPercent +
         " hedgeType=" + order.m_hedgeType +
         " hedgeParam=" + order.m_hedgeParam +
         " account=" + order.m_account +
@@ -132,8 +140,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         		msg += " comboLegsDescrip=" + contract.m_comboLegsDescrip;
         	}
         	if (order.m_basisPoints != Double.MAX_VALUE) {
-        		msg += " basisPoints=" + order.m_basisPoints;
-        		msg += " basisPointsType=" + order.m_basisPointsType;
+        		msg += " basisPoints=" + Util.DoubleMaxString(order.m_basisPoints);
+        		msg += " basisPointsType=" + Util.IntMaxString(order.m_basisPointsType);
         	}
         }
         
