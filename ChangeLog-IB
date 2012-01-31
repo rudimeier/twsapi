@@ -1,0 +1,83 @@
+
+Original IB API Release Notes taken from their homepage
+http://www.interactivebrokers.com
+=======================================================
+
+
+Build 9.66, January 13, 2012
+
+  * Opt Out of Default SmartRouting for ASX-Directed Orders
+  * Support for Frozen Market Data
+  * Support for Hedging Orders
+  * Support for Smart Combo Routing
+  * Changes to Bond Contract Data
+  * Echo Order Reference Field on Execution Objects
+
+
+Build 9.65, August 18, 2011
+
+  * Support for Short Sale Exempt Orders
+  * Support for globalCancel Request
+  * Active X Support in 64-bit Windows
+
+
+Build 9.64, December 15, 2010
+
+  * Request Market Data and Place Order by conid
+  * Bond Bid/Ask/Last Yield
+  * New Request for Implied Volatility
+  * New Tick Type: CUST_OPTION_COMPUTATION
+  * Tick Types Now Return Greeks, Underlying Price, Model Implied Volatility,
+    Stock and Option Reference Price
+  * New Request to Calculate Option Price and Greek Values
+
+
+Build 9.63, April 21, 2010
+
+  * New HALTED Tick Type
+  * Support for Security Identifiers in the Contract Object
+  * Fields added to the Contract Details Object
+  * New ActiveX for Excel Sample Spreadsheet
+  * Bug Fixes: ActiveX for Excel
+  * Bug Fixes: DDE for Excel
+
+
+Build 9.62, June 08, 2009
+
+  * New POSIX API and Test Client
+  * Required Validation for Precautionary Constraints
+  * DDE for Excel API Sample Spreadsheet Updates
+  * New ActiveX for Excel Sample Spreadsheet
+  * ContractDetails Passes More Information to the Client
+  * New End Marker for Tick Snapshots
+  * Important Bug Fixes
+  * RTVolume Generic Tick Type and mdoff Flag
+  * Using Negative API Order ID Numbers
+
+
+Build 9.6, January 20, 2009
+
+  * Support for IBALGO Orders
+  * RFQ Samples
+  * New underConId Field in ContractDetails Structure
+  * End-of-Download Marker for Orders
+  * End-of-Download Marker for Account Data
+  * End-of-Download Marker for Executions
+  * New Order Statuses
+
+
+Build 9.51, August 12, 200
+
+  * Reuters Fundamental Market Data
+  * Delta Neutral Combo Orders
+  * New ExecutionDetails fields
+  * End marker for ContractDetails
+  * Scale orders
+
+
+Build 9.41, April 7, 2008
+
+  * Reworked C++ internals
+
+
+---- older history skipped ----
