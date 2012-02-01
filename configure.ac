@@ -81,5 +81,6 @@ AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([PosixSocketClient/Makefile])
 AC_CONFIG_FILES([TestPosixSocketClient/Makefile])
 AC_CONFIG_FILES([libtwsapi.pc])
+AC_CONFIG_FILES([twsapi.spec])
 AC_OUTPUT
 

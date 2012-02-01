@@ -1,0 +1,47 @@
+#
+# spec file for package @PACKAGE@
+#
+
+
+Name:           @PACKAGE@
+Version:        @VERSION@
+Release:        1%{?dist}
+Summary:        C++ API for Interactive Brokers TWS
+License:        Unknown
+Group:          Development/Languages/C and C++
+URL:            https://github.com/rudimeier/twsapi/
+Source:         %{name}-%{version}.tar.gz
+BuildRequires:  gcc-c++
+BuildRequires:  pkgconfig
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+
+%description
+Library for Interactive Brokers API
+
+%package devel
+Summary:        Headers for developing programs with @PACKAGE@ library
+Group:          Development/Libraries
+
+%description devel
+This package contains the headers that programmers will need to
+develop applications which will use @PACKAGE@ Library.
+
+%prep
+%setup -q
+
+%build
+%configure --docdir=%{_docdir}/%{name}
+make %{?_smp_mflags}
+
+%install
+%{?make_install} %{!?make_install:make install DESTDIR=%{buildroot}}
+
+%clean
+rm -rf %{buildroot}
+
+%files devel
+%defattr(-,root,root,-)
+%doc %{_docdir}/%{name}/
+%{_libdir}/lib@PACKAGE@.a
+%{_libdir}/pkgconfig/lib@PACKAGE@.pc
+%{_includedir}/@PACKAGE@/
