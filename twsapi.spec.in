@@ -31,18 +31,17 @@ develop applications which will use @PACKAGE@ Library.
 
 %build
 %configure --docdir=%{_docdir}/%{name}
-%{__make}
+make %{?_smp_mflags}
 
 %install
-%{__rm} -rf %{buildroot}
-make DESTDIR=%{buildroot} install
+%{?make_install} %{!?make_install:make install DESTDIR=%{buildroot}}
 
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
 
 %clean
-%{__rm} -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
