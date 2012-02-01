@@ -11,6 +11,8 @@ License:        Unknown
 Group:          System Environment/Libraries
 URL:            http://www.interactivebrokers.com/
 Source:         @PACKAGE@-%{version}.tar.gz
+BuildRequires:  gcc-c++
+BuildRequires:  pkgconfig
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
@@ -19,8 +21,6 @@ Library for Interactive Brokers API
 %package devel
 Summary:        Headers for developing programs with @PACKAGE@ library
 Group:          Development/Libraries
-Requires:       %{name} = %{version}-%{release}
-Requires:       pkgconfig
 
 %description devel
 This package contains the headers that programmers will need to
@@ -36,19 +36,12 @@ make %{?_smp_mflags}
 %install
 %{?make_install} %{!?make_install:make install DESTDIR=%{buildroot}}
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
-
 %clean
 rm -rf %{buildroot}
 
-%files
+%files devel
 %defattr(-,root,root,-)
 %doc %{_docdir}/%{name}/
 %{_libdir}/lib@PACKAGE@.a
-
-%files devel
-%defattr(-,root,root,-)
 %{_libdir}/pkgconfig/lib@PACKAGE@.pc
 %{_includedir}/@PACKAGE@/
