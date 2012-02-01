@@ -30,7 +30,7 @@ develop applications which will use @PACKAGE@ Library.
 %setup -q
 
 %build
-%configure
+%configure --docdir=%{_docdir}/%{name}
 %{__make}
 
 %install
