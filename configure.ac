@@ -19,9 +19,11 @@ DEFAULT_CXXFLAGS="-g -Wall -W"
 AC_SUBST([DEFAULT_CXXFLAGS])
 
 
-
-
+dnl ** our default includes should support networking stuff
 ac_includes_default="$ac_includes_default
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
 #ifdef HAVE_NETDB_H
 # include <netdb.h>
 #endif
@@ -35,7 +37,7 @@ ac_includes_default="$ac_includes_default
 
 dnl ** check for specific header (.h) files that we are interested in
 AC_CHECK_HEADERS([fcntl.h])
-AC_CHECK_HEADERS([arpa/inet.h netdb.h])
+AC_CHECK_HEADERS([arpa/inet.h sys/socket.h netdb.h])
 AC_CHECK_HEADERS([winsock2.h ws2tcpip.h],
   [LIBS="-lws2_32"])
 
