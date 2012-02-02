@@ -1,6 +1,8 @@
 LANG = C
 LC_ALL = C
 
+ACLOCAL_AMFLAGS = -I m4
+
 SUBDIRS = PosixSocketClient TestPosixSocketClient
 
 dist_doc_DATA =
