@@ -38,8 +38,8 @@
 
 	inline int set_socket_nonblock(int sockfd)
 		{
-			unsigned long non_zero = 123;
-			if( ioctlsocket( sockfd, FIONREAD,  &non_zero) == NO_ERROR ) {
+			unsigned long mode = 1;
+			if( ioctlsocket(sockfd, FIONBIO, &mode) == NO_ERROR ) {
 				return 0;
 			}
 			return -1;
