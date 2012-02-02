@@ -34,15 +34,10 @@ ac_includes_default="$ac_includes_default
 
 
 dnl ** check for specific header (.h) files that we are interested in
-AC_CHECK_HEADERS([fcntl.h winsock2.h ws2tcpip.h])
+AC_CHECK_HEADERS([fcntl.h])
 AC_CHECK_HEADERS([arpa/inet.h netdb.h])
-
-dnl --------------------------------------------------
-dnl * add required libs for test client and pkg-config and the checks below
-dnl --------------------------------------------------
-if test "x$ac_cv_header_winsock2_h" = xyes; then
-	LIBS="-lws2_32"
-fi
+AC_CHECK_HEADERS([winsock2.h ws2tcpip.h],
+  [LIBS="-lws2_32"])
 
 
 dnl ** some systems need better checks for get*info
