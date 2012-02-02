@@ -46,13 +46,9 @@ dnl ** some systems need better checks for get*info
 SANE_CHECK_NETDB_FUNC(getaddrinfo)
 SANE_CHECK_NETDB_FUNC(gai_strerror)
 
-dnl -------------------------------------------------------
-dnl * test for AI_* flags that not all implementations have
-dnl -------------------------------------------------------
+
+dnl ** test for AI_* flags that not all implementations have
 AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
-
-
-
 
 
 ## output
@@ -62,4 +58,3 @@ AC_CONFIG_FILES([TestPosixSocketClient/Makefile])
 AC_CONFIG_FILES([libtwsapi.pc])
 AC_CONFIG_FILES([twsapi.spec])
 AC_OUTPUT
-
