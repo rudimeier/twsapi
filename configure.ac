@@ -47,9 +47,7 @@ fi
 
 dnl ** some systems need better checks for get*info
 SANE_CHECK_NETDB_FUNC(getaddrinfo)
-
-dnl Missing under mingw, sigh.
-AC_CHECK_FUNCS(gai_strerror)
+SANE_CHECK_NETDB_FUNC(gai_strerror)
 
 dnl -------------------------------------------------------
 dnl * test for AI_* flags that not all implementations have
