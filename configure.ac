@@ -45,25 +45,8 @@ if test "x$ac_cv_header_winsock2_h" = xyes; then
 fi
 
 
-dnl --------------------------------------------------
-dnl * test for getaddrinfo
-dnl --------------------------------------------------
-AC_MSG_CHECKING(for getaddrinfo)
-dnl Can't use AC_CHECK_FUNC here, because it doesn't do the right
-dnl thing on Windows.
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$ac_includes_default
-int testme(){ getaddrinfo; }]])],[AC_DEFINE([HAVE_GETADDRINFO], [1], [Define to 1 if you have the `getaddrinfo' function.]) ac_have_getaddrinfo=yes; AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
-
-dnl Under mingw, we may need to set WINVER to 0x0501 to expose getaddrinfo.
-if test "x$ac_have_getaddrinfo" = x; then
-  old_CFLAGS="$CFLAGS"
-  if test "z$ac_cv_header_ws2tcpip_h" = zyes; then
-    CFLAGS="-DWINVER=0x0501 $CFLAGS"
-    AC_MSG_CHECKING(for getaddrinfo if WINVER is 0x0501)
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[$ac_includes_default
-    int testme(){ getaddrinfo; }]])],[AC_DEFINE([HAVE_GETADDRINFO], [1], [Define to 1 if you have the `getaddrinfo' function.]) AC_DEFINE([NEED_WINVER_XP], [1], [Define to 1 if the `getaddrinfo' function needs WINVER set.]) EXTRA_CPPFLAGS="-DWINVER=0x0501 $EXTRA_CPPFLAGS"; AC_MSG_RESULT(yes)],[CFLAGS="$old_CFLAGS"; AC_MSG_RESULT(no)])
-  fi
-fi
+dnl ** some systems need better checks for get*info
+SANE_CHECK_NETDB_FUNC(getaddrinfo)
 
 dnl Missing under mingw, sigh.
 AC_CHECK_FUNCS(gai_strerror)
