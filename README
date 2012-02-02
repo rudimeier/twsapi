@@ -33,7 +33,7 @@ Repository layout
 
 Beside the usual master branch I keep two important branches:
  - ib_orig: the original IB API code from upstream
- - ib_orig_plus: the original IB API plus autotools build chain and namespace IB
+ - ib_orig_plus: the original IB API plus namespace IB
 
 Both are used to commit upstream updates to be merged into master. 
 
