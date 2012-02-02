@@ -21,6 +21,8 @@ Library for Interactive Brokers API
 %package devel
 Summary:        Headers for developing programs with @PACKAGE@ library
 Group:          Development/Libraries
+Provides:       %{name} = %{version}
+Obsoletes:      %{name} < %{version}
 
 %description devel
 This package contains the headers that programmers will need to
