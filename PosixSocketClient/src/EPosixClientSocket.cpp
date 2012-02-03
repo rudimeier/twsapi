@@ -7,10 +7,7 @@
 
 #include <string.h>
 #include <assert.h>
-
-#ifdef TWS_DEBUG
-	#include <stdio.h>
-#endif
+#include <stdio.h>
 
 namespace IB {
 
@@ -52,24 +49,9 @@ int resolveHost( const char *host, sockaddr_in *sa )
 			try all adresses and maybe add ipv6 support */
 		if( rp->ai_family == AF_INET ) {
 			void *addr = &(((struct sockaddr_in*)rp->ai_addr)->sin_addr);
-#ifdef TWS_DEBUG
-			char buf[64];
-			const char *addr_str =
-				inet_ntop( rp->ai_family, addr, buf, sizeof(buf) );
-			fprintf(stderr, "resolved: %s\n", addr_str);
-#endif
 			memcpy((char*) &sa->sin_addr.s_addr, addr, rp->ai_addrlen);
 			s = 0;
 			break;
-#ifdef TWS_DEBUG
-		} else if( rp->ai_family == AF_INET6 ) {
-			/* ipv6 resolving prepared */
-			void *addr = &(((struct sockaddr_in6*)rp->ai_addr)->sin6_addr);
-			char buf[64];
-			const char *addr_str =
-				inet_ntop( rp->ai_family, addr, buf, sizeof(buf) );
-			fprintf(stderr, "resolved: %s\n", addr_str);
-#endif
 		}
 	}
 
