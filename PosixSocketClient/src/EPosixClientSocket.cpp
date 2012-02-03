@@ -118,6 +118,23 @@ static int wait_socket( int fd, int flag )
 	return ret;
 }
 
+static int timeout_connect( int fd, const struct sockaddr *serv_addr,
+	socklen_t addrlen )
+{
+	if( connect( fd, serv_addr, addrlen) < 0 ) {
+		if( errno != EINPROGRESS ) {
+			return -1;
+		}
+	}
+	if( wait_socket( fd, WAIT_WRITE  ) <= 0 ) {
+		if( errno == 0 ) {
+			errno = ETIMEDOUT;
+		}
+		return -1;
+	}
+	return 0;
+}
+
 
 
 ///////////////////////////////////////////////////////////
@@ -190,17 +207,8 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	}
 
 	// try to connect
-	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
-		// error connecting
-		if( errno != EINPROGRESS ) {
-			const char *err = strerror(errno);
-			eDisconnect();
-			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-			return false;
-		}
-	}
-	if( wait_socket( m_fd, WAIT_WRITE  ) <= 0 ) {
-		const char *err = (errno != 0) ? strerror(errno) : strerror(ETIMEDOUT);
+	if( timeout_connect( m_fd, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
+		const char *err = strerror(errno);
 		eDisconnect();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
