@@ -15,15 +15,10 @@ namespace IB {
  * Resolve host names.
  * Return 0 on success or EAI_* errcode to be used with gai_strerror().
  */
-int resolveHost( const char *host, unsigned int port, sockaddr_in *sa )
+static int resolveHost( const char *host, unsigned int port,
+	struct addrinfo **res )
 {
 	struct addrinfo hints;
-	struct addrinfo *result;
-
-	memset( sa, 0, sizeof(sockaddr_in));
-	sa->sin_family = AF_INET;
-	sa->sin_port = htons( port);
-	sa->sin_addr.s_addr = inet_addr( host);
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_INET;
@@ -37,23 +32,11 @@ int resolveHost( const char *host, unsigned int port, sockaddr_in *sa )
 #endif
 	hints.ai_protocol = 0; 
 
-	int s = getaddrinfo(host, NULL, &hints, &result);
-	if( s != 0 ) {
-		return s;
-	}
+	char strport[32];
+	/* Convert the port number into a string. */
+	snprintf(strport, sizeof strport, "%u", port);
 
-	s = EAI_FAMILY;
-	if( result != NULL ) {
-		/* for now we are just using the first ipv4 address but we should
-			try all adresses and maybe add ipv6 support */
-		if( result->ai_family == AF_INET ) {
-			void *addr = &(((struct sockaddr_in*)result->ai_addr)->sin_addr);
-			memcpy((char*) &sa->sin_addr.s_addr, addr, result->ai_addrlen);
-			s = 0;
-		}
-	}
-
-	freeaddrinfo(result);
+	int s = getaddrinfo(host, strport, &hints, res);
 	return s;
 }
 
@@ -179,9 +162,9 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	}
 
 	// starting to connect to server
-	struct sockaddr_in sa;
+	struct addrinfo *aitop;
 
-	int s = resolveHost( host, port, &sa );
+	int s = resolveHost( host, port, &aitop );
 	if( s != 0 ) {
 		eDisconnect();
 		const char *err;
@@ -195,12 +178,14 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	}
 
 	// try to connect
-	if( timeout_connect( m_fd, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
+	if( timeout_connect( m_fd, aitop->ai_addr, aitop->ai_addrlen ) < 0 ) {
 		const char *err = strerror(errno);
 		eDisconnect();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
+
+	freeaddrinfo(aitop);
 
 	// set client id
 	setClientId( clientId);
