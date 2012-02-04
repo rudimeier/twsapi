@@ -86,6 +86,67 @@ int resolveHost( const char *host, sockaddr_in *sa )
 }
 
 
+enum { WAIT_READ = 1, WAIT_WRITE = 2 };
+
+static int wait_socket( int fd, int flag )
+{
+	errno = 0;
+	const int timeout_msecs = 5000;
+	
+	struct timeval tval;
+	tval.tv_usec = 1000 * (timeout_msecs % 1000);
+	tval.tv_sec = timeout_msecs / 1000;
+
+	fd_set waitSet;
+	FD_ZERO( &waitSet );
+	FD_SET( fd, &waitSet );
+
+	int ret;
+	switch( flag ) {
+	case WAIT_READ:
+		ret = select( fd + 1, &waitSet, NULL, NULL, &tval );
+		break;
+	case WAIT_WRITE:
+		ret = select( fd + 1, NULL, &waitSet, NULL, &tval );
+		break;
+	default:
+		assert( false );
+		ret = 0;
+		break;
+	}
+	
+	return ret;
+}
+
+static int timeout_connect( int fd, const struct sockaddr *serv_addr,
+	socklen_t addrlen )
+{
+	if( connect( fd, serv_addr, addrlen) < 0 ) {
+		if( errno != EINPROGRESS ) {
+			return -1;
+		}
+	}
+	if( wait_socket( fd, WAIT_WRITE  ) <= 0 ) {
+		if( errno == 0 ) {
+			errno = ETIMEDOUT;
+		}
+		return -1;
+	}
+
+	/* Completed or failed */
+	int optval = 0;
+	socklen_t optlen = sizeof(optval);
+	/* casting  &optval to char* is required for win32 */
+	if( getsockopt(fd, SOL_SOCKET, SO_ERROR, (char*)&optval, &optlen) == -1 ) {
+		return -1;
+	}
+	if (optval != 0) {
+		errno = optval;
+		return -1;
+	}
+	return 0;
+}
+
 
 
 ///////////////////////////////////////////////////////////
@@ -98,40 +159,6 @@ EPosixClientSocket::EPosixClientSocket( EWrapper *ptr) : EClientSocketBase( ptr)
 EPosixClientSocket::~EPosixClientSocket()
 {
 }
-
-
-enum { WAIT_READ = 1, WAIT_WRITE = 2 };
-
-int EPosixClientSocket::wait_socket( int flag )
-{
-	errno = 0;
-	const int timeout_msecs = 5000;
-	
-	struct timeval tval;
-	tval.tv_usec = 1000 * (timeout_msecs % 1000);
-	tval.tv_sec = timeout_msecs / 1000;
-
-	fd_set waitSet;
-	FD_ZERO( &waitSet );
-	FD_SET( m_fd, &waitSet );
-
-	int ret;
-	switch( flag ) {
-	case WAIT_READ:
-		ret = select( m_fd + 1, &waitSet, NULL, NULL, &tval );
-		break;
-	case WAIT_WRITE:
-		ret = select( m_fd + 1, NULL, &waitSet, NULL, &tval );
-		break;
-	default:
-		assert( false );
-		ret = 0;
-		break;
-	}
-	
-	return ret;
-}
-
 
 bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId)
 {
@@ -192,17 +219,8 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	}
 
 	// try to connect
-	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
-		// error connecting
-		if( errno != EINPROGRESS ) {
-			const char *err = strerror(errno);
-			eDisconnect();
-			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-			return false;
-		}
-	}
-	if( wait_socket( WAIT_WRITE  ) <= 0 ) {
-		const char *err = (errno != 0) ? strerror(errno) : strerror(ETIMEDOUT);
+	if( timeout_connect( m_fd, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
+		const char *err = strerror(errno);
 		eDisconnect();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
@@ -217,7 +235,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		/* For now we consider it as error if it's not possible to send an
 		   integer string within a single tcp packet. Here we don't know weather
 		   ::send() really failed or not. If so then we hopefully still have
-		   it's errno set. Seems that we even get ECONNREFUSED (O_NONBLOCK). */
+		   it's errno set.*/
 		const char *err = (errno != 0) ? strerror(errno)
 			: "Sending client id failed.";
 		eDisconnect();
@@ -225,7 +243,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		return false;
 	}
 
-	if( wait_socket( WAIT_READ ) <= 0 ) {
+	if( wait_socket( m_fd, WAIT_READ ) <= 0 ) {
 		const char *err = (errno != 0) ? strerror(errno) : strerror(ENODATA);
 		eDisconnect();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );

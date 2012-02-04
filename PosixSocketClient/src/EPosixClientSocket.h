@@ -32,7 +32,6 @@ public:
 	void onSend();
 
 private:
-	int wait_socket( int flag );
 
 	int m_fd;
 };
