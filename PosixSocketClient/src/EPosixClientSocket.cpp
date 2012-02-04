@@ -15,10 +15,15 @@ namespace IB {
  * Resolve host names.
  * Return 0 on success or EAI_* errcode to be used with gai_strerror().
  */
-int resolveHost( const char *host, sockaddr_in *sa )
+int resolveHost( const char *host, unsigned int port, sockaddr_in *sa )
 {
 	struct addrinfo hints;
 	struct addrinfo *result;
+
+	memset( sa, 0, sizeof(sockaddr_in));
+	sa->sin_family = AF_INET;
+	sa->sin_port = htons( port);
+	sa->sin_addr.s_addr = inet_addr( host);
 
 	memset(&hints, 0, sizeof(struct addrinfo));
 	hints.ai_family = AF_UNSPEC;
@@ -176,12 +181,8 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 
 	// starting to connect to server
 	struct sockaddr_in sa;
-	memset( &sa, 0, sizeof(sa));
-	sa.sin_family = AF_INET;
-	sa.sin_port = htons( port);
-	sa.sin_addr.s_addr = inet_addr( host);
 
-	int s = resolveHost( host, &sa );
+	int s = resolveHost( host, port, &sa );
 	if( s != 0 ) {
 		eDisconnect();
 		const char *err;
