@@ -15,13 +15,13 @@ namespace IB {
  * Resolve host names.
  * Return 0 on success or EAI_* errcode to be used with gai_strerror().
  */
-static int resolveHost( const char *host, unsigned int port,
+static int resolveHost( const char *host, unsigned int port, int family,
 	struct addrinfo **res )
 {
 	struct addrinfo hints;
 
 	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_INET;
+	hints.ai_family = family;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = 0;
 #if HAVE_DECL_AI_ADDRCONFIG
@@ -147,7 +147,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	// starting to connect to server
 	struct addrinfo *aitop;
 
-	int s = resolveHost( host, port, &aitop );
+	int s = resolveHost( host, port, AF_INET, &aitop );
 	if( s != 0 ) {
 		SocketsDestroy();
 		const char *err;
