@@ -26,7 +26,7 @@ int resolveHost( const char *host, unsigned int port, sockaddr_in *sa )
 	sa->sin_addr.s_addr = inet_addr( host);
 
 	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_UNSPEC;
+	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = 0;
 #if HAVE_DECL_AI_ADDRCONFIG
@@ -43,14 +43,13 @@ int resolveHost( const char *host, unsigned int port, sockaddr_in *sa )
 	}
 
 	s = EAI_FAMILY;
-	for( struct addrinfo *rp = result; rp != NULL; rp = rp->ai_next ) {
+	if( result != NULL ) {
 		/* for now we are just using the first ipv4 address but we should
 			try all adresses and maybe add ipv6 support */
-		if( rp->ai_family == AF_INET ) {
-			void *addr = &(((struct sockaddr_in*)rp->ai_addr)->sin_addr);
-			memcpy((char*) &sa->sin_addr.s_addr, addr, rp->ai_addrlen);
+		if( result->ai_family == AF_INET ) {
+			void *addr = &(((struct sockaddr_in*)result->ai_addr)->sin_addr);
+			memcpy((char*) &sa->sin_addr.s_addr, addr, result->ai_addrlen);
 			s = 0;
-			break;
 		}
 	}
 
