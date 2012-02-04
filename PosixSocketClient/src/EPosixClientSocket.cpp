@@ -139,6 +139,27 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		return false;
 	}
 
+	// use local machine if no host passed in
+	if ( !( host && *host)) {
+		host = "127.0.0.1";
+	}
+
+	// starting to connect to server
+	struct addrinfo *aitop;
+
+	int s = resolveHost( host, port, &aitop );
+	if( s != 0 ) {
+		SocketsDestroy();
+		const char *err;
+#ifdef HAVE_GETADDRINFO
+		err = gai_strerror(s);
+#else
+		err = "Invalid address, hostname resolving not supported.";
+#endif
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
+		return false;
+	}
+
 	// create socket
 	m_fd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -155,27 +176,6 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	   We could even make O_NONBLOCK optional. */
 	int sn = set_socket_nonblock( m_fd );
 	assert( sn == 0 );
-
-	// use local machine if no host passed in
-	if ( !( host && *host)) {
-		host = "127.0.0.1";
-	}
-
-	// starting to connect to server
-	struct addrinfo *aitop;
-
-	int s = resolveHost( host, port, &aitop );
-	if( s != 0 ) {
-		eDisconnect();
-		const char *err;
-#ifdef HAVE_GETADDRINFO
-		err = gai_strerror(s);
-#else
-		err = "Invalid address, hostname resolving not supported.";
-#endif
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		return false;
-	}
 
 	// try to connect
 	if( timeout_connect( m_fd, aitop->ai_addr, aitop->ai_addrlen ) < 0 ) {
