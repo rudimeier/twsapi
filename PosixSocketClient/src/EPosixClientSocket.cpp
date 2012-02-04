@@ -132,6 +132,18 @@ static int timeout_connect( int fd, const struct sockaddr *serv_addr,
 		}
 		return -1;
 	}
+
+	/* Completed or failed */
+	int optval = 0;
+	socklen_t optlen = sizeof(optval);
+	/* casting  &optval to char* is required for win32 */
+	if( getsockopt(fd, SOL_SOCKET, SO_ERROR, (char*)&optval, &optlen) == -1 ) {
+		return -1;
+	}
+	if (optval != 0) {
+		errno = optval;
+		return -1;
+	}
 	return 0;
 }
 
@@ -223,7 +235,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		/* For now we consider it as error if it's not possible to send an
 		   integer string within a single tcp packet. Here we don't know weather
 		   ::send() really failed or not. If so then we hopefully still have
-		   it's errno set. Seems that we even get ECONNREFUSED (O_NONBLOCK). */
+		   it's errno set.*/
 		const char *err = (errno != 0) ? strerror(errno)
 			: "Sending client id failed.";
 		eDisconnect();
