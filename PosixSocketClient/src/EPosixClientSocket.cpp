@@ -125,6 +125,19 @@ EPosixClientSocket::~EPosixClientSocket()
 
 bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId)
 {
+	/* after test period we'll change the default to AF_UNSPEC */
+	return eConnect2( host, port, clientId, AF_INET );
+}
+
+/**
+ * Same as eConnect() except you may the specify address family here (default is
+ * AF_UNSPEC).
+ * We couldn't just add the new family arg to eConnect because the original one
+ * is pure virtual declared in EClientSocketBase. Thanks C++ design crap ...
+ */
+bool EPosixClientSocket::eConnect2( const char *host, unsigned int port,
+	int clientId, int family )
+{
 	// already connected?
 	if( m_fd >= 0) {
 		assert(false); // for now we don't allow that
@@ -147,7 +160,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	// starting to connect to server
 	struct addrinfo *aitop;
 
-	int s = resolveHost( host, port, AF_INET, &aitop );
+	int s = resolveHost( host, port, family, &aitop );
 	if( s != 0 ) {
 		SocketsDestroy();
 		const char *err;
