@@ -161,7 +161,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	}
 
 	// create socket
-	m_fd = socket(AF_INET, SOCK_STREAM, 0);
+	m_fd = socket(aitop->ai_family, aitop->ai_socktype, 0);
 
 	// cannot create socket
 	if( m_fd < 0) {
