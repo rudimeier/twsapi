@@ -17,12 +17,6 @@ namespace IB {
  */
 int resolveHost( const char *host, sockaddr_in *sa )
 {
-	if (sa->sin_addr.s_addr != INADDR_NONE) {
-		/* No need to resolve it. */
-		return 0;
-	}
-
-#ifdef HAVE_GETADDRINFO
 	struct addrinfo hints;
 	struct addrinfo *result;
 
@@ -57,14 +51,6 @@ int resolveHost( const char *host, sockaddr_in *sa )
 
 	freeaddrinfo(result);
 	return s;
-#else
-	/* resolving at least localhost */
-	if( strcasecmp(host, "localhost") == 0 ) {
-		sa->sin_addr.s_addr = inet_addr( "127.0.0.1");
-		return 0;
-	}
-	return -1;
-#endif // HAVE_GETADDRINFO
 }
 
 
