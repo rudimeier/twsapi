@@ -160,16 +160,16 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		return false;
 	}
 
+	int con_errno = 0;
+	for( struct addrinfo *ai = aitop; ai != NULL; ai = ai->ai_next ) {
+
 	// create socket
-	m_fd = socket(aitop->ai_family, aitop->ai_socktype, 0);
+	m_fd = socket(ai->ai_family, ai->ai_socktype, 0);
 
 	// cannot create socket
 	if( m_fd < 0) {
-		const char *err = strerror(errno);
-		// uninitialize Winsock DLL (only for Windows)
-		SocketsDestroy();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		return false;
+		con_errno = errno;
+		continue;
 	}
 
 	/* Set socket O_NONBLOCK. If wanted we could handle errors (portability!).
@@ -178,14 +178,25 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	assert( sn == 0 );
 
 	// try to connect
-	if( timeout_connect( m_fd, aitop->ai_addr, aitop->ai_addrlen ) < 0 ) {
-		const char *err = strerror(errno);
-		eDisconnect();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		return false;
+	if( timeout_connect( m_fd, ai->ai_addr, ai->ai_addrlen ) < 0 ) {
+		con_errno = errno;
+		SocketClose(m_fd);
+		m_fd = -1;
+		continue;
+	}
+		/* successfully  connected */
+		break;
 	}
 
 	freeaddrinfo(aitop);
+
+	/* connection failed, tell the error which happened in our last try  */
+	if( m_fd < 0 ) {
+		const char *err = strerror(con_errno);
+		SocketsDestroy();
+		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
+		return false;
+	}
 
 	// set client id
 	setClientId( clientId);
