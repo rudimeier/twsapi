@@ -223,7 +223,7 @@ void PosixTestClient::currentTime( long time)
 
 void PosixTestClient::error(const int id, const int errorCode, const IBString errorString)
 {
-//	printf( "Error id=%d, errorCode=%d, msg=%s\n", id, errorCode, errorString.c_str());
+	printf( "Error id=%d, errorCode=%d, msg=%s\n", id, errorCode, errorString.c_str());
 
 	if( id == -1 && errorCode == 1100) // if "Connectivity between IB and TWS has been lost"
 		disconnect();

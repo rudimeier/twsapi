@@ -107,7 +107,15 @@ static int wait_socket( int fd, int flag )
 		ret = select( fd + 1, &waitSet, NULL, NULL, &tval );
 		break;
 	case WAIT_WRITE:
+#if defined _WIN32
+		/* exceptfds is only needed on windows to note "connection refused "*/
+		fd_set exceptfds;
+		FD_ZERO( &exceptfds );
+		FD_SET( fd, &exceptfds );
+		ret = select( fd + 1, NULL, &waitSet, &exceptfds, &tval );
+#else
 		ret = select( fd + 1, NULL, &waitSet, NULL, &tval );
+#endif
 		break;
 	default:
 		assert( false );
@@ -121,7 +129,7 @@ static int wait_socket( int fd, int flag )
 static int timeout_connect( int fd, const struct sockaddr *serv_addr,
 	socklen_t addrlen )
 {
-	if( connect( fd, serv_addr, addrlen) < 0 ) {
+	if( socket_connect( fd, serv_addr, addrlen) < 0 ) {
 		if( errno != EINPROGRESS ) {
 			return -1;
 		}

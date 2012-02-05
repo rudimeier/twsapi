@@ -35,15 +35,6 @@
 	};
 	inline bool SocketsDestroy() { return ( !WSACleanup()); };
 	inline int SocketClose(int sockfd) { return closesocket( sockfd); };
-
-	inline int set_socket_nonblock(int sockfd)
-		{
-			unsigned long non_zero = 123;
-			if( ioctlsocket( sockfd, FIONREAD,  &non_zero) == NO_ERROR ) {
-				return 0;
-			}
-			return -1;
-		}
 	}
 
 #else
@@ -61,20 +52,53 @@
 	inline bool SocketsInit() { return true; };
 	inline bool SocketsDestroy() { return true; };
 	inline int SocketClose(int sockfd) { return close( sockfd); };
-
-	inline int set_socket_nonblock(int sockfd)
-	{
-		int flags = fcntl( sockfd, F_GETFL, 0 );
-		if( flags < 0 ) {
-			return -1;
-		}
-		if( fcntl(sockfd, F_SETFL, flags | O_NONBLOCK)  < 0 ) {
-			return -1;
-		}
-		return 0;
-	}
 	}
 
 #endif
+
+
+namespace IB {
+
+
+static inline int
+set_socket_nonblock(int sockfd)
+{
+#if defined _WIN32
+	unsigned long mode = 1;
+	if( ioctlsocket(sockfd, FIONBIO, &mode) != NO_ERROR ) {
+		return -1;
+	}
+#else
+	int flags = fcntl( sockfd, F_GETFL, 0 );
+	if( flags == -1 ) {
+		return -1;
+	}
+	if( fcntl(sockfd, F_SETFL, flags | O_NONBLOCK)  == -1 ) {
+		return -1;
+	}
+#endif
+	return 0;
+}
+
+
+static inline int
+socket_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+{
+	int rval = connect(sockfd, addr, addrlen );
+#if defined _WIN32
+	/* connect does not set errno on win32 */
+	if( rval != 0 ) {
+		errno = WSAGetLastError();
+		if( errno == WSAEWOULDBLOCK ) {
+			errno = EINPROGRESS;
+		}
+	}
+#endif
+	return rval;
+}
+
+
+} // namespace IB
+
 
 #endif
