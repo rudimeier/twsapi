@@ -107,7 +107,15 @@ static int wait_socket( int fd, int flag )
 		ret = select( fd + 1, &waitSet, NULL, NULL, &tval );
 		break;
 	case WAIT_WRITE:
+#if defined _WIN32
+		/* exceptfds is only needed on windows to note "connection refused "*/
+		fd_set exceptfds;
+		FD_ZERO( &exceptfds );
+		FD_SET( fd, &exceptfds );
+		ret = select( fd + 1, NULL, &waitSet, &exceptfds, &tval );
+#else
 		ret = select( fd + 1, NULL, &waitSet, NULL, &tval );
+#endif
 		break;
 	default:
 		assert( false );
