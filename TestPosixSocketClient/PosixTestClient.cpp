@@ -35,7 +35,7 @@ bool PosixTestClient::connect(const char *host, unsigned int port, int clientId)
 	// trying to connect
 	printf( "Connecting to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
 
-	bool bRes = m_pClient->eConnect( host, port, clientId);
+	bool bRes = m_pClient->eConnect2( host, port, clientId);
 
 	if (bRes) {
 		printf( "Connected to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
