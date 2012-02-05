@@ -77,4 +77,28 @@
 
 #endif
 
+
+namespace IB {
+
+
+static inline int
+socket_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+{
+	int rval = connect(sockfd, addr, addrlen );
+#if defined _WIN32
+	/* connect does not set errno on win32 */
+	if( rval != 0 ) {
+		errno = WSAGetLastError();
+		if( errno == WSAEWOULDBLOCK ) {
+			errno = EINPROGRESS;
+		}
+	}
+#endif
+	return rval;
+}
+
+
+} // namespace IB
+
+
 #endif

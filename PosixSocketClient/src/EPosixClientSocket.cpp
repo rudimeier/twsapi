@@ -121,7 +121,7 @@ static int wait_socket( int fd, int flag )
 static int timeout_connect( int fd, const struct sockaddr *serv_addr,
 	socklen_t addrlen )
 {
-	if( connect( fd, serv_addr, addrlen) < 0 ) {
+	if( socket_connect( fd, serv_addr, addrlen) < 0 ) {
 		if( errno != EINPROGRESS ) {
 			return -1;
 		}
