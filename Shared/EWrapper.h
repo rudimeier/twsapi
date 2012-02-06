@@ -124,7 +124,7 @@ public:
    virtual void deltaNeutralValidation(int reqId, const UnderComp& underComp) = 0;
    virtual void tickSnapshotEnd( int reqId) = 0;
    /* XXX: for now not pure to not break source compatibility */
-   virtual void marketDataType( TickerId reqId, int marketDataType) {};
+   virtual void marketDataType( TickerId /*reqId*/, int /*marketDataType*/) {};
 };
 
 
