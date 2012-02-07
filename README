@@ -50,13 +50,21 @@ Changes of original IB API
 Here I point out some of the most important things about our modified TWS API.
 (This documentation may not be entirely complete.)
 
+Improvements:
+ - Comfortable autotools build chain and pkg-config support to make developers
+   happy.
+ - Generally the socket error handling is stable and reliable now. Error message
+   callbacks with code SOCKET_EXCEPTION are using standard message strings
+   (errno/strerror).
+ - Never throwing nor catching any Exceptions.
+ - Using non-blocking sockets with well defined connection timeout. 
+ - Hostnames will be resolved.
+ - IPv6 support.
+ - Source compatibility between API updates.
 
-Generally the socket error handling is stable and reliable now. Error message
-callbacks with code SOCKET_EXCEPTION are using standard message strings
-(errno/strerror).
 
-Hostnames will be resolved.
-
+Below some details about the improved reliablity of the API interface functions
+and callbacks.
 
 eConnect():
  1. It's blocking and returns either connected or disconnected.

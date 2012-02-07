@@ -6,10 +6,20 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 0.4.0 - not yet released -------------------------------------------------------
 
-Update to IB API 9.65
+Update to IB API 9.65, add IPv6 support and minor fixes
 
   - update to IB API 9.66, see ChangeLog-IB for more details
-  - twsapi 0.4.x will be source compatible to 0.3 series
+  - twsapi 0.4.x will be source compatible to 0.3 series (i.e., code which
+    compiles against twsapi 0.3.x will still work with 0.4.x.)
+  - new build target: make rpm
+  - minor build chain fixes and cleanup
+  - fix, "connection refused" was noticed too late
+  - fix, on win32 we were still using blocking sockets
+  - drop support of systems without getaddrinfo()
+  - eConnect() now tries to connect to all possible IPs of a given hostname
+    before giving up
+  - add IPv6 support, it's still not used per default
+  - add new function eConnect2() to specify the wanted address family
 
 
 
