@@ -18,9 +18,6 @@ TestPosixSocketClient_CPPFLAGS =
 TestPosixSocketClient_CPPFLAGS += $(AM_CPPFLAGS)
 TestPosixSocketClient_CPPFLAGS += -I$(top_srcdir)/PosixSocketClient/src
 TestPosixSocketClient_CPPFLAGS += -I$(top_srcdir)/Shared
-TestPosixSocketClient_CXXFLAGS =
-TestPosixSocketClient_CXXFLAGS += $(DEFAULT_CXXFLAGS)
-TestPosixSocketClient_CXXFLAGS += -Wno-unused-parameter
 TestPosixSocketClient_LDFLAGS = $(AM_LDFLAGS)
 
 CLEANFILES =

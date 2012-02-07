@@ -11,6 +11,13 @@
 #include <time.h>
 #include <sys/time.h>
 
+#if defined __INTEL_COMPILER
+# pragma warning (disable:869)
+#elif defined __GNUC__
+# pragma GCC diagnostic ignored "-Wswitch"
+# pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif  /* __INTEL_COMPILER */
+
 namespace IB {
 
 const int PING_DEADLINE = 2; // seconds
