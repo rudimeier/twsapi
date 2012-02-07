@@ -35,9 +35,6 @@ libtwsapi_a_LIBADD =
 libtwsapi_a_CPPFLAGS =
 libtwsapi_a_CPPFLAGS += $(AM_CPPFLAGS)
 libtwsapi_a_CPPFLAGS += -I$(top_srcdir)/Shared
-libtwsapi_a_CXXFLAGS =
-libtwsapi_a_CXXFLAGS += $(DEFAULT_CXXFLAGS)
-libtwsapi_a_CXXFLAGS += -Wno-switch
 
 CLEANFILES =
 CLEANFILES += *.s
