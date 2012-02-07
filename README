@@ -3,7 +3,7 @@ Portable C++ API for Interactive Brokers TWS
 ============================================
 
 
-This twsapi is almost identical to the original IB C++ posix api. It contains
+This twsapi is almost identical to the original IB C++ Posix API. It contains
 several bugfixes, usage improvements and it's using the autotools build system.
 For more details read "Changes of original IB API" below.
 
@@ -15,8 +15,9 @@ Check out the latest version at https://github.com/rudimeier/twsapi
 Installation
 ------------
 
- Building from source requires a C++ compiler (tested with gcc/g++).
- Windows has been successfully tested using cygwin and mingw.
+ Building from source requires a C++ compiler. It has been very well tested with
+ GNU gcc/g++ and Intel icc/icpc on various Linux distros, MacOSX and
+ Windows/Cygwin. Native Windows/Mingw is also supported.
 
  When building from git checkout you need the autotools and don't forget to
  type "autoreconf -vfi" first.

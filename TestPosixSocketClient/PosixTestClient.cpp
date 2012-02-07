@@ -11,6 +11,13 @@
 #include <time.h>
 #include <sys/time.h>
 
+#if defined __INTEL_COMPILER
+# pragma warning (disable:869)
+#elif defined __GNUC__
+# pragma GCC diagnostic ignored "-Wswitch"
+# pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif  /* __INTEL_COMPILER */
+
 namespace IB {
 
 const int PING_DEADLINE = 2; // seconds
@@ -33,15 +40,15 @@ PosixTestClient::~PosixTestClient()
 bool PosixTestClient::connect(const char *host, unsigned int port, int clientId)
 {
 	// trying to connect
-	printf( "Connecting to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
+	printf( "Connecting to %s:%u clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
 
 	bool bRes = m_pClient->eConnect( host, port, clientId);
 
 	if (bRes) {
-		printf( "Connected to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
+		printf( "Connected to %s:%u clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
 	}
 	else
-		printf( "Cannot connect to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
+		printf( "Cannot connect to %s:%u clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
 
 	return bRes;
 }
