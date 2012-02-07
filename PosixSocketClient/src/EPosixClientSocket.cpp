@@ -7,10 +7,7 @@
 
 #include <string.h>
 #include <assert.h>
-
-#ifdef TWS_DEBUG
-	#include <stdio.h>
-#endif
+#include <stdio.h>
 
 namespace IB {
 
@@ -18,19 +15,13 @@ namespace IB {
  * Resolve host names.
  * Return 0 on success or EAI_* errcode to be used with gai_strerror().
  */
-int resolveHost( const char *host, sockaddr_in *sa )
+static int resolveHost( const char *host, unsigned int port, int family,
+	struct addrinfo **res )
 {
-	if (sa->sin_addr.s_addr != INADDR_NONE) {
-		/* No need to resolve it. */
-		return 0;
-	}
-
-#ifdef HAVE_GETADDRINFO
 	struct addrinfo hints;
-	struct addrinfo *result;
 
 	memset(&hints, 0, sizeof(struct addrinfo));
-	hints.ai_family = AF_UNSPEC;
+	hints.ai_family = family;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = 0;
 #if HAVE_DECL_AI_ADDRCONFIG
@@ -41,48 +32,12 @@ int resolveHost( const char *host, sockaddr_in *sa )
 #endif
 	hints.ai_protocol = 0; 
 
-	int s = getaddrinfo(host, NULL, &hints, &result);
-	if( s != 0 ) {
-		return s;
-	}
+	char strport[32];
+	/* Convert the port number into a string. */
+	snprintf(strport, sizeof strport, "%u", port);
 
-	s = EAI_FAMILY;
-	for( struct addrinfo *rp = result; rp != NULL; rp = rp->ai_next ) {
-		/* for now we are just using the first ipv4 address but we should
-			try all adresses and maybe add ipv6 support */
-		if( rp->ai_family == AF_INET ) {
-			void *addr = &(((struct sockaddr_in*)rp->ai_addr)->sin_addr);
-#ifdef TWS_DEBUG
-			char buf[64];
-			const char *addr_str =
-				inet_ntop( rp->ai_family, addr, buf, sizeof(buf) );
-			fprintf(stderr, "resolved: %s\n", addr_str);
-#endif
-			memcpy((char*) &sa->sin_addr.s_addr, addr, rp->ai_addrlen);
-			s = 0;
-			break;
-#ifdef TWS_DEBUG
-		} else if( rp->ai_family == AF_INET6 ) {
-			/* ipv6 resolving prepared */
-			void *addr = &(((struct sockaddr_in6*)rp->ai_addr)->sin6_addr);
-			char buf[64];
-			const char *addr_str =
-				inet_ntop( rp->ai_family, addr, buf, sizeof(buf) );
-			fprintf(stderr, "resolved: %s\n", addr_str);
-#endif
-		}
-	}
-
-	freeaddrinfo(result);
+	int s = getaddrinfo(host, strport, &hints, res);
 	return s;
-#else
-	/* resolving at least localhost */
-	if( strcasecmp(host, "localhost") == 0 ) {
-		sa->sin_addr.s_addr = inet_addr( "127.0.0.1");
-		return 0;
-	}
-	return -1;
-#endif // HAVE_GETADDRINFO
 }
 
 
@@ -170,6 +125,19 @@ EPosixClientSocket::~EPosixClientSocket()
 
 bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId)
 {
+	/* after test period we'll change the default to AF_UNSPEC */
+	return eConnect2( host, port, clientId, AF_INET );
+}
+
+/**
+ * Same as eConnect() except you may the specify address family here (default is
+ * AF_UNSPEC).
+ * We couldn't just add the new family arg to eConnect because the original one
+ * is pure virtual declared in EClientSocketBase. Thanks C++ design crap ...
+ */
+bool EPosixClientSocket::eConnect2( const char *host, unsigned int port,
+	int clientId, int family )
+{
 	// already connected?
 	if( m_fd >= 0) {
 		assert(false); // for now we don't allow that
@@ -184,38 +152,17 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		return false;
 	}
 
-	// create socket
-	m_fd = socket(AF_INET, SOCK_STREAM, 0);
-
-	// cannot create socket
-	if( m_fd < 0) {
-		const char *err = strerror(errno);
-		// uninitialize Winsock DLL (only for Windows)
-		SocketsDestroy();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		return false;
-	}
-
-	/* Set socket O_NONBLOCK. If wanted we could handle errors (portability!).
-	   We could even make O_NONBLOCK optional. */
-	int sn = set_socket_nonblock( m_fd );
-	assert( sn == 0 );
-
 	// use local machine if no host passed in
 	if ( !( host && *host)) {
 		host = "127.0.0.1";
 	}
 
 	// starting to connect to server
-	struct sockaddr_in sa;
-	memset( &sa, 0, sizeof(sa));
-	sa.sin_family = AF_INET;
-	sa.sin_port = htons( port);
-	sa.sin_addr.s_addr = inet_addr( host);
+	struct addrinfo *aitop;
 
-	int s = resolveHost( host, &sa );
+	int s = resolveHost( host, port, family, &aitop );
 	if( s != 0 ) {
-		eDisconnect();
+		SocketsDestroy();
 		const char *err;
 #ifdef HAVE_GETADDRINFO
 		err = gai_strerror(s);
@@ -226,10 +173,38 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 		return false;
 	}
 
-	// try to connect
-	if( timeout_connect( m_fd, (struct sockaddr*) &sa, sizeof(sa) ) < 0 ) {
-		const char *err = strerror(errno);
-		eDisconnect();
+	int con_errno = 0;
+	for( struct addrinfo *ai = aitop; ai != NULL; ai = ai->ai_next ) {
+
+		// create socket
+		m_fd = socket(ai->ai_family, ai->ai_socktype, 0);
+		if( m_fd < 0) {
+			con_errno = errno;
+			continue;
+		}
+
+		/* Set socket O_NONBLOCK. If wanted we could handle errors
+		   (portability!) We could even make O_NONBLOCK optional. */
+		int sn = set_socket_nonblock( m_fd );
+		assert( sn == 0 );
+
+		// try to connect
+		if( timeout_connect( m_fd, ai->ai_addr, ai->ai_addrlen ) < 0 ) {
+			con_errno = errno;
+			SocketClose(m_fd);
+			m_fd = -1;
+			continue;
+		}
+		/* successfully  connected */
+		break;
+	}
+
+	freeaddrinfo(aitop);
+
+	/* connection failed, tell the error which happened in our last try  */
+	if( m_fd < 0 ) {
+		const char *err = strerror(con_errno);
+		SocketsDestroy();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
