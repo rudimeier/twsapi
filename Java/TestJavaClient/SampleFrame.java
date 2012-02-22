@@ -1047,6 +1047,7 @@ class SampleFrame extends JFrame implements EWrapper {
         destOrder.m_continuousUpdate = srcOrder.m_continuousUpdate;
         destOrder.m_referencePriceType = srcOrder.m_referencePriceType;
         destOrder.m_trailStopPrice = srcOrder.m_trailStopPrice;
+        destOrder.m_trailingPercent = srcOrder.m_trailingPercent;
         destOrder.m_scaleInitLevelSize = srcOrder.m_scaleInitLevelSize;
         destOrder.m_scaleSubsLevelSize = srcOrder.m_scaleSubsLevelSize;
         destOrder.m_scalePriceIncrement = srcOrder.m_scalePriceIncrement;

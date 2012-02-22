@@ -67,8 +67,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " exchange=" + contract.m_exchange +
         " secType=" + contract.m_secType +
         " type=" + order.m_orderType +
-        " lmtPrice=" + order.m_lmtPrice +
-        " auxPrice=" + order.m_auxPrice +
+        " lmtPrice=" + Util.DoubleMaxString(order.m_lmtPrice) +
+        " auxPrice=" + Util.DoubleMaxString(order.m_auxPrice) +
         " TIF=" + order.m_tif +
         " localSymbol=" + contract.m_localSymbol +
         " client Id=" + order.m_clientId +
@@ -115,6 +115,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " continuousUpdate=" + order.m_continuousUpdate +
         " referencePriceType=" + order.m_referencePriceType +
         " trailStopPrice=" + Util.DoubleMaxString(order.m_trailStopPrice) +
+        " trailingPercent=" + Util.DoubleMaxString(order.m_trailingPercent) +
         " scaleInitLevelSize=" + Util.IntMaxString(order.m_scaleInitLevelSize) +
         " scaleSubsLevelSize=" + Util.IntMaxString(order.m_scaleSubsLevelSize) +
         " scalePriceIncrement=" + Util.DoubleMaxString(order.m_scalePriceIncrement) +
@@ -139,6 +140,29 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         	if (contract.m_comboLegsDescrip != null) {
         		msg += " comboLegsDescrip=" + contract.m_comboLegsDescrip;
         	}
+        	
+           	msg += " comboLegs={";
+            if (contract.m_comboLegs != null) {
+            	for (int i = 0; i < contract.m_comboLegs.size(); ++i) {
+            		ComboLeg comboLeg = (ComboLeg)contract.m_comboLegs.get(i);
+            		msg += " leg " + (i+1) + ": "; 
+            		msg += "conId=" +  comboLeg.m_conId;
+            		msg += " ratio=" +  comboLeg.m_ratio;
+            		msg += " action=" +  comboLeg.m_action;
+            		msg += " exchange=" +  comboLeg.m_exchange;
+            		msg += " openClose=" +  comboLeg.m_openClose;
+            		msg += " shortSaleSlot=" +  comboLeg.m_shortSaleSlot;
+            		msg += " designatedLocation=" +  comboLeg.m_designatedLocation;
+            		msg += " exemptCode=" +  comboLeg.m_exemptCode;
+            		if (order.m_orderComboLegs != null && contract.m_comboLegs.size() == order.m_orderComboLegs.size()) {
+            			OrderComboLeg orderComboLeg = (OrderComboLeg)order.m_orderComboLegs.get(i);
+            			msg += " price=" +  Util.DoubleMaxString(orderComboLeg.m_price);
+            		}
+            		msg += ";";
+            	}
+            }
+           	msg += "}";
+           	
         	if (order.m_basisPoints != Double.MAX_VALUE) {
         		msg += " basisPoints=" + Util.DoubleMaxString(order.m_basisPoints);
         		msg += " basisPointsType=" + Util.IntMaxString(order.m_basisPointsType);

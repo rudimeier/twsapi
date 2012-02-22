@@ -349,7 +349,7 @@ public class OrderDlg extends JDialog {
     void onAddComboLegs() {
     	
         ComboLegDlg comboLegDlg = new ComboLegDlg(
-        		m_contract.m_comboLegs, m_exchange.getText(), this);
+        		m_contract.m_comboLegs, m_order.m_orderComboLegs, m_exchange.getText(), this);
         
         // show the combo leg dialog
         comboLegDlg.setVisible( true);
@@ -418,8 +418,8 @@ public class OrderDlg extends JDialog {
             m_order.m_action = m_action.getText();
             m_order.m_totalQuantity = Integer.parseInt( m_totalQuantity.getText() );
             m_order.m_orderType = m_orderType.getText();
-            m_order.m_lmtPrice = Double.parseDouble( m_lmtPrice.getText() );
-            m_order.m_auxPrice = Double.parseDouble( m_auxPrice.getText() );
+            m_order.m_lmtPrice = parseStringToMaxDouble( m_lmtPrice.getText());
+            m_order.m_auxPrice = parseStringToMaxDouble( m_auxPrice.getText());
             m_order.m_goodAfterTime = m_goodAfterTime.getText();
             m_order.m_goodTillDate = m_goodTillDate.getText();
 
@@ -495,4 +495,14 @@ public class OrderDlg extends JDialog {
     		return defValue;
     	}
     }
+    
+    private double parseStringToMaxDouble(String value) {
+        if (value.trim().length() == 0) {
+            return Double.MAX_VALUE;
+            }
+        else {
+            return Double.parseDouble(value);
+        }
+    }
+    
 }

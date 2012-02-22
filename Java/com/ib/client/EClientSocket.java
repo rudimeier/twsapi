@@ -80,8 +80,10 @@ public class EClientSocket {
 	// 53 = can receive orderRef in execution
 	// 54 = can receive scale order fields (PriceAdjustValue, PriceAdjustInterval, ProfitOffset, AutoReset, 
 	//      InitPosition, InitFillQty and RandomPercent) in openOrder
+	// 55 = can receive orderComboLegs (price) in openOrder
+	// 56 = can receive trailingPercent in openOrder
 
-    private static final int CLIENT_VERSION = 54;
+    private static final int CLIENT_VERSION = 56;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -171,6 +173,8 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS = 57;
     private static final int MIN_SERVER_VER_DELTA_NEUTRAL_CONID = 58;
     private static final int MIN_SERVER_VER_SCALE_ORDERS3 = 60;
+    private static final int MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE = 61;
+    private static final int MIN_SERVER_VER_TRAILING_PERCENT = 62;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -1038,7 +1042,29 @@ public class EClientSocket {
         	}
         }
         
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 36;
+        if (m_serverVersion < MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE && BAG_SEC_TYPE.equalsIgnoreCase(contract.m_secType)) {
+        	if (!order.m_orderComboLegs.isEmpty()) {
+        		OrderComboLeg orderComboLeg;
+        		for (int i = 0; i < order.m_orderComboLegs.size(); ++i) {
+        			orderComboLeg = (OrderComboLeg)order.m_orderComboLegs.get(i);
+        			if (orderComboLeg.m_price != Double.MAX_VALUE) {
+        			error(id, EClientErrors.UPDATE_TWS,
+        				"  It does not support per-leg prices for order combo legs.");
+        			return;
+        			}
+        		}
+        	}
+        }
+        
+        if (m_serverVersion < MIN_SERVER_VER_TRAILING_PERCENT) {
+        	if (order.m_trailingPercent != Double.MAX_VALUE) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support trailing percent parameter");
+        		return;
+        	}
+        }
+        
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 38;
         
         // send place order msg
         try {
@@ -1075,8 +1101,18 @@ public class EClientSocket {
             send( order.m_action);
             send( order.m_totalQuantity);
             send( order.m_orderType);
-            send( order.m_lmtPrice);
-            send( order.m_auxPrice);
+            if (m_serverVersion < MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE) {
+                send( order.m_lmtPrice == Double.MAX_VALUE ? 0 : order.m_lmtPrice);
+            }
+            else {
+                sendMax( order.m_lmtPrice);
+            }
+            if (m_serverVersion < MIN_SERVER_VER_TRAILING_PERCENT) {
+                send( order.m_auxPrice == Double.MAX_VALUE ? 0 : order.m_auxPrice);
+            }
+            else {
+                sendMax( order.m_auxPrice);
+            }
 
             // send extended order fields
             send( order.m_tif);
@@ -1132,6 +1168,21 @@ public class EClientSocket {
                         if (m_serverVersion >= MIN_SERVER_VER_SSHORTX_OLD) { 
                             send( comboLeg.m_exemptCode);
                         }
+                    }
+                }
+            }
+            
+            // Send order combo legs for BAG requests
+            if(m_serverVersion >= MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE && BAG_SEC_TYPE.equalsIgnoreCase(contract.m_secType)) {
+                if ( order.m_orderComboLegs == null ) {
+                    send( 0);
+                }
+                else {
+                    send( order.m_orderComboLegs.size());
+
+                    for (int i = 0; i < order.m_orderComboLegs.size(); i++) {
+                        OrderComboLeg orderComboLeg = (OrderComboLeg)order.m_orderComboLegs.get(i);
+                        sendMax( orderComboLeg.m_price);
                     }
                 }
             }
@@ -1241,6 +1292,10 @@ public class EClientSocket {
            
            if (m_serverVersion >= 30) { // TRAIL_STOP_LIMIT stop price
                sendMax( order.m_trailStopPrice);
+           }
+           
+           if( m_serverVersion >= MIN_SERVER_VER_TRAILING_PERCENT){
+               sendMax( order.m_trailingPercent);
            }
            
            if (m_serverVersion >= MIN_SERVER_VER_SCALE_ORDERS) {

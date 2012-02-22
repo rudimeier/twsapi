@@ -361,8 +361,18 @@ public class EReader extends Thread {
                 order.m_action = readStr();
                 order.m_totalQuantity = readInt();
                 order.m_orderType = readStr();
-                order.m_lmtPrice = readDouble();
-                order.m_auxPrice = readDouble();
+                if (version < 29) { 
+                    order.m_lmtPrice = readDouble();
+                }
+                else {
+                    order.m_lmtPrice = readDoubleMax();
+                }
+                if (version < 30) { 
+                    order.m_auxPrice = readDouble();
+                }
+                else {
+                    order.m_auxPrice = readDoubleMax();
+                }
                 order.m_tif = readStr();
                 order.m_ocaGroup = readStr();
                 order.m_account = readStr();
@@ -474,10 +484,46 @@ public class EReader extends Thread {
                 	order.m_trailStopPrice = readDoubleMax();
                 }
 
+                if (version >= 30) {
+                	order.m_trailingPercent = readDoubleMax();
+                }
+
                 if (version >= 14) {
                 	order.m_basisPoints = readDoubleMax();
                 	order.m_basisPointsType = readIntMax();
                 	contract.m_comboLegsDescrip = readStr();
+                }
+                
+                if (version >= 29) {
+                	int comboLegsCount = readInt();
+                	if (comboLegsCount > 0) {
+                		contract.m_comboLegs = new Vector(comboLegsCount);
+                		for (int i = 0; i < comboLegsCount; ++i) {
+                			int conId = readInt();
+                			int ratio = readInt();
+                			String action = readStr();
+                			String exchange = readStr();
+                			int openClose = readInt();
+                			int shortSaleSlot = readInt();
+                			String designatedLocation = readStr();
+                			int exemptCode = readInt();
+                			
+                			ComboLeg comboLeg = new ComboLeg(conId, ratio, action, exchange, openClose, 
+                					shortSaleSlot, designatedLocation, exemptCode);
+                			contract.m_comboLegs.add(comboLeg);
+                		}
+                	}
+                	
+                	int orderComboLegsCount = readInt();
+                	if (orderComboLegsCount > 0) {
+                		order.m_orderComboLegs = new Vector(orderComboLegsCount);
+                		for (int i = 0; i < orderComboLegsCount; ++i) {
+                			double price = readDoubleMax(); 
+                			
+                			OrderComboLeg orderComboLeg = new OrderComboLeg(price);
+                			order.m_orderComboLegs.add(orderComboLeg);
+                		}
+                	}
                 }
                 
                 if (version >= 26) {

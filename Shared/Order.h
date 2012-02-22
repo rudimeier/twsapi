@@ -21,6 +21,21 @@ enum AuctionStrategy { AUCTION_UNSET = 0,
                        AUCTION_IMPROVEMENT = 2,
                        AUCTION_TRANSPARENT = 3 };
 
+struct OrderComboLeg
+{
+	OrderComboLeg()
+	{
+		price = UNSET_DOUBLE;
+	}
+
+	double price;
+
+	bool operator==( const OrderComboLeg &other) const
+	{
+		return (price == other.price);
+	}
+};
+
 struct TagValue
 {
 	TagValue() {}
@@ -33,6 +48,7 @@ struct TagValue
 };
 
 typedef shared_ptr<TagValue> TagValueSPtr;
+typedef shared_ptr<OrderComboLeg> OrderComboLegSPtr;
 
 struct Order
 {
@@ -45,8 +61,8 @@ struct Order
 
 		// main order fields
 		totalQuantity = 0;
-		lmtPrice      = 0;
-		auxPrice      = 0;
+		lmtPrice      = UNSET_DOUBLE;
+		auxPrice      = UNSET_DOUBLE;
 
 		// extended order fields
 		ocaType        = 0;
@@ -63,6 +79,7 @@ struct Order
 		percentOffset  = UNSET_DOUBLE;
 		overridePercentageConstraints = false;
 		trailStopPrice = UNSET_DOUBLE;
+		trailingPercent = UNSET_DOUBLE;
 
 		// institutional (ie non-cleared) only
 		openClose     = "O";
@@ -155,6 +172,7 @@ struct Order
 	double   percentOffset; // REL orders only
 	bool     overridePercentageConstraints;
 	double   trailStopPrice; // TRAILLIMIT orders only
+	double   trailingPercent;
 
 	// financial advisors only
 	IBString faGroup;
@@ -238,6 +256,36 @@ struct Order
 
 	// Not Held
 	bool     notHeld;
+
+	// order combo legs
+	typedef std::vector<OrderComboLegSPtr> OrderComboLegList;
+	typedef shared_ptr<OrderComboLegList> OrderComboLegListSPtr;
+
+	OrderComboLegListSPtr orderComboLegs;
+
+public:
+
+	// Helpers
+	static void CloneOrderComboLegs(OrderComboLegListSPtr& dst, const OrderComboLegListSPtr& src);
 };
+
+inline void
+Order::CloneOrderComboLegs(OrderComboLegListSPtr& dst, const OrderComboLegListSPtr& src)
+{
+	if (!src.get())
+		return;
+
+	dst->reserve(src->size());
+
+	OrderComboLegList::const_iterator iter = src->begin();
+	const OrderComboLegList::const_iterator iterEnd = src->end();
+
+	for (; iter != iterEnd; ++iter) {
+		const OrderComboLeg* leg = iter->get();
+		if (!leg)
+			continue;
+		dst->push_back(OrderComboLegSPtr(new OrderComboLeg(*leg)));
+	}
+}
 
 #endif

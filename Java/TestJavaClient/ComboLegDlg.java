@@ -24,6 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.table.AbstractTableModel;
 
 import com.ib.client.ComboLeg;
+import com.ib.client.OrderComboLeg;
 import com.ib.client.Contract;
 
 public class ComboLegDlg extends JDialog {
@@ -33,6 +34,7 @@ public class ComboLegDlg extends JDialog {
     //private static String 	SSHORT = "SSHORT";
 	
 	private Vector          m_comboLegs;
+	private Vector          m_orderComboLegs;
 
     private JTextField 		m_conId = new JTextField( "0");
     private JTextField 		m_ratio = new JTextField( "0");
@@ -42,6 +44,7 @@ public class ComboLegDlg extends JDialog {
     private JTextField      m_shortSaleSlot = new JTextField( "0");
     private JTextField      m_designatedLocation = new JTextField( "");
     private JTextField      m_exemptCode = new JTextField( "-1");
+    private JTextField      m_price = new JTextField( "");
     
     private JButton 		m_addLeg = new JButton( "Add");
     private JButton	 	    m_removeLeg = new JButton( "Remove");
@@ -54,17 +57,19 @@ public class ComboLegDlg extends JDialog {
    
     public ComboLegModel comboLegModel() { return m_comboLegsModel; }
 
-    public ComboLegDlg( Vector comboLegs, String orderExchange, JDialog owner) {
+    public ComboLegDlg( Vector<ComboLeg> comboLegs, Vector<OrderComboLeg> orderComboLegs, String orderExchange, JDialog owner) {
         super( owner, true);
         
         m_comboLegs = comboLegs;
+        m_orderComboLegs = orderComboLegs;
 
         setTitle( "Combination Legs");
 
         // create combos list panel
         JPanel pLegList = new JPanel( new GridLayout( 0, 1, 10, 10) );
         pLegList.setBorder( BorderFactory.createTitledBorder( "Combination Order legs:") );
-        m_comboLegsModel.comboLegModel().addAll(comboLegs);
+        m_comboLegsModel.comboLegData().addAll(comboLegs);
+        m_comboLegsModel.orderComboLegData().addAll(orderComboLegs);
         pLegList.add( m_comboLegsPane);
         
         if (orderExchange != null && orderExchange.length() > 0) {
@@ -90,6 +95,8 @@ public class ComboLegDlg extends JDialog {
         pComboDetails.add( m_designatedLocation);
         pComboDetails.add( new JLabel( "Exempt Code:") );
         pComboDetails.add( m_exemptCode);
+        pComboDetails.add( new JLabel( "Price:") );
+        pComboDetails.add( m_price);
         pComboDetails.add( m_addLeg);
         pComboDetails.add( m_removeLeg);
 
@@ -141,9 +148,11 @@ public class ComboLegDlg extends JDialog {
             int openClose = Integer.parseInt( m_openClose.getText());
             int shortSaleSlot = Integer.parseInt(m_shortSaleSlot.getText());
             int exemptCode = Integer.parseInt(m_exemptCode.getText().length() != 0 ? m_exemptCode.getText() : "-1");
+            double price = parseStringToMaxDouble(m_price.getText());
             m_comboLegsModel.addComboLeg( new ComboLeg(conId, ratio,
                             m_action.getText(), m_exchange.getText(), openClose,
-                            shortSaleSlot, m_designatedLocation.getText(), exemptCode) );
+                            shortSaleSlot, m_designatedLocation.getText(), exemptCode), 
+                            				new OrderComboLeg(price) );
         }
         catch( Exception e) {
             reportError( "Error - ", e);
@@ -168,7 +177,9 @@ public class ComboLegDlg extends JDialog {
 
     void onOk() {
     	m_comboLegs.clear();
-        m_comboLegs.addAll( m_comboLegsModel.comboLegModel());
+        m_comboLegs.addAll( m_comboLegsModel.comboLegData());
+        m_orderComboLegs.clear();
+        m_orderComboLegs.addAll( m_comboLegsModel.orderComboLegData());
         setVisible( false);
     }
 
@@ -192,28 +203,42 @@ public class ComboLegDlg extends JDialog {
         if( y < 0) y = 0;
         window.setLocation( x, y);
     }
+
+    private double parseStringToMaxDouble(String value) {
+        if (value.trim().length() == 0) {
+            return Double.MAX_VALUE;
+            }
+        else {
+            return Double.parseDouble(value);
+        }
+    }
+
 }
 
 class ComboLegModel extends AbstractTableModel {
-    private Vector  m_allData = new Vector();
+    private Vector  m_comboLegData = new Vector();
+    private Vector  m_orderComboLegData = new Vector();
 
-    synchronized public void addComboLeg( ComboLeg leg)
+    synchronized public void addComboLeg( ComboLeg comboLeg, OrderComboLeg orderComboLeg)
     {
-        m_allData.add( leg);
+        m_comboLegData.add( comboLeg);
+        m_orderComboLegData.add( orderComboLeg);
         fireTableDataChanged();
     }
 
     synchronized public void removeComboLeg( int index)
     {
-        m_allData.remove(index);
+        m_comboLegData.remove(index);
+        m_orderComboLegData.remove(index);
         fireTableDataChanged();
     }
 
-    synchronized public void removeComboLeg( ComboLeg leg)
+    synchronized public void removeComboLeg( ComboLeg comboLeg)
     {
-        for ( int i=0; i < m_allData.size(); i++ ) {
-                if ( leg.equals( (ComboLeg)m_allData.get(i)) ) {
-                        m_allData.remove(i);
+        for ( int i=0; i < m_comboLegData.size(); i++ ) {
+                if ( comboLeg.equals( (ComboLeg)m_comboLegData.get(i)) ) {
+                        m_comboLegData.remove(i);
+                        m_orderComboLegData.remove(i);
                         break;
                 }
         }
@@ -221,38 +246,42 @@ class ComboLegModel extends AbstractTableModel {
     }
 
     synchronized public void reset() {
-        m_allData.removeAllElements();
+        m_comboLegData.removeAllElements();
+        m_orderComboLegData.removeAllElements();
 		fireTableDataChanged();
     }
 
     synchronized public int getRowCount() {
-        return m_allData.size();
+        return m_comboLegData.size();
     }
 
     synchronized public int getColumnCount() {
-        return 8;
+        return 9;
     }
 
     synchronized public Object getValueAt(int r, int c) {
-        ComboLeg leg = (ComboLeg)m_allData.get(r);
+        ComboLeg comboLeg = (ComboLeg)m_comboLegData.get(r);
+        OrderComboLeg orderComboLeg = (OrderComboLeg)m_orderComboLegData.get(r);
 
         switch (c) {
             case 0:
-                return Integer.toString(leg.m_conId);
+                return Integer.toString(comboLeg.m_conId);
             case 1:
-                return Integer.toString(leg.m_ratio);
+                return Integer.toString(comboLeg.m_ratio);
             case 2:
-                return leg.m_action;
+                return comboLeg.m_action;
             case 3:
-                return leg.m_exchange;
+                return comboLeg.m_exchange;
             case 4:
-                return Integer.toString(leg.m_openClose);
+                return Integer.toString(comboLeg.m_openClose);
             case 5:
-            	return Integer.toString(leg.m_shortSaleSlot);
+               return Integer.toString(comboLeg.m_shortSaleSlot);
             case 6:
-            	return leg.m_designatedLocation;
+               return comboLeg.m_designatedLocation;
             case 7:
-            	return Integer.toString(leg.m_exemptCode);
+                return Integer.toString(comboLeg.m_exemptCode);
+            case 8:
+                return parseMaxDoubleToString(orderComboLeg.m_price);
             default:
                 return "";
         }
@@ -281,12 +310,24 @@ class ComboLegModel extends AbstractTableModel {
             	return "Designated Location";
             case 7:
             	return "Exempt Code";
+            case 8:
+                return "Price";
             default:
                 return null;
         }
     }
 
-    public Vector comboLegModel() {
-        return m_allData;
+    public Vector comboLegData() {
+        return m_comboLegData;
     }
+    
+    public Vector orderComboLegData() {
+        return m_orderComboLegData;
+    }
+    
+    private String parseMaxDoubleToString(double value) {
+        return value == Double.MAX_VALUE ? "" : String.valueOf(value);
+    }
+
+    
 }

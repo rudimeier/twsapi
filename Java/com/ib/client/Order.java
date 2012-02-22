@@ -52,6 +52,7 @@ public class Order {
     public int      m_minQty;
     public double   m_percentOffset;    // REL orders only
     public double   m_trailStopPrice;   // for TRAILLIMIT orders only
+    public double   m_trailingPercent;
 
     // Financial advisors only 
     public String   m_faGroup;
@@ -136,7 +137,12 @@ public class Order {
     // Smart combo routing params
     public Vector<TagValue> m_smartComboRoutingParams;
     
+    // order combo legs
+    public Vector<OrderComboLeg> m_orderComboLegs = new Vector<OrderComboLeg>();
+    
     public Order() {
+        m_lmtPrice = Double.MAX_VALUE;
+        m_auxPrice = Double.MAX_VALUE;
     	m_outsideRth = false;
         m_openClose	= "O";
         m_origin = CUSTOMER;
@@ -162,6 +168,7 @@ public class Order {
         m_deltaNeutralClearingIntent = EMPTY_STR;
         m_referencePriceType = Integer.MAX_VALUE;
         m_trailStopPrice = Double.MAX_VALUE;
+        m_trailingPercent = Double.MAX_VALUE;
         m_basisPoints = Double.MAX_VALUE;
         m_basisPointsType = Integer.MAX_VALUE;
         m_scaleInitLevelSize = Integer.MAX_VALUE;
@@ -211,6 +218,7 @@ public class Order {
         	m_minQty != l_theOther.m_minQty ||
         	m_percentOffset != l_theOther.m_percentOffset ||
         	m_trailStopPrice != l_theOther.m_trailStopPrice ||
+        	m_trailingPercent != l_theOther.m_trailingPercent ||
         	m_origin != l_theOther.m_origin ||
         	m_shortSaleSlot != l_theOther.m_shortSaleSlot ||
         	m_discretionaryAmt != l_theOther.m_discretionaryAmt ||
@@ -281,6 +289,11 @@ public class Order {
         }
 
         if (!Util.VectorEqualsUnordered(m_smartComboRoutingParams, l_theOther.m_smartComboRoutingParams)) {
+        	return false;
+        }
+
+    	// compare order combo legs
+        if (!Util.VectorEqualsUnordered(m_orderComboLegs, l_theOther.m_orderComboLegs)) {
         	return false;
         }
         

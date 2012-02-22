@@ -96,9 +96,11 @@ public class ExecFilterDlg extends JDialog {
 
             // set extended order fields
             String clientId = m_clientID.getText().toString();
-            m_execFilter.m_clientId = clientId != ""
-            		? Integer.parseInt( m_clientID.getText())
-            		: 0;
+            if(clientId.equals("")){
+            	m_execFilter.m_clientId = 0;
+            }else{
+            	m_execFilter.m_clientId = Integer.parseInt(clientId);
+            }
             m_execFilter.m_acctCode = m_acctCode.getText();
             m_execFilter.m_time = m_time.getText();
             m_execFilter.m_symbol = m_symbol.getText();

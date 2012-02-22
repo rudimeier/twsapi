@@ -75,6 +75,7 @@ public class ExtOrdDlg extends JDialog {
     private JTextField  m_VOLContinuousUpdate = new JTextField();
     private JTextField  m_VOLReferencePriceType = new JTextField();
     private JTextField  m_trailStopPrice = new JTextField();
+    private JTextField  m_trailingPercent = new JTextField();
     
     private JTextField 	m_scaleInitLevelSize = new JTextField();
     private JTextField 	m_scaleSubsLevelSize = new JTextField();
@@ -144,6 +145,8 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add( m_discretionaryAmt);
         extOrderDetailsPanel.add( new JLabel( "Trail Stop Price") );
         extOrderDetailsPanel.add( m_trailStopPrice);
+        extOrderDetailsPanel.add( new JLabel( "Trailing Percent") );
+        extOrderDetailsPanel.add( m_trailingPercent);
         extOrderDetailsPanel.add( new JLabel( "Institutional Short Sale Slot") );
         extOrderDetailsPanel.add( m_shortSaleSlot);
         extOrderDetailsPanel.add( new JLabel( "Institutional Designated Location") );
@@ -313,6 +316,7 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_continuousUpdate = parseInt(m_VOLContinuousUpdate);
             m_order.m_referencePriceType = parseMaxInt(m_VOLReferencePriceType);
             m_order.m_trailStopPrice = parseMaxDouble(m_trailStopPrice);
+            m_order.m_trailingPercent = parseMaxDouble(m_trailingPercent);
             
             m_order.m_scaleInitLevelSize = parseMaxInt(m_scaleInitLevelSize);
             m_order.m_scaleSubsLevelSize = parseMaxInt(m_scaleSubsLevelSize);
