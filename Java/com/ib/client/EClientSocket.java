@@ -82,8 +82,9 @@ public class EClientSocket {
 	//      InitPosition, InitFillQty and RandomPercent) in openOrder
 	// 55 = can receive orderComboLegs (price) in openOrder
 	// 56 = can receive trailingPercent in openOrder
+	// 57 = can receive commissionReport message
 
-    private static final int CLIENT_VERSION = 56;
+    private static final int CLIENT_VERSION = 57;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";

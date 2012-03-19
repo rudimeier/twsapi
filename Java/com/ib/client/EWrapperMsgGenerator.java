@@ -466,4 +466,15 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     static public String marketDataType(int reqId, int marketDataType){
     	return "id=" + reqId + " marketDataType = " + MarketDataType.getField(marketDataType);
     }
+    
+    static public String commissionReport( CommissionReport commissionReport) {
+        String msg = "commission report:" +
+        " execId=" + commissionReport.m_execId +
+        " commission=" + Util.DoubleMaxString(commissionReport.m_commission) +
+        " currency=" + commissionReport.m_currency +
+        " realizedPNL=" + Util.DoubleMaxString(commissionReport.m_realizedPNL) +
+        " yield=" + Util.DoubleMaxString(commissionReport.m_yield) +
+        " yieldRedemptionDate=" + Util.IntMaxString(commissionReport.m_yieldRedemptionDate);
+        return msg;
+    }
 }

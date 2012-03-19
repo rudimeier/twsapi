@@ -11,6 +11,7 @@
 #include "OrderState.h"
 #include "Execution.h"
 #include "ScannerSubscription.h"
+#include "CommissionReport.h"
 
 
 #include <sstream>
@@ -94,7 +95,8 @@
 //      InitPosition, InitFillQty and RandomPercent) in openOrder
 // 55 = can receive orderComboLegs (price) in openOrder
 // 56 = can receive trailingPercent in openOrder
-const int CLIENT_VERSION    = 56;
+// 57 = can receive commissionReport message
+const int CLIENT_VERSION    = 57;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -203,6 +205,7 @@ const int EXECUTION_DATA_END        = 55;
 const int DELTA_NEUTRAL_VALIDATION  = 56;
 const int TICK_SNAPSHOT_END         = 57;
 const int MARKET_DATA_TYPE          = 58;
+const int COMMISSION_REPORT         = 59;
 
 // TWS New Bulletins constants
 const int NEWS_MSG              = 1;    // standard IB news bulleting message
@@ -3310,6 +3313,23 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( marketDataType);
 
 				m_pEWrapper->marketDataType( reqId, marketDataType);
+				break;
+			}
+
+			case COMMISSION_REPORT:
+			{
+				int version;
+				DECODE_FIELD( version);
+
+				CommissionReport commissionReport;
+				DECODE_FIELD( commissionReport.execId);
+				DECODE_FIELD( commissionReport.commission);
+				DECODE_FIELD( commissionReport.currency);
+				DECODE_FIELD( commissionReport.realizedPNL);
+				DECODE_FIELD( commissionReport.yield);
+				DECODE_FIELD( commissionReport.yieldRedemptionDate);
+
+				m_pEWrapper->commissionReport( commissionReport);
 				break;
 			}
 

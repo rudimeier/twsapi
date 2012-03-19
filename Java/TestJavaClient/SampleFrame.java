@@ -27,6 +27,7 @@ import com.ib.client.Order;
 import com.ib.client.OrderState;
 import com.ib.client.UnderComp;
 import com.ib.client.Util;
+import com.ib.client.CommissionReport;
 
 class SampleFrame extends JFrame implements EWrapper {
     private static final int NOT_AN_FA_ACCOUNT_ERROR = 321 ;
@@ -998,6 +999,11 @@ class SampleFrame extends JFrame implements EWrapper {
     public void marketDataType(int reqId, int marketDataType) {
         String msg = EWrapperMsgGenerator.marketDataType(reqId, marketDataType);
         m_tickers.add(msg);
+    }
+
+    public void commissionReport(CommissionReport commissionReport) {
+        String msg = EWrapperMsgGenerator.commissionReport(commissionReport);
+        m_TWS.add(msg);
     }
 
     private void copyExtendedOrderDetails( Order destOrder, Order srcOrder) {

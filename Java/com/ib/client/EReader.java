@@ -46,6 +46,7 @@ public class EReader extends Thread {
     static final int DELTA_NEUTRAL_VALIDATION = 56;
     static final int TICK_SNAPSHOT_END = 57;
     static final int MARKET_DATA_TYPE = 58;
+    static final int COMMISSION_REPORT = 59;
 
     private EClientSocket 	m_parent;
     private DataInputStream m_dis;
@@ -980,7 +981,21 @@ public class EReader extends Thread {
                 eWrapper().marketDataType( reqId, marketDataType);
                 break;
             }
-            
+            case COMMISSION_REPORT: {
+                /*int version =*/ readInt();
+
+                CommissionReport commissionReport = new CommissionReport();
+                commissionReport.m_execId = readStr();
+                commissionReport.m_commission = readDouble();
+                commissionReport.m_currency = readStr();
+                commissionReport.m_realizedPNL = readDouble();
+                commissionReport.m_yield = readDouble();
+                commissionReport.m_yieldRedemptionDate = readInt();
+
+                eWrapper().commissionReport( commissionReport);
+                break;
+            }
+
             default: {
                 m_parent.error( EClientErrors.NO_VALID_ID, EClientErrors.UNKNOWN_ID.code(), EClientErrors.UNKNOWN_ID.msg());
                 return false;

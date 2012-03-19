@@ -92,6 +92,7 @@ public:
 	void deltaNeutralValidation(int reqId, const UnderComp& underComp);
 	void tickSnapshotEnd(int reqId);
 	void marketDataType(TickerId reqId, int marketDataType);
+	void commissionReport( const CommissionReport& commissionReport);
 
 private:
 

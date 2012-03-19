@@ -53,4 +53,5 @@ public interface EWrapper extends AnyWrapper {
     void deltaNeutralValidation(int reqId, UnderComp underComp);
     void tickSnapshotEnd(int reqId);
     void marketDataType(int reqId, int marketDataType);
+    void commissionReport(CommissionReport commissionReport);
 }

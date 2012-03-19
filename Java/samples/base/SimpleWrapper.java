@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
 import com.ib.client.ContractDetails;
 import com.ib.client.EClientSocket;
@@ -222,6 +223,10 @@ public class SimpleWrapper implements EWrapper {
       logIn("marketDataType");
    }
    
+   public void commissionReport(CommissionReport commissionReport) {
+      logIn("commissionReport");
+   }
+
    /* ***************************************************************
     * Helpers
     *****************************************************************/
