@@ -8,14 +8,24 @@ AC_CONFIG_SRCDIR([PosixSocketClient/])
 AM_INIT_AUTOMAKE([foreign])
 
 ## compiler check
-AC_PROG_CXX
+AC_PROG_CC
 AC_PROG_CC_C_O
 AC_PROG_CC_C99
+AC_PROG_CXX
+AC_PROG_CXX_C_O
 AC_PROG_RANLIB
 
+AC_LANG([C++])
+AX_COMPILER_VENDOR
+
 CPPFLAGS="${CPPFLAGS} -DIB_USE_STD_STRING"
-CXXFLAGS=""
-DEFAULT_CXXFLAGS="-g -Wall -W"
+# enable some warnings
+AX_CHECK_COMPILE_FLAG([-Wall],[warnflags="-Wall"])
+# intel's -Wextra is too verbose
+if test "$ax_cv_cxx_compiler_vendor" != "intel"; then
+	AX_CHECK_COMPILE_FLAG([-Wextra],[warnflags="$warnflags -Wextra"])
+fi
+DEFAULT_CXXFLAGS="$warnflags"
 AC_SUBST([DEFAULT_CXXFLAGS])
 
 

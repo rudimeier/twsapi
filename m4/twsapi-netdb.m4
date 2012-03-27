@@ -13,6 +13,8 @@ dnl This file is part of twsapi.
 # libs.
 AC_DEFUN([SANE_CHECK_NETDB_FUNC],
 [
+  # FIXME make this work with C++
+  AC_LANG_PUSH([C])
   do_winver_test="no"
 
   AC_CACHE_CHECK([for $1],[ac_cv_func_$1],
@@ -46,4 +48,5 @@ AC_DEFUN([SANE_CHECK_NETDB_FUNC],
   fi
 
   unset do_winver_test
+  AC_LANG_POP([C])
 ])
