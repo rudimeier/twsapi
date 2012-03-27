@@ -1,4 +1,5 @@
 AM_CPPFLAGS = -DDEBUG -D_GNU_SOURCE
+AM_CXXFLAGS = $(DEFAULT_CXXFLAGS)
 AM_LDFLAGS =
 
 headerdir = $(includedir)/twsapi
