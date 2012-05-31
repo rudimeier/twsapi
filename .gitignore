@@ -35,5 +35,7 @@ lib
 libtool
 ltmain.sh
 stamp-h1
+test-driver
+
 *.pc
 *.spec
