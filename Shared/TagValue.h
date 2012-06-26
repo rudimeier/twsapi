@@ -9,6 +9,8 @@
 
 #include <vector>
 
+namespace IB {
+
 struct TagValue
 {
 	TagValue() {}
@@ -24,5 +26,6 @@ typedef shared_ptr<TagValue> TagValueSPtr;
 typedef std::vector<TagValueSPtr> TagValueList;
 typedef shared_ptr<TagValueList> TagValueListSPtr;
 
+} // namespace IB
 #endif
 

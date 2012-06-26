@@ -6,6 +6,8 @@
 
 #include "IBString.h"
 
+namespace IB {
+
 struct CommissionReport
 {
 	CommissionReport()
@@ -25,4 +27,5 @@ struct CommissionReport
 	int			yieldRedemptionDate; // YYYYMMDD format
 };
 
+} // namespace IB
 #endif // commissionreport_def
