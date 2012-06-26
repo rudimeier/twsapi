@@ -1,8 +1,7 @@
 #ifndef contract_def
 #define contract_def
 
-#include <vector>
-#include "IBString.h"
+#include "TagValue.h"
 
 namespace IB {
 
@@ -66,6 +65,8 @@ struct UnderComp
 	double	price;
 };
 
+typedef shared_ptr<ComboLeg> ComboLegSPtr;
+
 struct Contract
 {
    Contract()
@@ -95,8 +96,11 @@ struct Contract
    // COMBOS
    IBString comboLegsDescrip; // received in open order 14 and up for all combos
 
-   typedef std::vector<ComboLeg*> ComboLegList;
-   ComboLegList* comboLegs;
+	// combo legs
+   typedef std::vector<ComboLegSPtr> ComboLegList;
+   typedef shared_ptr<ComboLegList> ComboLegListSPtr;
+
+   ComboLegListSPtr comboLegs;
 
    // delta neutral
    UnderComp* underComp;
@@ -104,8 +108,7 @@ struct Contract
 public:
 
 	// Helpers
-	static void CloneComboLegs(ComboLegList& dst, const ComboLegList& src);
-    static void CleanupComboLegs(ComboLegList&);
+	static void CloneComboLegs(ComboLegListSPtr& dst, const ComboLegListSPtr& src);
 };
 
 struct ContractDetails
@@ -119,6 +122,7 @@ struct ContractDetails
 	  , coupon(0)
 	  , convertible(false)
 	  , nextOptionPartial(false)
+	  , evMultiplier(0)
 		
    {
    }
@@ -139,6 +143,10 @@ struct ContractDetails
    IBString	timeZoneId;
    IBString	tradingHours;
    IBString	liquidHours;
+   IBString evRule;
+   double   evMultiplier;
+
+   TagValueListSPtr secIdList;
 
    // BOND values
    IBString cusip;
@@ -159,41 +167,24 @@ struct ContractDetails
 };
 
 inline void
-Contract::CloneComboLegs(ComboLegList& dst, const ComboLegList& src)
+Contract::CloneComboLegs(ComboLegListSPtr& dst, const ComboLegListSPtr& src)
 {
-	CleanupComboLegs(dst);
-
-	if (src.empty())
+	if (!src.get())
 		return;
 
-	dst.reserve(src.size());
+	dst->reserve(src->size());
 
-	ComboLegList::const_iterator iter = src.begin();
-	const ComboLegList::const_iterator iterEnd = src.end();
+	ComboLegList::const_iterator iter = src->begin();
+	const ComboLegList::const_iterator iterEnd = src->end();
 
 	for (; iter != iterEnd; ++iter) {
-		const ComboLeg* leg = *iter;
+		const ComboLeg* leg = iter->get();
 		if (!leg)
 			continue;
-		dst.push_back(new ComboLeg(*leg));
+		dst->push_back(ComboLegSPtr(new ComboLeg(*leg)));
 	}
 }
 
-inline void
-Contract::CleanupComboLegs(ComboLegList& legs)
-{
-	if (legs.empty())
-		return;
-
-	ComboLegList::iterator iter = legs.begin();
-	const ComboLegList::iterator iterEnd = legs.end();
-
-	for (; iter != iterEnd; ++iter) {
-		delete *iter;
-	}
-
-	legs.clear();
-}
 
 } // namespace IB
 #endif

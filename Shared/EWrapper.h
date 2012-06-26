@@ -68,6 +68,7 @@ struct Order;
 struct OrderState;
 struct Execution;
 struct UnderComp;
+struct CommissionReport;
 
 class EWrapper
 {
@@ -124,6 +125,7 @@ public:
    virtual void deltaNeutralValidation(int reqId, const UnderComp& underComp) = 0;
    virtual void tickSnapshotEnd( int reqId) = 0;
    virtual void marketDataType( TickerId reqId, int marketDataType) = 0;
+   virtual void commissionReport( const CommissionReport &commissionReport) = 0;
 };
 
 
