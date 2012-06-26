@@ -117,12 +117,12 @@ struct ContractDetails
       : minTick(0)
 	  , priceMagnifier(0)
 	  , underConId(0)
+	  , evMultiplier(0)
 	  , callable(false)
 	  , putable(false)
 	  , coupon(0)
 	  , convertible(false)
 	  , nextOptionPartial(false)
-	  , evMultiplier(0)
 		
    {
    }
