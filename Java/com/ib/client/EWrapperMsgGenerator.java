@@ -276,7 +276,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "subcategory = " + contractDetails.m_subcategory + "\n"
         + "timeZoneId = " + contractDetails.m_timeZoneId + "\n"
         + "tradingHours = " + contractDetails.m_tradingHours + "\n"
-        + "liquidHours = " + contractDetails.m_liquidHours + "\n";
+        + "liquidHours = " + contractDetails.m_liquidHours + "\n"
+        + "evRule = " + contractDetails.m_evRule + "\n"
+        + "evMultiplier = " + contractDetails.m_evMultiplier + "\n"
+        + contractDetailsSecIdList(contractDetails);
     	return msg;
     }
     
@@ -325,10 +328,29 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "nextOptionPartial = " + contractDetails.m_nextOptionPartial + "\n"
         + "notes = " + contractDetails.m_notes + "\n"
         + "longName = " + contractDetails.m_longName + "\n"
+        + "evRule = " + contractDetails.m_evRule + "\n"
+        + "evMultiplier = " + contractDetails.m_evMultiplier + "\n"
+        + contractDetailsSecIdList(contractDetails)
         + " ---- Bond Contract Details End ----\n";
         return msg;
     }
     
+    static public String contractDetailsSecIdList(ContractDetails contractDetails) {
+        String msg = "secIdList={";
+        if (contractDetails.m_secIdList != null) {
+            Vector secIdList = contractDetails.m_secIdList;
+            for (int i = 0; i < secIdList.size(); ++i) {
+                TagValue param = (TagValue)secIdList.elementAt(i);
+                if (i > 0) {
+                    msg += ",";
+                }
+                msg += param.m_tag + "=" + param.m_value;
+            }
+        }
+        msg += "}\n";
+        return msg;
+    }
+
     static public String contractDetailsEnd(int reqId) {
     	return "reqId = " + reqId + " =============== end ===============";
     }
@@ -343,6 +365,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "expiry = " + contract.m_expiry + "\n"
         + "strike = " + contract.m_strike + "\n"
         + "right = " + contract.m_right + "\n"
+        + "multiplier = " + contract.m_multiplier + "\n"
         + "contractExchange = " + contract.m_exchange + "\n"
         + "currency = " + contract.m_currency + "\n"
         + "localSymbol = " + contract.m_localSymbol + "\n"
@@ -358,6 +381,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "cumQty = " + execution.m_cumQty + "\n"
         + "avgPrice = " + execution.m_avgPrice + "\n"
         + "orderRef = " + execution.m_orderRef + "\n"
+        + "evRule = " + execution.m_evRule + "\n"
+        + "evMultiplier = " + execution.m_evMultiplier + "\n"
         + " ---- Execution Details end ----\n";
         return msg;
     }

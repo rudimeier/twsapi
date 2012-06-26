@@ -4,6 +4,8 @@
  */
 package com.ib.client;
 
+import java.util.Vector;
+
 public class ContractDetails {
     public Contract	m_summary;
     public String 	m_marketName;
@@ -21,6 +23,10 @@ public class ContractDetails {
     public String	m_timeZoneId;
     public String	m_tradingHours;
     public String	m_liquidHours;
+    public String 	m_evRule;
+    public double 	m_evMultiplier;
+
+    public Vector<TagValue> m_secIdList; // CUSIP/ISIN/etc.
 
     // BOND values
     public String 	m_cusip;
@@ -43,12 +49,14 @@ public class ContractDetails {
         m_summary = new Contract();
         m_minTick = 0;
         m_underConId = 0;
+        m_evMultiplier = 0;
     }
 
     public ContractDetails( Contract p_summary, String p_marketName, String p_tradingClass,
     		double p_minTick, String p_orderTypes, String p_validExchanges, int p_underConId, String p_longName,
     	    String p_contractMonth, String p_industry, String p_category, String p_subcategory,
-    	    String p_timeZoneId, String	p_tradingHours, String p_liquidHours) {
+    	    String p_timeZoneId, String	p_tradingHours, String p_liquidHours, 
+    	    String p_evRule, double p_evMultiplier) {
         m_summary = p_summary;
     	m_marketName = p_marketName;
     	m_tradingClass = p_tradingClass;
@@ -64,5 +72,7 @@ public class ContractDetails {
         m_timeZoneId = p_timeZoneId;
         m_tradingHours = p_tradingHours;
         m_liquidHours = p_liquidHours;
+        m_evRule = p_evRule;
+        m_evMultiplier = p_evMultiplier;
     }
 }

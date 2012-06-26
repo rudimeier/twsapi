@@ -1,13 +1,10 @@
 #ifndef order_def
 #define order_def
 
-#include "shared_ptr.h"
-#include "IBString.h"
+#include "TagValue.h"
 
 #include <float.h>
 #include <limits.h>
-
-#include <vector>
 
 #define UNSET_DOUBLE DBL_MAX
 #define UNSET_INTEGER INT_MAX
@@ -36,18 +33,6 @@ struct OrderComboLeg
 	}
 };
 
-struct TagValue
-{
-	TagValue() {}
-	TagValue(const IBString& p_tag, const IBString& p_value)
-		: tag(p_tag), value(p_value)
-	{}
-
-	IBString tag;
-	IBString value;
-};
-
-typedef shared_ptr<TagValue> TagValueSPtr;
 typedef shared_ptr<OrderComboLeg> OrderComboLegSPtr;
 
 struct Order
@@ -244,9 +229,6 @@ struct Order
 
 	// ALGO ORDERS ONLY
 	IBString algoStrategy;
-
-	typedef std::vector<TagValueSPtr> TagValueList;
-	typedef shared_ptr<TagValueList> TagValueListSPtr;
 
 	TagValueListSPtr algoParams;
 	TagValueListSPtr smartComboRoutingParams;

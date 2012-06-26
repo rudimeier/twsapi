@@ -96,7 +96,10 @@
 // 55 = can receive orderComboLegs (price) in openOrder
 // 56 = can receive trailingPercent in openOrder
 // 57 = can receive commissionReport message
-const int CLIENT_VERSION    = 57;
+// 58 = can receive CUSIP/ISIN/etc. in contractDescription/bondContractDescription
+// 59 = can receive evRule, evMultiplier in contractDescription/bondContractDescription/executionDetails
+//      can receive multiplier in executionDetails
+const int CLIENT_VERSION    = 59;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -1488,7 +1491,7 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	}	
 
 	if( m_serverVersion >= MIN_SERVER_VER_SMART_COMBO_ROUTING_PARAMS && Compare(contract.secType, "BAG") == 0) {
-		const Order::TagValueList* const smartComboRoutingParams = order.smartComboRoutingParams.get();
+		const TagValueList* const smartComboRoutingParams = order.smartComboRoutingParams.get();
 		const int smartComboRoutingParamsCount = smartComboRoutingParams ? smartComboRoutingParams->size() : 0;
 		ENCODE_FIELD( smartComboRoutingParamsCount);
 		if( smartComboRoutingParamsCount > 0) {
@@ -1659,7 +1662,7 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		ENCODE_FIELD( order.algoStrategy);
 
 		if( !IsEmpty(order.algoStrategy)) {
-			const Order::TagValueList* const algoParams = order.algoParams.get();
+			const TagValueList* const algoParams = order.algoParams.get();
 			const int algoParamsCount = algoParams ? algoParams->size() : 0;
 			ENCODE_FIELD( algoParamsCount);
 			if( algoParamsCount > 0) {
@@ -2622,7 +2625,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 					int smartComboRoutingParamsCount = 0;
 					DECODE_FIELD( smartComboRoutingParamsCount);
 					if( smartComboRoutingParamsCount > 0) {
-						Order::TagValueListSPtr smartComboRoutingParams( new Order::TagValueList);
+						TagValueListSPtr smartComboRoutingParams( new TagValueList);
 						smartComboRoutingParams->reserve( smartComboRoutingParamsCount);
 						for( int i = 0; i < smartComboRoutingParamsCount; ++i) {
 							TagValueSPtr tagValue( new TagValue());
@@ -2693,7 +2696,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 						int algoParamsCount = 0;
 						DECODE_FIELD( algoParamsCount);
 						if( algoParamsCount > 0) {
-							Order::TagValueListSPtr algoParams( new Order::TagValueList);
+							TagValueListSPtr algoParams( new TagValueList);
 							algoParams->reserve( algoParamsCount);
 							for( int i = 0; i < algoParamsCount; ++i) {
 								TagValueSPtr tagValue( new TagValue());
@@ -2860,6 +2863,25 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 					DECODE_FIELD( contract.tradingHours);
 					DECODE_FIELD( contract.liquidHours);
 				}
+				if( version >= 8) {
+					DECODE_FIELD( contract.evRule);
+					DECODE_FIELD( contract.evMultiplier);
+				}
+				if( version >= 7) {
+					int secIdListCount = 0;
+					DECODE_FIELD( secIdListCount);
+					if( secIdListCount > 0) {
+						TagValueListSPtr secIdList( new TagValueList);
+						secIdList->reserve( secIdListCount);
+						for( int i = 0; i < secIdListCount; ++i) {
+							TagValueSPtr tagValue( new TagValue());
+							DECODE_FIELD( tagValue->tag);
+							DECODE_FIELD( tagValue->value);
+							secIdList->push_back( tagValue);
+						}
+						contract.secIdList = secIdList;
+					}
+				}
 
 				m_pEWrapper->contractDetails( reqId, contract);
 				break;
@@ -2904,6 +2926,25 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				if( version >= 4) {
 					DECODE_FIELD( contract.longName);
 				}
+				if( version >= 6) {
+					DECODE_FIELD( contract.evRule);
+					DECODE_FIELD( contract.evMultiplier);
+				}
+				if( version >= 5) {
+					int secIdListCount = 0;
+					DECODE_FIELD( secIdListCount);
+					if( secIdListCount > 0) {
+						TagValueListSPtr secIdList( new TagValueList);
+						secIdList->reserve( secIdListCount);
+						for( int i = 0; i < secIdListCount; ++i) {
+							TagValueSPtr tagValue( new TagValue());
+							DECODE_FIELD( tagValue->tag);
+							DECODE_FIELD( tagValue->value);
+							secIdList->push_back( tagValue);
+						}
+						contract.secIdList = secIdList;
+					}
+				}
 
 				m_pEWrapper->bondContractDetails( reqId, contract);
 				break;
@@ -2930,6 +2971,9 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.expiry);
 				DECODE_FIELD( contract.strike);
 				DECODE_FIELD( contract.right);
+				if( version >= 9) {
+					DECODE_FIELD( contract.multiplier);
+				}
 				DECODE_FIELD( contract.exchange);
 				DECODE_FIELD( contract.currency);
 				DECODE_FIELD( contract.localSymbol);
@@ -2955,6 +2999,11 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 
 				if( version >= 8) {
 					DECODE_FIELD( exec.orderRef);
+				}
+
+				if( version >= 9) {
+					DECODE_FIELD( exec.evRule);
+					DECODE_FIELD( exec.evMultiplier);
 				}
 
 				m_pEWrapper->execDetails( reqId, contract, exec);

@@ -713,6 +713,23 @@ public class EReader extends Thread {
                     contract.m_tradingHours = readStr();
                     contract.m_liquidHours = readStr();
                  }
+                if (version >= 8) {
+                    contract.m_evRule = readStr();
+                    contract.m_evMultiplier = readDouble();
+                }
+                if (version >= 7) {
+                    int secIdListCount = readInt();
+                        if (secIdListCount  > 0) {
+                            contract.m_secIdList = new Vector(secIdListCount);
+                            for (int i = 0; i < secIdListCount; ++i) {
+                                TagValue tagValue = new TagValue();
+                                tagValue.m_tag = readStr();
+                                tagValue.m_value = readStr();
+                                contract.m_secIdList.add(tagValue);
+                            }
+                        }
+                }
+
                 eWrapper().contractDetails( reqId, contract);
                 break;
             }
@@ -756,6 +773,23 @@ public class EReader extends Thread {
                 if( version >= 4) {
                    contract.m_longName = readStr();
                 }
+                if ( version >= 6) {
+                    contract.m_evRule = readStr();
+                    contract.m_evMultiplier = readDouble();
+                }
+                if (version >= 5) {
+                    int secIdListCount = readInt();
+                        if (secIdListCount  > 0) {
+                            contract.m_secIdList = new Vector(secIdListCount);
+                            for (int i = 0; i < secIdListCount; ++i) {
+                                TagValue tagValue = new TagValue();
+                                tagValue.m_tag = readStr();
+                                tagValue.m_value = readStr();
+                                contract.m_secIdList.add(tagValue);
+                            }
+                        }
+                }
+
                 eWrapper().bondContractDetails( reqId, contract);
                 break;
             }
@@ -779,6 +813,9 @@ public class EReader extends Thread {
                 contract.m_expiry = readStr();
                 contract.m_strike = readDouble();
                 contract.m_right = readStr();
+                if (version >= 9) {
+                    contract.m_multiplier = readStr();
+                }
                 contract.m_exchange = readStr();
                 contract.m_currency = readStr();
                 contract.m_localSymbol = readStr();
@@ -808,6 +845,11 @@ public class EReader extends Thread {
                 if (version >= 8) {
                     exec.m_orderRef = readStr();
                 }
+                if (version >= 9) {
+                    exec.m_evRule = readStr();
+                    exec.m_evMultiplier = readDouble();
+                }
+                
                 eWrapper().execDetails( reqId, contract, exec);
                 break;
             }

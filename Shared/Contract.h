@@ -1,9 +1,7 @@
 #ifndef contract_def
 #define contract_def
 
-#include <vector>
-#include "shared_ptr.h"
-#include "IBString.h"
+#include "TagValue.h"
 
 /*
     SAME_POS    = open/close leg value is same as combo
@@ -122,6 +120,7 @@ struct ContractDetails
 	  , coupon(0)
 	  , convertible(false)
 	  , nextOptionPartial(false)
+	  , evMultiplier(0)
 		
    {
    }
@@ -142,6 +141,10 @@ struct ContractDetails
    IBString	timeZoneId;
    IBString	tradingHours;
    IBString	liquidHours;
+   IBString evRule;
+   double   evMultiplier;
+
+   TagValueListSPtr secIdList;
 
    // BOND values
    IBString cusip;

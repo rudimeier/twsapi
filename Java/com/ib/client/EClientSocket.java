@@ -83,8 +83,11 @@ public class EClientSocket {
 	// 55 = can receive orderComboLegs (price) in openOrder
 	// 56 = can receive trailingPercent in openOrder
 	// 57 = can receive commissionReport message
+	// 58 = can receive CUSIP/ISIN/etc. in contractDescription/bondContractDescription
+	// 59 = can receive evRule, evMultiplier in contractDescription/bondContractDescription/executionDetails
+	//      can receive multiplier in executionDetails
 
-    private static final int CLIENT_VERSION = 57;
+    private static final int CLIENT_VERSION = 59;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
