@@ -15,8 +15,7 @@ EXTRA_DIST =
 EXTRA_DIST += @PACKAGE@.spec
 
 pkgconfigdir = @libdir@/pkgconfig
-pkgconfig_DATA = lib@PACKAGE@.pc
-pkgconfig_DATA += @PACKAGE@.pc
+pkgconfig_DATA = @PACKAGE@.pc
 
 # Rule to build RPM distribution package
 rpm: dist-gzip

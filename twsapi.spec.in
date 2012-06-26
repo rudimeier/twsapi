@@ -45,6 +45,5 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc %{_docdir}/%{name}/
 %{_libdir}/lib@PACKAGE@.a
-%{_libdir}/pkgconfig/lib@PACKAGE@.pc
 %{_libdir}/pkgconfig/@PACKAGE@.pc
 %{_includedir}/@PACKAGE@/

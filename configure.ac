@@ -65,7 +65,6 @@ AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([PosixSocketClient/Makefile])
 AC_CONFIG_FILES([TestPosixSocketClient/Makefile])
-AC_CONFIG_FILES([libtwsapi.pc])
 AC_CONFIG_FILES([twsapi.pc])
 AC_CONFIG_FILES([twsapi.spec])
 AC_OUTPUT
