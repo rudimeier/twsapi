@@ -68,6 +68,7 @@ struct Order;
 struct OrderState;
 struct Execution;
 struct UnderComp;
+struct CommissionReport;
 
 class EWrapper
 {
@@ -125,6 +126,7 @@ public:
    virtual void tickSnapshotEnd( int reqId) = 0;
    /* XXX: for now not pure to not break source compatibility */
    virtual void marketDataType( TickerId /*reqId*/, int /*marketDataType*/) {};
+   virtual void commissionReport( const CommissionReport &commissionReport) = 0;
 };
 
 
