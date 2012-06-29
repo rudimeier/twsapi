@@ -1,5 +1,5 @@
 AC_PREREQ([2.61])
-AC_INIT([twsapi], [0.4.0], [http://www.ga-group.nl/])
+AC_INIT([twsapi], [0.4.1], [http://www.ga-group.nl/])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_HEADER([./config.h])
 AC_CONFIG_MACRO_DIR([m4])

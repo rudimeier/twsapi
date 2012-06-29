@@ -4,6 +4,15 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 
 
+0.4.1 - not yet released  ------------------------------------------------------
+
+Libtool support and minor build fixes
+
+  - minor build chain cleanups regarding compiler warnings and CXXFLAGS
+  - add libtool support
+
+
+
 0.4.0 - 2012-02-19  ------------------------------------------------------------
 
 Update to IB API 9.66, add IPv6 support and minor fixes
