@@ -9,7 +9,7 @@ ChangeLog, twsapi for Interactive Brokers TWS
 Libtool support and minor build fixes
 
   - minor build chain cleanups regarding compiler warnings and CXXFLAGS
-  - add libtool support
+  - add libtool support and compile with -fPIC
 
 
 
