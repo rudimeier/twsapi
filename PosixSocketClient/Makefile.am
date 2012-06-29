@@ -34,7 +34,7 @@ libtwsapi_la_LIBADD =
 
 
 libtwsapi_la_CPPFLAGS =
-libtwsapi_la_CPPFLAGS += $(AM_CPPFLAGS)
+libtwsapi_la_CPPFLAGS += $(AM_CPPFLAGS) -fPIC
 libtwsapi_la_CPPFLAGS += -I$(top_srcdir)/Shared
 
 CLEANFILES =
