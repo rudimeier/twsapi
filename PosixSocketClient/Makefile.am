@@ -5,11 +5,11 @@ AM_LDFLAGS =
 headerdir = $(includedir)/twsapi
 
 
-lib_LIBRARIES =
-lib_LIBRARIES += libtwsapi.a
-libtwsapi_a_SOURCES =
-libtwsapi_a_SOURCES += src/EClientSocketBase.cpp
-libtwsapi_a_SOURCES += src/EPosixClientSocket.cpp
+lib_LTLIBRARIES =
+lib_LTLIBRARIES += libtwsapi.la
+libtwsapi_la_SOURCES =
+libtwsapi_la_SOURCES += src/EClientSocketBase.cpp
+libtwsapi_la_SOURCES += src/EPosixClientSocket.cpp
 header_HEADERS =
 header_HEADERS += $(top_srcdir)/Shared/CommonDefs.h
 header_HEADERS += $(top_srcdir)/Shared/CommissionReport.h
@@ -31,13 +31,13 @@ noinst_HEADERS += $(top_srcdir)/Shared/EClientSocketBaseImpl.h
 noinst_HEADERS += $(top_srcdir)/Shared/TwsSocketClientErrors.h
 noinst_HEADERS += src/EPosixClientSocketPlatform.h
 
-EXTRA_libtwsapi_a_SOURCES =
-libtwsapi_a_LIBADD =
+EXTRA_libtwsapi_la_SOURCES =
+libtwsapi_la_LIBADD =
 
 
-libtwsapi_a_CPPFLAGS =
-libtwsapi_a_CPPFLAGS += $(AM_CPPFLAGS)
-libtwsapi_a_CPPFLAGS += -I$(top_srcdir)/Shared
+libtwsapi_la_CPPFLAGS =
+libtwsapi_la_CPPFLAGS += $(AM_CPPFLAGS) -fPIC
+libtwsapi_la_CPPFLAGS += -I$(top_srcdir)/Shared
 
 CLEANFILES =
 CLEANFILES += *.s

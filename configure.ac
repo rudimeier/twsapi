@@ -6,6 +6,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([PosixSocketClient/])
 
 AM_INIT_AUTOMAKE([foreign])
+LT_INIT([disable-shared])
 
 ## compiler check
 AC_PROG_CC
@@ -13,7 +14,6 @@ AC_PROG_CC_C_O
 AC_PROG_CC_C99
 AC_PROG_CXX
 AC_PROG_CXX_C_O
-AC_PROG_RANLIB
 
 AC_LANG([C++])
 AX_COMPILER_VENDOR
