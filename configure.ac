@@ -65,6 +65,8 @@ AC_MSG_CHECKING([for IB API version])
 . "${srcdir}/API_VersionNum.txt"
 AC_MSG_RESULT([${API_Version}])
 AC_SUBST([API_Version])
+## ya never know...
+AC_DEFINE_UNQUOTED([API_VERSION], ["${API_Version}"], [IB internal API version])
 
 ## output
 AC_CONFIG_FILES([Makefile])
