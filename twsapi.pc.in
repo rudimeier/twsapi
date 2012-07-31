@@ -3,6 +3,7 @@ exec_prefix=@exec_prefix@
 includedir=@includedir@
 libdir=@libdir@
 datadir=@datarootdir@
+api_version=@API_Version@
 
 Name: @PACKAGE@
 Description:  API Library for Interactive Brokers TWS

@@ -60,6 +60,13 @@ SANE_CHECK_NETDB_FUNC(gai_strerror)
 dnl ** test for AI_* flags that not all implementations have
 AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
 
+dnl examine IB's fantastic way of disseminating the API version
+AC_MSG_CHECKING([for IB API version])
+. "${srcdir}/API_VersionNum.txt"
+AC_MSG_RESULT([${API_Version}])
+AC_SUBST([API_Version])
+## ya never know...
+AC_DEFINE_UNQUOTED([API_VERSION], ["${API_Version}"], [IB internal API version])
 
 ## output
 AC_CONFIG_FILES([Makefile])
