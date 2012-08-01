@@ -46,6 +46,7 @@ private:
 	/* for the multi-stage handshake */
 	enum {
 		HND_SHK_ST_UNK,
+		HND_SHK_ST_CLEAN,
 		HND_SHK_ST_SENT_TOKEN,
 		HND_SHK_ST_RCVD_CONNACK,
 	} hnd_shk_state;
