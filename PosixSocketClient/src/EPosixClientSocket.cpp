@@ -272,12 +272,23 @@ int EPosixClientSocket::fd() const
 
 int EPosixClientSocket::handshake(int socket, int clientId)
 {
-	// check what the (l)user deems a working socket
 	if (this->m_fd > 0) {
-		/* doesn't matter what SOCKET is now
-		 * we use the one we know about */
+		/* don't matter what SOCKET is we use the one we know about */
 		;
 	} else if ((this->m_fd = socket) < 0) {
+		errno = EBADF;
+		return -1;
+	} else {
+		/* set the client id also */
+		setClientId(clientId);
+	}
+	return 0;
+}
+
+int EPosixClientSocket::handshake(void)
+{
+	if (this->m_fd < 0) {
+		/* do fuckall */
 		errno = EBADF;
 		return -1;
 	}
@@ -304,9 +315,9 @@ int EPosixClientSocket::handshake(int socket, int clientId)
 		this->hnd_shk_state = HND_SHK_ST_RCVD_CONNACK;
 		break;
 
+	default:
 	case HND_SHK_ST_RCVD_CONNACK:
-		// finally set client id
-		setClientId(clientId);
+		;
 		break;
 	}
 

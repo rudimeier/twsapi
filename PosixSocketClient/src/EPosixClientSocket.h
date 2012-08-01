@@ -26,6 +26,7 @@ public:
 	/* Here's the expert API that just performs protocol actions on
 	 * a socket established and maintained elsewhere. */
 	int handshake(int socket, int clientId = 0);
+	int handshake(void);
 	int wavegoodbye(void);
 
 private:
