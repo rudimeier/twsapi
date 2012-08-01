@@ -268,6 +268,59 @@ int EPosixClientSocket::fd() const
 	return m_fd;
 }
 
+
+int EPosixClientSocket::handshake(int socket, int clientId)
+{
+	// check what the (l)user deems a working socket
+	if (this->m_fd > 0) {
+		/* doesn't matter what SOCKET is now
+		 * we use the one we know about */
+		;
+	} else if ((this->m_fd = socket) < 0) {
+		errno = EBADF;
+		return -1;
+	}
+
+	switch (this->hnd_shk_state) {
+	case HND_SHK_ST_UNK:
+		// initiate the handshake
+		onConnectBase();
+		if (!isOutBufferEmpty()) {
+			// let the user deal with this
+			// errno is hopefully still set
+			return -1;
+		}
+		this->hnd_shk_state = HND_SHK_ST_SENT_TOKEN;
+		break;
+
+	case HND_SHK_ST_SENT_TOKEN:
+		if (!checkMessagesConnect()) {
+			// great effort, why don't we reboot the computer now?
+			eDisconnectBase();
+			this->hnd_shk_state = HND_SHK_ST_UNK;
+			return -1;
+		}
+		this->hnd_shk_state = HND_SHK_ST_RCVD_CONNACK;
+		break;
+
+	case HND_SHK_ST_RCVD_CONNACK:
+		// finally set client id
+		setClientId(clientId);
+		break;
+	}
+
+	// successfully connected
+	return 0;
+}
+
+int EPosixClientSocket::wavegoodbye(void)
+{
+	this->m_fd = -1;
+	eDisconnectBase();
+	this->hnd_shk_state = HND_SHK_ST_UNK;
+	return 0;
+}
+
 int EPosixClientSocket::send(const char* buf, size_t sz)
 {
 	assert( sz > 0 );
