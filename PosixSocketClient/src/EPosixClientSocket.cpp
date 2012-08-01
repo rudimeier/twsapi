@@ -281,6 +281,7 @@ int EPosixClientSocket::handshake(int socket, int clientId)
 	} else {
 		/* set the client id also */
 		setClientId(clientId);
+		this->hnd_shk_state = HND_SHK_ST_CLEAN;
 	}
 	return 0;
 }
@@ -294,7 +295,7 @@ int EPosixClientSocket::handshake(void)
 	}
 
 	switch (this->hnd_shk_state) {
-	case HND_SHK_ST_UNK:
+	case HND_SHK_ST_CLEAN:
 		// initiate the handshake
 		onConnectBase();
 		if (!isOutBufferEmpty()) {
@@ -315,9 +316,10 @@ int EPosixClientSocket::handshake(void)
 		this->hnd_shk_state = HND_SHK_ST_RCVD_CONNACK;
 		break;
 
-	default:
 	case HND_SHK_ST_RCVD_CONNACK:
 		;
+	default:
+	case HND_SHK_ST_UNK:
 		break;
 	}
 
@@ -371,10 +373,11 @@ void EPosixClientSocket::onReceive()
 	switch (this->hnd_shk_state) {
 	case HND_SHK_ST_SENT_TOKEN:
 		handshake();
-	case HND_SHK_ST_UNK:
+	case HND_SHK_ST_CLEAN:
 		return;
-	default:
 	case HND_SHK_ST_RCVD_CONNACK:
+	default:
+	case HND_SHK_ST_UNK:
 		break;
 	}
 
@@ -391,12 +394,13 @@ void EPosixClientSocket::onSend()
 {
 	/* as a special service, complete the handshake here */
 	switch (this->hnd_shk_state) {
-	case HND_SHK_ST_UNK:
+	case HND_SHK_ST_CLEAN:
 		handshake();
 	case HND_SHK_ST_SENT_TOKEN:
 		return;
-	default:
 	case HND_SHK_ST_RCVD_CONNACK:
+	default:
+	case HND_SHK_ST_UNK:
 		break;
 	}
 
