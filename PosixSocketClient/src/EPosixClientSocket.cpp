@@ -367,6 +367,17 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 void EPosixClientSocket::onReceive()
 {
+	/* as a special service, complete the handshake here */
+	switch (this->hnd_shk_state) {
+	case HND_SHK_ST_SENT_TOKEN:
+		handshake();
+	case HND_SHK_ST_UNK:
+		return;
+	default:
+	case HND_SHK_ST_RCVD_CONNACK:
+		break;
+	}
+
 	if( !checkMessages() ) {
 		const char * err = (errno != 0) ? strerror(errno)
 			: "The remote host closed the connection.";
@@ -378,6 +389,17 @@ void EPosixClientSocket::onReceive()
 
 void EPosixClientSocket::onSend()
 {
+	/* as a special service, complete the handshake here */
+	switch (this->hnd_shk_state) {
+	case HND_SHK_ST_UNK:
+		handshake();
+	case HND_SHK_ST_SENT_TOKEN:
+		return;
+	default:
+	case HND_SHK_ST_RCVD_CONNACK:
+		break;
+	}
+
 	sendBufferedData();
 }
 
