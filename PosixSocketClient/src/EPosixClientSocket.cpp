@@ -117,6 +117,7 @@ static int timeout_connect( int fd, const struct sockaddr *serv_addr,
 EPosixClientSocket::EPosixClientSocket( EWrapper *ptr) : EClientSocketBase( ptr)
 {
 	m_fd = -1;
+	hnd_shk_state = HND_SHK_ST_UNK;
 }
 
 EPosixClientSocket::~EPosixClientSocket()
