@@ -345,6 +345,11 @@ int EPosixClientSocket::wavegoodbye(void)
 	return 0;
 }
 
+bool EPosixClientSocket::handshakeComplete()
+{
+	return this->hnd_shk_state == HND_SHK_ST_RCVD_CONNACK;
+}
+
 int EPosixClientSocket::send(const char* buf, size_t sz)
 {
 	assert( sz > 0 );
