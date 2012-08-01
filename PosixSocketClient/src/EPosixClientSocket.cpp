@@ -250,13 +250,23 @@ bool EPosixClientSocket::eConnect2( const char *host, unsigned int port,
 
 void EPosixClientSocket::eDisconnect()
 {
-	if ( m_fd >= 0 )
-		// close socket
-		SocketClose( m_fd);
-	m_fd = -1;
-	// uninitialize Winsock DLL (only for Windows)
-	SocketsDestroy();
-	eDisconnectBase();
+	switch (this->hnd_shk_state) {
+	default:
+	case HND_SHK_ST_UNK:
+		if ( m_fd >= 0 ) {
+			// close socket
+			SocketClose( m_fd);
+		}
+		m_fd = -1;
+		// uninitialize Winsock DLL (only for Windows)
+		SocketsDestroy();
+		/*@fallthrough@*/
+	case HND_SHK_ST_CLEAN:
+	case HND_SHK_ST_SENT_TOKEN:
+	case HND_SHK_ST_RCVD_CONNACK:
+		eDisconnectBase();
+		break;
+	}
 }
 
 bool EPosixClientSocket::isSocketOK() const
