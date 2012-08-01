@@ -29,6 +29,8 @@ public:
 	int handshake(void);
 	int wavegoodbye(void);
 
+	bool handshakeComplete();
+
 private:
 
 	int send( const char* buf, size_t sz);
