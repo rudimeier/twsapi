@@ -280,7 +280,7 @@ int EPosixClientSocket::fd() const
 }
 
 
-int EPosixClientSocket::handshake(int socket, int clientId)
+int EPosixClientSocket::prepareHandshake(int socket, int clientId)
 {
 	if (this->m_fd > 0) {
 		/* don't matter what SOCKET is we use the one we know about */
@@ -298,6 +298,9 @@ int EPosixClientSocket::handshake(int socket, int clientId)
 
 int EPosixClientSocket::handshake(void)
 {
+/* if everything goes ok, handshake() will return 0,
+ * on error -1 is returned, and
+ * once the handshake is finished 1 is returned. */
 	if (this->m_fd < 0) {
 		/* do fuckall */
 		errno = EBADF;
@@ -324,13 +327,14 @@ int EPosixClientSocket::handshake(void)
 			return -1;
 		}
 		this->hnd_shk_state = HND_SHK_ST_RCVD_CONNACK;
-		break;
+		/*@fallthrough@*/
 
 	case HND_SHK_ST_RCVD_CONNACK:
-		;
+		/* handshake succeeded */
+		return 1;
 	default:
 	case HND_SHK_ST_UNK:
-		break;
+		return -1;
 	}
 
 	// successfully connected
@@ -345,10 +349,6 @@ int EPosixClientSocket::wavegoodbye(void)
 	return 0;
 }
 
-bool EPosixClientSocket::handshakeComplete()
-{
-	return this->hnd_shk_state == HND_SHK_ST_RCVD_CONNACK;
-}
 
 int EPosixClientSocket::send(const char* buf, size_t sz)
 {
