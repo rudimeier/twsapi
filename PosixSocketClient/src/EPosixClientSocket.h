@@ -23,6 +23,12 @@ public:
 	bool isSocketOK() const;
 	int fd() const;
 
+	/* Here's the expert API that just performs protocol actions on
+	 * a socket established and maintained elsewhere. */
+	int prepareHandshake(int socket, int clientId = 0);
+	int handshake(void);
+	int wavegoodbye(void);
+
 private:
 
 	int send( const char* buf, size_t sz);
@@ -36,6 +42,14 @@ public:
 private:
 
 	int m_fd;
+
+	/* for the multi-stage handshake */
+	enum {
+		HND_SHK_ST_UNK,
+		HND_SHK_ST_CLEAN,
+		HND_SHK_ST_SENT_TOKEN,
+		HND_SHK_ST_RCVD_CONNACK,
+	} hnd_shk_state;
 };
 
 } // namespace IB
