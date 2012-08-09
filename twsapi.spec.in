@@ -8,7 +8,7 @@ Version:        @VERSION@
 Release:        1%{?dist}
 Summary:        C++ API for Interactive Brokers TWS
 License:        Unknown
-Group:          Development/Languages/C and C++
+Group:          Development/Libraries/C and C++
 URL:            https://github.com/rudimeier/twsapi/
 Source:         %{name}-%{version}.tar.gz
 BuildRequires:  gcc-c++
@@ -20,7 +20,7 @@ Library for Interactive Brokers API
 
 %package devel
 Summary:        Headers for developing programs with @PACKAGE@ library
-Group:          Development/Libraries
+Group:          Development/Libraries/C and C++
 Provides:       %{name} = %{version}
 Obsoletes:      %{name} < %{version}
 
