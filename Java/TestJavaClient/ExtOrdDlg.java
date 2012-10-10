@@ -72,6 +72,10 @@ public class ExtOrdDlg extends JDialog {
     private JTextField  m_VOLDeltaNeutralSettlingFirm = new JTextField();
     private JTextField  m_VOLDeltaNeutralClearingAccount = new JTextField();
     private JTextField  m_VOLDeltaNeutralClearingIntent = new JTextField();
+    private JTextField  m_VOLDeltaNeutralOpenClose = new JTextField();
+    private JCheckBox   m_VOLDeltaNeutralShortSale = new JCheckBox("VOL: Hedge Delta ShortSale", false);
+    private JTextField  m_VOLDeltaNeutralShortSaleSlot = new JTextField();
+    private JTextField  m_VOLDeltaNeutralDesignatedLocation = new JTextField();
     private JTextField  m_VOLContinuousUpdate = new JTextField();
     private JTextField  m_VOLReferencePriceType = new JTextField();
     private JTextField  m_trailStopPrice = new JTextField();
@@ -201,6 +205,14 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add(m_VOLDeltaNeutralClearingAccount);
         extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Clearing Intent"));
         extOrderDetailsPanel.add(m_VOLDeltaNeutralClearingIntent);
+        extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Open Close"));
+        extOrderDetailsPanel.add(m_VOLDeltaNeutralOpenClose);
+        extOrderDetailsPanel.add(m_VOLDeltaNeutralShortSale);
+        extOrderDetailsPanel.add( new JLabel(""));
+        extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Short Sale Slot"));
+        extOrderDetailsPanel.add(m_VOLDeltaNeutralShortSaleSlot);
+        extOrderDetailsPanel.add(new JLabel("VOL: Hedge Delta Designated Location"));
+        extOrderDetailsPanel.add(m_VOLDeltaNeutralDesignatedLocation);
         extOrderDetailsPanel.add(new JLabel("VOL: Continuously Update Price (0 or 1)"));
         extOrderDetailsPanel.add(m_VOLContinuousUpdate);
         extOrderDetailsPanel.add(new JLabel("VOL: Reference Price Type (1 or 2)"));
@@ -313,6 +325,10 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_deltaNeutralSettlingFirm = m_VOLDeltaNeutralSettlingFirm.getText().trim();
             m_order.m_deltaNeutralClearingAccount = m_VOLDeltaNeutralClearingAccount.getText().trim();
             m_order.m_deltaNeutralClearingIntent = m_VOLDeltaNeutralClearingIntent.getText().trim();
+            m_order.m_deltaNeutralOpenClose = m_VOLDeltaNeutralOpenClose.getText().trim();
+            m_order.m_deltaNeutralShortSale = m_VOLDeltaNeutralShortSale.isSelected();
+            m_order.m_deltaNeutralShortSaleSlot = parseInt(m_VOLDeltaNeutralShortSaleSlot);
+            m_order.m_deltaNeutralDesignatedLocation = m_VOLDeltaNeutralDesignatedLocation.getText().trim();
             m_order.m_continuousUpdate = parseInt(m_VOLContinuousUpdate);
             m_order.m_referencePriceType = parseMaxInt(m_VOLReferencePriceType);
             m_order.m_trailStopPrice = parseMaxDouble(m_trailStopPrice);

@@ -472,6 +472,13 @@ public class EReader extends Thread {
                             order.m_deltaNeutralClearingAccount = readStr();
                             order.m_deltaNeutralClearingIntent = readStr();
                         }
+                        
+                        if (version >= 31 && !Util.StringIsEmpty(order.m_deltaNeutralOrderType)) {
+                            order.m_deltaNeutralOpenClose = readStr();
+                            order.m_deltaNeutralShortSale = readBoolFromInt();
+                            order.m_deltaNeutralShortSaleSlot = readInt();
+                            order.m_deltaNeutralDesignatedLocation = readStr();
+                        }
                     }
                     order.m_continuousUpdate = readInt();
                     if (m_parent.serverVersion() == 26) {

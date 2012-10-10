@@ -1050,6 +1050,10 @@ class SampleFrame extends JFrame implements EWrapper {
         destOrder.m_deltaNeutralSettlingFirm = srcOrder.m_deltaNeutralSettlingFirm;
         destOrder.m_deltaNeutralClearingAccount = srcOrder.m_deltaNeutralClearingAccount;
         destOrder.m_deltaNeutralClearingIntent = srcOrder.m_deltaNeutralClearingIntent;
+        destOrder.m_deltaNeutralOpenClose = srcOrder.m_deltaNeutralOpenClose;
+        destOrder.m_deltaNeutralShortSale = srcOrder.m_deltaNeutralShortSale;
+        destOrder.m_deltaNeutralShortSaleSlot = srcOrder.m_deltaNeutralShortSaleSlot;
+        destOrder.m_deltaNeutralDesignatedLocation = srcOrder.m_deltaNeutralDesignatedLocation;
         destOrder.m_continuousUpdate = srcOrder.m_continuousUpdate;
         destOrder.m_referencePriceType = srcOrder.m_referencePriceType;
         destOrder.m_trailStopPrice = srcOrder.m_trailStopPrice;

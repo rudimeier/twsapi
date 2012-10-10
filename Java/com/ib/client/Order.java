@@ -97,6 +97,10 @@ public class Order {
     public String   m_deltaNeutralSettlingFirm;
     public String   m_deltaNeutralClearingAccount;
     public String   m_deltaNeutralClearingIntent;
+    public String   m_deltaNeutralOpenClose;
+    public boolean  m_deltaNeutralShortSale;
+    public int      m_deltaNeutralShortSaleSlot;
+    public String   m_deltaNeutralDesignatedLocation;
 
     // COMBO ORDERS ONLY
     public double   m_basisPoints;      // EFP orders only
@@ -166,6 +170,10 @@ public class Order {
         m_deltaNeutralSettlingFirm = EMPTY_STR;
         m_deltaNeutralClearingAccount = EMPTY_STR;
         m_deltaNeutralClearingIntent = EMPTY_STR;
+        m_deltaNeutralOpenClose = EMPTY_STR;
+        m_deltaNeutralShortSale = false;
+        m_deltaNeutralShortSaleSlot = 0;
+        m_deltaNeutralDesignatedLocation = EMPTY_STR;
         m_referencePriceType = Integer.MAX_VALUE;
         m_trailStopPrice = Double.MAX_VALUE;
         m_trailingPercent = Double.MAX_VALUE;
@@ -238,6 +246,8 @@ public class Order {
         	m_referencePriceType != l_theOther.m_referencePriceType ||
         	m_deltaNeutralAuxPrice != l_theOther.m_deltaNeutralAuxPrice ||
         	m_deltaNeutralConId != l_theOther.m_deltaNeutralConId ||
+        	m_deltaNeutralShortSale != l_theOther.m_deltaNeutralShortSale ||
+        	m_deltaNeutralShortSaleSlot != l_theOther.m_deltaNeutralShortSaleSlot ||
         	m_basisPoints != l_theOther.m_basisPoints ||
         	m_basisPointsType != l_theOther.m_basisPointsType ||
         	m_scaleInitLevelSize != l_theOther.m_scaleInitLevelSize ||
@@ -274,6 +284,8 @@ public class Order {
         	Util.StringCompare(m_deltaNeutralSettlingFirm, l_theOther.m_deltaNeutralSettlingFirm) != 0 ||
         	Util.StringCompare(m_deltaNeutralClearingAccount, l_theOther.m_deltaNeutralClearingAccount) != 0 ||
         	Util.StringCompare(m_deltaNeutralClearingIntent, l_theOther.m_deltaNeutralClearingIntent) != 0 ||
+        	Util.StringCompare(m_deltaNeutralOpenClose, l_theOther.m_deltaNeutralOpenClose) != 0 ||
+        	Util.StringCompare(m_deltaNeutralDesignatedLocation, l_theOther.m_deltaNeutralDesignatedLocation) != 0 ||
         	Util.StringCompare(m_hedgeType, l_theOther.m_hedgeType) != 0 ||
         	Util.StringCompare(m_hedgeParam, l_theOther.m_hedgeParam) != 0 ||
         	Util.StringCompare(m_account, l_theOther.m_account) != 0 ||

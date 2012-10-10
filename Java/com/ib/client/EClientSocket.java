@@ -86,8 +86,9 @@ public class EClientSocket {
 	// 58 = can receive CUSIP/ISIN/etc. in contractDescription/bondContractDescription
 	// 59 = can receive evRule, evMultiplier in contractDescription/bondContractDescription/executionDetails
 	//      can receive multiplier in executionDetails
+	// 60 = can receive deltaNeutralOpenClose, deltaNeutralShortSale, deltaNeutralShortSaleSlot and deltaNeutralDesignatedLocation in openOrder
 
-    private static final int CLIENT_VERSION = 59;
+    private static final int CLIENT_VERSION = 60;
     private static final int SERVER_VERSION = 38;
     private static final byte[] EOL = {0};
     private static final String BAG_SEC_TYPE = "BAG";
@@ -179,6 +180,7 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_SCALE_ORDERS3 = 60;
     private static final int MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE = 61;
     private static final int MIN_SERVER_VER_TRAILING_PERCENT = 62;
+    private static final int MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE = 66;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -1029,6 +1031,18 @@ public class EClientSocket {
         	}
         }
         
+        if (m_serverVersion < MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE) {
+        	if (!IsEmpty(order.m_deltaNeutralOpenClose)
+        			|| order.m_deltaNeutralShortSale
+        			|| order.m_deltaNeutralShortSaleSlot > 0 
+        			|| !IsEmpty(order.m_deltaNeutralDesignatedLocation)
+        			) {
+        		error(id, EClientErrors.UPDATE_TWS,
+        			"  It does not support deltaNeutral parameters: OpenClose, ShortSale, ShortSaleSlot, DesignatedLocation");
+        		return;
+        	}
+        }
+        
         if (m_serverVersion < MIN_SERVER_VER_SCALE_ORDERS3) {
         	if (order.m_scalePriceIncrement > 0 && order.m_scalePriceIncrement != Double.MAX_VALUE) {
         		if (order.m_scalePriceAdjustValue != Double.MAX_VALUE ||
@@ -1068,7 +1082,7 @@ public class EClientSocket {
         	}
         }
         
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 38;
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 39;
         
         // send place order msg
         try {
@@ -1281,6 +1295,13 @@ public class EClientSocket {
                        send( order.m_deltaNeutralSettlingFirm);
                        send( order.m_deltaNeutralClearingAccount);
                        send( order.m_deltaNeutralClearingIntent);
+                   }
+                   
+                   if (m_serverVersion >= MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE && !IsEmpty(order.m_deltaNeutralOrderType)){
+                       send( order.m_deltaNeutralOpenClose);
+                       send( order.m_deltaNeutralShortSale);
+                       send( order.m_deltaNeutralShortSaleSlot);
+                       send( order.m_deltaNeutralDesignatedLocation);
                    }
                }
                send( order.m_continuousUpdate);

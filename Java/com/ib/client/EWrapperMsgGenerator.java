@@ -112,6 +112,10 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " deltaNeutralSettlingFirm=" + order.m_deltaNeutralSettlingFirm +
         " deltaNeutralClearingAccount=" + order.m_deltaNeutralClearingAccount +
         " deltaNeutralClearingIntent=" + order.m_deltaNeutralClearingIntent +
+        " deltaNeutralOpenClose=" + order.m_deltaNeutralOpenClose +
+        " deltaNeutralShortSale=" + order.m_deltaNeutralShortSale +
+        " deltaNeutralShortSaleSlot=" + order.m_deltaNeutralShortSaleSlot +
+        " deltaNeutralDesignatedLocation=" + order.m_deltaNeutralDesignatedLocation +
         " continuousUpdate=" + order.m_continuousUpdate +
         " referencePriceType=" + order.m_referencePriceType +
         " trailStopPrice=" + Util.DoubleMaxString(order.m_trailStopPrice) +
