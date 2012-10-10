@@ -3,9 +3,14 @@ Original IB API Release Notes taken from their homepage
 http://www.interactivebrokers.com
 =======================================================
 
-Build 9.67 beta, April 02, 2012
+Build 9.67, October 8, 2012
 
-  * see IB homepage -> API "Release Notes" -> "Beta Notes"
+  * Contract Identifiers Added to Contract Details
+  * Specify Per-Leg Combo Prices
+  * Track Commissions with CommissionReport
+  * New Order Field: trailingPercent
+  * Support for Extended Scale Orders
+  * evRule and evMultiplier added to Execution and Contract Details
 
 Build 9.66, January 13, 2012
 
