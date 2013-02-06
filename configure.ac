@@ -31,6 +31,9 @@ AC_SUBST([DEFAULT_CXXFLAGS])
 
 dnl ** our default includes should support networking stuff
 ac_includes_default="$ac_includes_default
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#endif
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
@@ -46,7 +49,7 @@ ac_includes_default="$ac_includes_default
 
 
 dnl ** check for specific header (.h) files that we are interested in
-AC_CHECK_HEADERS([fcntl.h])
+AC_CHECK_HEADERS([fcntl.h errno.h])
 AC_CHECK_HEADERS([arpa/inet.h sys/socket.h netdb.h])
 AC_CHECK_HEADERS([winsock2.h ws2tcpip.h],
   [LIBS="-lws2_32"])
@@ -59,6 +62,7 @@ SANE_CHECK_NETDB_FUNC(gai_strerror)
 
 dnl ** test for AI_* flags that not all implementations have
 AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
+AC_CHECK_DECLS([ENODATA, ETIMEDOUT])
 
 
 ## output
