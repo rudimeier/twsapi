@@ -53,6 +53,10 @@
 		#include <sys/socket.h>
 	#endif
 
+	#if ! HAVE_DECL_ENODATA
+		#define ENODATA ETIMEDOUT
+	#endif
+
 	namespace IB {
 	// helpers
 	inline bool SocketsInit() { return true; };
