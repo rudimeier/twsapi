@@ -14,6 +14,9 @@ dist_doc_DATA += README
 EXTRA_DIST =
 EXTRA_DIST += @PACKAGE@.spec
 
+dist_noinst_SCRIPTS =
+dist_noinst_SCRIPTS += gen_twsapi_config_h
+
 pkgconfigdir = @libdir@/pkgconfig
 pkgconfig_DATA = lib@PACKAGE@.pc
 pkgconfig_DATA += @PACKAGE@.pc
