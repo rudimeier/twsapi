@@ -64,6 +64,9 @@ dnl ** test for AI_* flags that not all implementations have
 AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
 AC_CHECK_DECLS([ENODATA, ETIMEDOUT])
 
+## offload some of the final targets here
+headerdir="${includedir}/${PACKAGE}"
+AC_SUBST([headerdir])
 
 ## output
 AC_CONFIG_FILES([Makefile])

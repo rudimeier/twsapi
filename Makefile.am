@@ -5,6 +5,12 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = PosixSocketClient TestPosixSocketClient
 
+nodist_header_HEADERS =
+nodist_header_HEADERS += twsapi_config.h
+
+twsapi_config.h: config.h API_VersionNum.txt gen_twsapi_config_h
+	$(srcdir)/gen_twsapi_config_h config.h $(srcdir)/API_VersionNum.txt > $@
+
 dist_doc_DATA =
 dist_doc_DATA += API_VersionNum.txt
 dist_doc_DATA += ChangeLog
@@ -13,6 +19,12 @@ dist_doc_DATA += README
 
 EXTRA_DIST =
 EXTRA_DIST += @PACKAGE@.spec
+
+dist_noinst_SCRIPTS =
+dist_noinst_SCRIPTS += gen_twsapi_config_h
+
+distclean-local:
+	-rm -f twsapi_config.h
 
 pkgconfigdir = @libdir@/pkgconfig
 pkgconfig_DATA = @PACKAGE@.pc
