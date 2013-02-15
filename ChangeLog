@@ -4,6 +4,16 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 
 
+0.4.2 - not yet released  ------------------------------------------------------
+
+Maintenance release
+
+  - build fixes for BSD
+  - introduce new header twsapi_config.h to have version and configure
+    informations about the twsapi library
+
+
+
 0.4.1 - 2012-08-09  ------------------------------------------------------------
 
 Libtool support and minor build fixes
