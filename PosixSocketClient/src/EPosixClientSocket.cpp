@@ -117,6 +117,7 @@ static int timeout_connect( int fd, const struct sockaddr *serv_addr,
 EPosixClientSocket::EPosixClientSocket( EWrapper *ptr) : EClientSocketBase( ptr)
 {
 	m_fd = -1;
+	hnd_shk_state = HND_SHK_ST_UNK;
 }
 
 EPosixClientSocket::~EPosixClientSocket()
@@ -249,13 +250,24 @@ bool EPosixClientSocket::eConnect2( const char *host, unsigned int port,
 
 void EPosixClientSocket::eDisconnect()
 {
-	if ( m_fd >= 0 )
-		// close socket
-		SocketClose( m_fd);
-	m_fd = -1;
-	// uninitialize Winsock DLL (only for Windows)
-	SocketsDestroy();
-	eDisconnectBase();
+	switch (this->hnd_shk_state) {
+	default:
+	case HND_SHK_ST_UNK:
+		if ( m_fd >= 0 ) {
+			// close socket
+			SocketClose( m_fd);
+		}
+		// uninitialize Winsock DLL (only for Windows)
+		SocketsDestroy();
+		/*@fallthrough@*/
+	case HND_SHK_ST_CLEAN:
+	case HND_SHK_ST_SENT_TOKEN:
+	case HND_SHK_ST_RCVD_CONNACK:
+		this->hnd_shk_state = HND_SHK_ST_UNK;
+		m_fd = -1;
+		eDisconnectBase();
+		break;
+	}
 }
 
 bool EPosixClientSocket::isSocketOK() const
@@ -266,6 +278,68 @@ bool EPosixClientSocket::isSocketOK() const
 int EPosixClientSocket::fd() const
 {
 	return m_fd;
+}
+
+
+int EPosixClientSocket::prepareHandshake(int socket, int clientId)
+{
+	if (this->m_fd > 0) {
+		/* don't matter what SOCKET is we use the one we know about */
+		;
+	} else if ((this->m_fd = socket) < 0) {
+		errno = EBADF;
+		return -1;
+	} else {
+		/* set the client id also */
+		setClientId(clientId);
+		this->hnd_shk_state = HND_SHK_ST_CLEAN;
+	}
+	return 0;
+}
+
+int EPosixClientSocket::handshake(void)
+{
+/* if everything goes ok, handshake() will return 0,
+ * on error -1 is returned, and
+ * once the handshake is finished 1 is returned. */
+	if (this->m_fd < 0) {
+		/* do fuckall */
+		errno = EBADF;
+		return -1;
+	}
+
+	switch (this->hnd_shk_state) {
+	case HND_SHK_ST_CLEAN:
+		// initiate the handshake
+		onConnectBase();
+		if (!isOutBufferEmpty()) {
+			// let the user deal with this
+			// errno is hopefully still set
+			return -1;
+		}
+		this->hnd_shk_state = HND_SHK_ST_SENT_TOKEN;
+		break;
+
+	case HND_SHK_ST_SENT_TOKEN:
+		if (!checkMessagesConnect()) {
+			// great effort, why don't we reboot the computer now?
+			eDisconnectBase();
+			this->hnd_shk_state = HND_SHK_ST_UNK;
+			return -1;
+		}
+		this->hnd_shk_state = HND_SHK_ST_RCVD_CONNACK;
+		/*@fallthrough@*/
+
+	case HND_SHK_ST_RCVD_CONNACK:
+		/* handshake succeeded */
+		return 1;
+	default:
+	case HND_SHK_ST_UNK:
+		return -1;
+	}
+
+	// successfully connected
+	return 0;
 }
 
 int EPosixClientSocket::send(const char* buf, size_t sz)
@@ -302,6 +376,18 @@ int EPosixClientSocket::receive(char* buf, size_t sz)
 
 void EPosixClientSocket::onReceive()
 {
+	/* as a special service, complete the handshake here */
+	switch (this->hnd_shk_state) {
+	case HND_SHK_ST_SENT_TOKEN:
+		handshake();
+	case HND_SHK_ST_CLEAN:
+		return;
+	case HND_SHK_ST_RCVD_CONNACK:
+	default:
+	case HND_SHK_ST_UNK:
+		break;
+	}
+
 	if( !checkMessages() ) {
 		const char * err = (errno != 0) ? strerror(errno)
 			: "The remote host closed the connection.";
@@ -313,6 +399,18 @@ void EPosixClientSocket::onReceive()
 
 void EPosixClientSocket::onSend()
 {
+	/* as a special service, complete the handshake here */
+	switch (this->hnd_shk_state) {
+	case HND_SHK_ST_CLEAN:
+		handshake();
+	case HND_SHK_ST_SENT_TOKEN:
+		return;
+	case HND_SHK_ST_RCVD_CONNACK:
+	default:
+	case HND_SHK_ST_UNK:
+		break;
+	}
+
 	sendBufferedData();
 }
 
