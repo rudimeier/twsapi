@@ -27,7 +27,6 @@ public:
 	 * a socket established and maintained elsewhere. */
 	int prepareHandshake(int socket, int clientId = 0);
 	int handshake(void);
-	int wavegoodbye(void);
 
 private:
 

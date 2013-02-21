@@ -257,13 +257,14 @@ void EPosixClientSocket::eDisconnect()
 			// close socket
 			SocketClose( m_fd);
 		}
-		m_fd = -1;
 		// uninitialize Winsock DLL (only for Windows)
 		SocketsDestroy();
 		/*@fallthrough@*/
 	case HND_SHK_ST_CLEAN:
 	case HND_SHK_ST_SENT_TOKEN:
 	case HND_SHK_ST_RCVD_CONNACK:
+		this->hnd_shk_state = HND_SHK_ST_UNK;
+		m_fd = -1;
 		eDisconnectBase();
 		break;
 	}
@@ -340,15 +341,6 @@ int EPosixClientSocket::handshake(void)
 	// successfully connected
 	return 0;
 }
-
-int EPosixClientSocket::wavegoodbye(void)
-{
-	this->m_fd = -1;
-	eDisconnectBase();
-	this->hnd_shk_state = HND_SHK_ST_UNK;
-	return 0;
-}
-
 
 int EPosixClientSocket::send(const char* buf, size_t sz)
 {
