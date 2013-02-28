@@ -23,11 +23,11 @@ ib_client_version=""
 
 ## get twsapi version
 version_cmd="`sed -n -e 's/^#define[ \t][ \t]*PACKAGE_VERSION[ \t][ \t]*"\([^\.]*\)\.\([^\.]*\)\.\([^\.]\)"$/major_ver="\1";minor_ver="\2";micro_ver="\3"/p' "${config_h}"`"
-#echo "${version_cmd}"
+test "${debug}" != "0" && echo "eval ${version_cmd}" 1>&2
 eval "${version_cmd}" || exit 1
 
 version_cmd="`sed -n -e 's/^#define[ \t][ \t]*PACKAGE_VERSION[ \t][ \t]*\(.*\)$/pack_ver=\1/p' "${config_h}"`"
-#echo "${version_cmd}"
+test "${debug}" != "0" && echo "eval ${version_cmd}" 1>&2
 eval "${version_cmd}" || exit 1
 
 fail="0"
@@ -55,7 +55,7 @@ API_Version="none"
 ib_ver="${API_Version}"
 
 version_cmd="`sed -n -e 's/^API_Version=\([^\.]*\)\.\([^\.]*\)$/ib_major="\1";ib_minor="\2"/p' "${api_version_txt}"`"
-#echo "${version_cmd}"
+test "${debug}" != "0" && echo "eval ${version_cmd}" 1>&2
 eval "${version_cmd}" || exit 1
 
 fail="0"
@@ -78,7 +78,7 @@ fi
 
 ## get CLIENT_VERSION
 version_cmd="`sed -n 's/^[ \t]*const[ \t]*int[ \t]*\(CLIENT_VERSION\)[ \t]*=[ \t]*\([0-9]*\)[ \t]*;[ \t]*/ib_client_version=\2/p' "${socket_base_impl_h}"`"
-#echo "${version_cmd}"
+test "${debug}" != "0" && echo "eval ${version_cmd}" 1>&2
 eval "${version_cmd}" || exit 1
 
 fail="0"
