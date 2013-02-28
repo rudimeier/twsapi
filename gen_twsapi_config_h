@@ -2,11 +2,12 @@
 
 config_h="${1}"
 api_version_txt="${2}"
+socket_base_impl_h="${3}"
 debug=0
 my_name="`basename "$0"`"
 
-if test -z "${config_h}" -o -z "${api_version_txt}"; then
-	echo "usage: ${my_name} config.h API_VersionNum.txt"
+if test -z "${config_h}" -o -z "${api_version_txt}" -o -z "${socket_base_impl_h}"; then
+	echo "usage: ${my_name} config.h API_VersionNum.txt EClientSocketBaseImpl.h"
 	exit 1
 fi
 
@@ -18,6 +19,7 @@ ib_major="-1"
 ib_minor="-1"
 ib_micro="0"
 ib_ver=""
+ib_client_version=""
 
 ## get twsapi version
 version_cmd="`sed -n -e 's/^#define[ \t][ \t]*PACKAGE_VERSION[ \t][ \t]*"\([^\.]*\)\.\([^\.]*\)\.\([^\.]\)"$/major_ver="\1";minor_ver="\2";micro_ver="\3"/p' "${config_h}"`"
@@ -74,12 +76,31 @@ if test ${fail} != "0"; then
         exit 1
 fi
 
+## get CLIENT_VERSION
+version_cmd="`sed -n 's/^[ \t]*const[ \t]*int[ \t]*\(CLIENT_VERSION\)[ \t]*=[ \t]*\([0-9]*\)[ \t]*;[ \t]*/ib_client_version=\2/p' "${socket_base_impl_h}"`"
+#echo "${version_cmd}"
+eval "${version_cmd}" || exit 1
+
+fail="0"
+test "${ib_client_version}" -ge "0" || fail=1
+
+if test ${fail} != "0" -o "${debug}" != "0" ; then
+	echo "ib_client_version: '${ib_client_version}'" 1>&2
+fi
+
+if test ${fail} != "0"; then
+	echo "${my_name}: failed to get version info from '${socket_base_impl_h}'" 1>&2
+	exit 1
+fi
+
 ## export our version numbers
 TWSAPI_VERSION="${pack_ver}"
 TWSAPI_VERSION_NUMBER="`expr "${major_ver}" \* 10000 + "${minor_ver}" \* 100 + "${micro_ver}"`" 
 
 TWSAPI_IB_VERSION="${ib_ver}"
 TWSAPI_IB_VERSION_NUMBER="`expr "${ib_major}" \* 10000 + "${ib_minor}" \* 100 + "${ib_micro}"`"
+
+TWSAPI_IB_CLIENT_VERSION="${ib_client_version}"
 
 if test "${debug}" != "0"; then
 	echo "${TWSAPI_VERSION}" 1>&2
@@ -111,6 +132,9 @@ cat <<EOF
 
 /* the version number: 1.2.3 value is 10203 */
 #define TWSAPI_IB_VERSION_NUMBER ${TWSAPI_IB_VERSION_NUMBER}
+
+/* IB's CLIENT_VERSION (protocol version) */
+#define TWSAPI_IB_CLIENT_VERSION ${TWSAPI_IB_CLIENT_VERSION}
 
 #endif
 EOF

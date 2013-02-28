@@ -8,8 +8,8 @@ SUBDIRS = PosixSocketClient TestPosixSocketClient
 nodist_header_HEADERS =
 nodist_header_HEADERS += twsapi_config.h
 
-twsapi_config.h: config.h API_VersionNum.txt gen_twsapi_config_h
-	$(srcdir)/gen_twsapi_config_h config.h $(srcdir)/API_VersionNum.txt > $@
+twsapi_config.h: config.h API_VersionNum.txt gen_twsapi_config_h Shared/EClientSocketBaseImpl.h
+	$(srcdir)/gen_twsapi_config_h config.h $(srcdir)/API_VersionNum.txt $(srcdir)/Shared/EClientSocketBaseImpl.h > $@
 
 dist_doc_DATA =
 dist_doc_DATA += API_VersionNum.txt
