@@ -7,7 +7,7 @@ debug=0
 my_name="`basename "$0"`"
 
 if test -z "${config_h}" -o -z "${api_version_txt}" -o -z "${socket_base_impl_h}"; then
-	echo "usage: ${my_name} config.h API_VersionNum.txt EClientSocketBaseImpl.h"
+	echo "usage: ${my_name} config.h API_VersionNum.txt EClientSocketBaseImpl.h" 1>&2
 	exit 1
 fi
 
