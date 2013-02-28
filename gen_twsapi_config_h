@@ -127,10 +127,10 @@ cat <<EOF
 /* the version number: 1.2.3 value is 10203 */
 #define TWSAPI_VERSION_NUMBER ${TWSAPI_VERSION_NUMBER}
 
-/* the version string like "1.2.3" */
+/* IB's original version string like "1.2.3" */
 #define TWSAPI_IB_VERSION "${TWSAPI_IB_VERSION}"
 
-/* the version number: 1.2.3 value is 10203 */
+/* IB's original version number: 1.2.3 value is 10203 */
 #define TWSAPI_IB_VERSION_NUMBER ${TWSAPI_IB_VERSION_NUMBER}
 
 /* IB's CLIENT_VERSION (protocol version) */
