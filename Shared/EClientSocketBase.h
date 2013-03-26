@@ -89,6 +89,10 @@ public:
 	void cancelCalculateOptionPrice(TickerId reqId);
 	void reqGlobalCancel();
 	void reqMarketDataType(int marketDataType);
+	void reqPositions();
+	void cancelPositions();
+	void reqAccountSummary( int reqId, const IBString& groupName, const IBString& tags);
+	void cancelAccountSummary( int reqId);
 
 private:
 

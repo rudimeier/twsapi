@@ -27,7 +27,7 @@ public class Contract implements Cloneable {
     
     // COMBOS
     public String m_comboLegsDescrip; // received in open order version 14 and up for all combos
-    public Vector m_comboLegs = new Vector();
+    public Vector<ComboLeg> m_comboLegs = new Vector<ComboLeg>();
     
     // delta neutral
     public UnderComp m_underComp;
@@ -40,14 +40,14 @@ public class Contract implements Cloneable {
 
     public Object clone() throws CloneNotSupportedException {
         Contract retval = (Contract)super.clone();
-        retval.m_comboLegs = (Vector)retval.m_comboLegs.clone();
+        retval.m_comboLegs = (Vector<ComboLeg>)retval.m_comboLegs.clone();
         return retval;
     }
 
     public Contract(int p_conId, String p_symbol, String p_secType, String p_expiry,
                     double p_strike, String p_right, String p_multiplier,
                     String p_exchange, String p_currency, String p_localSymbol,
-                    Vector p_comboLegs, String p_primaryExch, boolean p_includeExpired, 
+                    Vector<ComboLeg> p_comboLegs, String p_primaryExch, boolean p_includeExpired, 
                     String p_secIdType, String p_secId) {
     	m_conId = p_conId;
         m_symbol = p_symbol;

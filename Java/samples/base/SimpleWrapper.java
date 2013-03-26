@@ -284,6 +284,18 @@ public class SimpleWrapper implements EWrapper {
             ut.disconnect();
          }
       });			    	
-   }    
-}
+   }
 
+   @Override public void position(String account, Contract contract, int pos) {
+      logIn("position");
+   }
+   @Override public void positionEnd() {
+       logIn("positionEnd");
+   }
+   @Override public void accountSummary( int reqId, String account, String tag, String value, String currency) {
+      logIn("accountSummary");
+   }
+   @Override public void accountSummaryEnd( int reqId) {
+       logIn("accountSummaryEnd");
+   }
+}

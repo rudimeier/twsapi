@@ -6,6 +6,7 @@ package com.ib.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -147,6 +148,10 @@ public class EClientSocket {
     private static final int CANCEL_CALC_OPTION_PRICE = 57;
     private static final int REQ_GLOBAL_CANCEL = 58;
     private static final int REQ_MARKET_DATA_TYPE = 59;
+    private static final int REQ_POSITIONS = 61;
+    private static final int REQ_ACCOUNT_SUMMARY = 62;
+    private static final int CANCEL_ACCOUNT_SUMMARY = 63;
+    private static final int CANCEL_POSITIONS = 64;
     
 	private static final int MIN_SERVER_VER_REAL_TIME_BARS = 34;
 	private static final int MIN_SERVER_VER_SCALE_ORDERS = 35;
@@ -181,6 +186,7 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE = 61;
     private static final int MIN_SERVER_VER_TRAILING_PERCENT = 62;
     private static final int MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE = 66;
+    private static final int MIN_SERVER_VER_ACCT_SUMMARY = 67;
 
     private AnyWrapper 			m_anyWrapper;	// msg handler
     private DataOutputStream 	m_dos;      // the socket output stream
@@ -287,14 +293,14 @@ public class EClientSocket {
         m_serverVersion = 0;
         m_TwsTime = "";
 
-        DataOutputStream dos = m_dos;
+        FilterOutputStream dos = m_dos;
         m_dos = null;
 
         EReader reader = m_reader;
         m_reader = null;
         
         try {
-            // stop reader thread
+            // stop reader thread; reader thread will close input stream
             if( reader != null) {
                 reader.interrupt();
             }
@@ -303,7 +309,7 @@ public class EClientSocket {
         }
         
         try {
-            // close socket
+            // close output stream
             if( dos != null) {
                 dos.close();
             }
@@ -404,7 +410,7 @@ public class EClientSocket {
             sendMax(subscription.couponRateBelow());
             send(subscription.excludeConvertible());
             if (m_serverVersion >= 25) {
-                send(subscription.averageOptionVolumeAbove());
+                sendMax(subscription.averageOptionVolumeAbove());
                 send(subscription.scannerSettingPairs());
             }
             if (m_serverVersion >= 27) {
@@ -579,6 +585,7 @@ public class EClientSocket {
         }        
     }
 
+    /** Note that formatData parameter affects intra-day bars only; 1-day bars always return with date in YYYYMMDD format. */
     public synchronized void reqHistoricalData( int tickerId, Contract contract,
                                                 String endDateTime, String durationStr,
                                                 String barSizeSetting, String whatToShow,
@@ -681,7 +688,7 @@ public class EClientSocket {
             send(contract.m_primaryExch);
             send(contract.m_currency);
             send(contract.m_localSymbol);
-            send(barSize);
+            send(barSize);  // this parameter is not currently used
             send(whatToShow);
             send(useRTH);
             
@@ -1990,7 +1997,117 @@ public class EClientSocket {
             close();
         }
     }
-    
+
+    public synchronized void reqPositions() {
+        if (!m_connected) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_ACCT_SUMMARY) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS,
+            "  It does not support position requests.");
+            return;
+        }
+
+        final int VERSION = 1;
+
+        Builder b = new Builder();
+        b.send( REQ_POSITIONS);
+        b.send( VERSION);
+        
+
+        try {
+            m_dos.write( b.getBytes() );
+        }
+        catch (IOException e) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.FAIL_SEND_REQPOSITIONS, "" + e);
+        }
+    }
+
+    public synchronized void cancelPositions() {
+        if (!m_connected) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_ACCT_SUMMARY) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS,
+            "  It does not support position cancellation.");
+            return;
+        }
+
+        final int VERSION = 1;
+
+        Builder b = new Builder();
+        b.send( CANCEL_POSITIONS);
+        b.send( VERSION);
+
+        try {
+            m_dos.write( b.getBytes() );
+        }
+        catch (IOException e) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.FAIL_SEND_CANPOSITIONS, "" + e);
+        }
+    }
+
+    public synchronized void reqAccountSummary( int reqId, String group, String tags) {
+        if (!m_connected) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_ACCT_SUMMARY) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS,
+            "  It does not support account summary requests.");
+            return;
+        }
+
+        final int VERSION = 1;
+
+        Builder b = new Builder();
+        b.send( REQ_ACCOUNT_SUMMARY);
+        b.send( VERSION);
+        b.send( reqId);
+        b.send( group);
+        b.send( tags);
+
+        try {
+           m_dos.write( b.getBytes() );
+        }
+        catch (IOException e) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.FAIL_SEND_REQACCOUNTDATA, "" + e);
+        }
+    }
+
+	public synchronized void cancelAccountSummary( int reqId) {
+        if (!m_connected) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.NOT_CONNECTED, "");
+            return;
+        }
+
+        if (m_serverVersion < MIN_SERVER_VER_ACCT_SUMMARY) {
+            error(EClientErrors.NO_VALID_ID, EClientErrors.UPDATE_TWS,
+            "  It does not support account summary cancellation.");
+            return;
+        }
+
+        final int VERSION = 1;
+
+        Builder b = new Builder();
+        b.send( CANCEL_ACCOUNT_SUMMARY);
+        b.send( VERSION);
+        b.send( reqId);
+
+        try {
+            m_dos.write( b.getBytes() );
+        }
+        catch (IOException e) {
+            error( EClientErrors.NO_VALID_ID, EClientErrors.FAIL_SEND_CANACCOUNTDATA, "" + e);
+        }
+    }
+
+    /** @deprecated, never called. */
     protected synchronized void error( String err) {
         m_anyWrapper.error( err);
     }

@@ -506,4 +506,42 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " yieldRedemptionDate=" + Util.IntMaxString(commissionReport.m_yieldRedemptionDate);
         return msg;
     }
+    
+    static public String position( String account, Contract contract, int position) {
+        String msg = " ---- Position begin ----\n"
+        + "account = " + account + "\n"
+        + "conId = " + contract.m_conId + "\n"
+        + "symbol = " + contract.m_symbol + "\n"
+        + "secType = " + contract.m_secType + "\n"
+        + "expiry = " + contract.m_expiry + "\n"
+        + "strike = " + contract.m_strike + "\n"
+        + "right = " + contract.m_right + "\n"
+        + "multiplier = " + contract.m_multiplier + "\n"
+        + "contractExchange = " + contract.m_exchange + "\n"
+        + "currency = " + contract.m_currency + "\n"
+        + "localSymbol = " + contract.m_localSymbol + "\n"
+        + "position = " + Util.IntMaxString(position) + "\n"
+        + " ---- Position end ----\n";
+        return msg;
+    }    
+
+    static public String positionEnd() {
+        return " =============== end ===============";
+    }
+
+    static public String accountSummary( int reqId, String account, String tag, String value, String currency) {
+        String msg = " ---- Account Summary begin ----\n"
+        + "reqId = " + reqId + "\n"
+        + "account = " + account + "\n"
+        + "tag = " + tag + "\n"
+        + "value = " + value + "\n"
+        + "currency = " + currency + "\n"
+        + " ---- Account Summary end ----\n";
+        return msg;
+    }
+
+    static public String accountSummaryEnd( int reqId) {
+    	return "id=" + reqId + " =============== end ===============";
+    }
+
 }

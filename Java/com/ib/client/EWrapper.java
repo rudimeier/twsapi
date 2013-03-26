@@ -54,4 +54,9 @@ public interface EWrapper extends AnyWrapper {
     void tickSnapshotEnd(int reqId);
     void marketDataType(int reqId, int marketDataType);
     void commissionReport(CommissionReport commissionReport);
+    void position(String account, Contract contract, int pos);
+    void positionEnd();	
+    void accountSummary(int reqId, String account, String tag, String value, String currency);
+    void accountSummaryEnd(int reqId);
 }
+

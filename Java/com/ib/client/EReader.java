@@ -47,6 +47,10 @@ public class EReader extends Thread {
     static final int TICK_SNAPSHOT_END = 57;
     static final int MARKET_DATA_TYPE = 58;
     static final int COMMISSION_REPORT = 59;
+    static final int POSITION = 61;
+    static final int POSITION_END = 62;
+    static final int ACCOUNT_SUMMARY = 63;
+    static final int ACCOUNT_SUMMARY_END = 64;
 
     private EClientSocket 	m_parent;
     private DataInputStream m_dis;
@@ -76,6 +80,12 @@ public class EReader extends Thread {
         }
         if (parent().isConnected()) {
         	m_parent.close();
+        }
+        try {
+            m_dis.close();
+            m_dis = null;
+            }
+            catch (IOException e) {
         }
     }
 
@@ -128,6 +138,61 @@ public class EReader extends Thread {
                 break;
             }
 
+            case POSITION:{
+                int version = readInt();
+                String account = readStr();
+                int conid = readInt();
+                String symbol = readStr();
+                String secType = readStr();
+                String expiry = readStr();
+                double strike = readDouble();
+                String right = readStr();
+                String mult = readStr();
+                String exchange = readStr();
+                String currency = readStr();
+                String localSymbol = readStr();
+                int pos = readInt();
+                
+                Contract contract = new Contract();
+                contract.m_conId = conid;
+                contract.m_symbol = symbol;
+                contract.m_secType = secType;
+                contract.m_expiry = expiry;
+                contract.m_strike = strike;
+                contract.m_right = right;
+                contract.m_multiplier = mult;
+                contract.m_exchange = exchange;
+                contract.m_currency = currency;
+                contract.m_localSymbol = localSymbol;
+                
+                eWrapper().position( account, contract, pos);
+                break;
+            }
+            
+            case POSITION_END:{
+                int version = readInt();
+                eWrapper().positionEnd();
+                break;
+            }
+            
+            case ACCOUNT_SUMMARY:{
+                int version = readInt();
+                int reqId = readInt();
+                String account = readStr();
+                String tag = readStr();
+                String value = readStr();
+                String currency = readStr();
+                eWrapper().accountSummary(reqId, account, tag, value, currency);
+                break;
+            }
+            
+            case ACCOUNT_SUMMARY_END:{
+                int version = readInt();
+                int reqId = readInt();
+                eWrapper().accountSummaryEnd(reqId);
+                break;
+            }
+            
             case TICK_OPTION_COMPUTATION: {
                 int version = readInt();
                 int tickerId = readInt();

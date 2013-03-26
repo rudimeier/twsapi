@@ -5,7 +5,7 @@
 package com.ib.client;
 
 public class ExecutionFilter{
-    public int 		m_clientId;
+    public int 		m_clientId; // zero means no filtering on this field
     public String 	m_acctCode;
     public String 	m_time;
     public String 	m_symbol;

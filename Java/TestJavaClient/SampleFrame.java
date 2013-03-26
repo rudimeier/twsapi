@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.ib.client.CommissionReport;
 import com.ib.client.Contract;
 import com.ib.client.ContractDetails;
 import com.ib.client.EClientSocket;
@@ -27,7 +28,6 @@ import com.ib.client.Order;
 import com.ib.client.OrderState;
 import com.ib.client.UnderComp;
 import com.ib.client.Util;
-import com.ib.client.CommissionReport;
 
 class SampleFrame extends JFrame implements EWrapper {
     private static final int NOT_AN_FA_ACCOUNT_ERROR = 321 ;
@@ -269,6 +269,31 @@ class SampleFrame extends JFrame implements EWrapper {
             }
         });
         
+        JButton butRequestPositions = new JButton( "Request Positions");
+        butRequestPositions.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onRequestPositions();
+            }
+        });
+        JButton butCancelPositions = new JButton( "Cancel Positions");
+        butCancelPositions.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onCancelPositions();
+            }
+        });
+        JButton butRequestAccountSummary = new JButton( "Request Account Summary");
+        butRequestAccountSummary.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onRequestAccountSummary();
+            }
+        });
+        JButton butCancelAccountSummary = new JButton( "Cancel Account Summary");
+        butCancelAccountSummary.addActionListener( new ActionListener() {
+            public void actionPerformed( ActionEvent e) {
+                onCancelAccountSummary();
+            }
+        });
+        
         JButton butClear = new JButton( "Clear");
         butClear.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -323,6 +348,10 @@ class SampleFrame extends JFrame implements EWrapper {
         buttonPanel.add( butFinancialAdvisor ) ;
         buttonPanel.add( butGlobalCancel ) ;
         buttonPanel.add( butReqMarketDataType ) ;
+        buttonPanel.add( butRequestPositions ) ;
+        buttonPanel.add( butCancelPositions ) ;
+        buttonPanel.add( butRequestAccountSummary ) ;
+        buttonPanel.add( butCancelAccountSummary ) ;
 
         buttonPanel.add( new JPanel() );
         buttonPanel.add( butClear );
@@ -723,6 +752,34 @@ class SampleFrame extends JFrame implements EWrapper {
         m_client.reqMarketDataType( m_orderDlg.m_marketDataType);
     }
     
+    void onRequestPositions() {
+        m_client.reqPositions();
+    }
+
+    void onCancelPositions() {
+        m_client.cancelPositions();
+    }
+
+    void onRequestAccountSummary() {
+        AccountSummary dlg = new AccountSummary(this);
+
+        dlg.setVisible(true);
+        if ( dlg.m_rc ) {
+            // request account summary
+            m_client.reqAccountSummary( dlg.m_reqId, dlg.m_groupName, dlg.m_tags);
+        }
+    }
+
+    void onCancelAccountSummary() {
+        AccountSummary dlg = new AccountSummary(this);
+
+        dlg.setVisible(true);
+        if ( dlg.m_rc ) {
+            // cancel account summary
+            m_client.cancelAccountSummary( dlg.m_reqId);
+        }
+    }
+
     public void tickPrice( int tickerId, int field, double price, int canAutoExecute) {
         // received price tick
     	String msg = EWrapperMsgGenerator.tickPrice( tickerId, field, price, canAutoExecute);
@@ -1074,5 +1131,25 @@ class SampleFrame extends JFrame implements EWrapper {
         destOrder.m_settlingFirm = srcOrder.m_settlingFirm;
         destOrder.m_clearingAccount = srcOrder.m_clearingAccount;
         destOrder.m_clearingIntent = srcOrder.m_clearingIntent;
+    }
+
+    public void position(String account, Contract contract, int pos) {
+        String msg = EWrapperMsgGenerator.position(account, contract, pos);
+        m_TWS.add(msg);
+    }
+
+    public void positionEnd() {
+        String msg = EWrapperMsgGenerator.positionEnd();
+        m_TWS.add(msg);
+    }
+
+    public void accountSummary( int reqId, String account, String tag, String value, String currency) {
+        String msg = EWrapperMsgGenerator.accountSummary(reqId, account, tag, value, currency);
+        m_TWS.add(msg);
+    }
+
+    public void accountSummaryEnd( int reqId) {
+        String msg = EWrapperMsgGenerator.accountSummaryEnd(reqId);
+        m_TWS.add(msg);
     }
 }

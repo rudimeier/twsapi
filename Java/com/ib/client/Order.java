@@ -50,9 +50,9 @@ public class Order {
     public String   m_rule80A;  // Individual = 'I', Agency = 'A', AgentOtherMember = 'W', IndividualPTIA = 'J', AgencyPTIA = 'U', AgentOtherMemberPTIA = 'M', IndividualPT = 'K', AgencyPT = 'Y', AgentOtherMemberPT = 'N'
     public boolean  m_allOrNone;
     public int      m_minQty;
-    public double   m_percentOffset;    // REL orders only
+    public double   m_percentOffset;    // REL orders only; specify the decimal, e.g. .04 not 4
     public double   m_trailStopPrice;   // for TRAILLIMIT orders only
-    public double   m_trailingPercent;
+    public double   m_trailingPercent;  // specify the percentage, e.g. 3, not .03
 
     // Financial advisors only 
     public String   m_faGroup;
@@ -87,10 +87,10 @@ public class Order {
     public double   m_stockRangeUpper;
 
     // VOLATILITY ORDERS ONLY
-    public double   m_volatility;
+    public double   m_volatility;  // enter percentage not decimal, e.g. 2 not .02
     public int      m_volatilityType;     // 1=daily, 2=annual
     public int      m_continuousUpdate;
-    public int      m_referencePriceType; // 1=Average, 2 = BidOrAsk
+    public int      m_referencePriceType; // 1=Bid/Ask midpoint, 2 = BidOrAsk
     public String   m_deltaNeutralOrderType;
     public double   m_deltaNeutralAuxPrice;
     public int      m_deltaNeutralConId;
@@ -103,8 +103,8 @@ public class Order {
     public String   m_deltaNeutralDesignatedLocation;
 
     // COMBO ORDERS ONLY
-    public double   m_basisPoints;      // EFP orders only
-    public int      m_basisPointsType;  // EFP orders only
+    public double   m_basisPoints;      // EFP orders only, download only
+    public int      m_basisPointsType;  // EFP orders only, download only
     
     // SCALE ORDERS ONLY
     public int      m_scaleInitLevelSize;
@@ -120,7 +120,7 @@ public class Order {
 
     // HEDGE ORDERS ONLY
     public String   m_hedgeType; // 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
-    public String   m_hedgeParam; // beta value for beta hedge, ratio for pair hedge
+    public String   m_hedgeParam; // beta value for beta hedge (in range 0-1), ratio for pair hedge
 
     // Clearing info
     public String 	m_account; // IB account

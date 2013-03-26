@@ -101,6 +101,7 @@
 //      can receive multiplier in executionDetails
 // 60 = can receive deltaNeutralOpenClose, deltaNeutralShortSale, deltaNeutralShortSaleSlot 
 //      and deltaNeutralDesignatedLocation in openOrder
+//      can receive position, positionEnd, accountSummary and accountSummaryEnd
 
 const int CLIENT_VERSION    = 60;
 const int SERVER_VERSION    = 38;
@@ -142,6 +143,10 @@ const int CANCEL_CALC_IMPLIED_VOLAT     = 56;
 const int CANCEL_CALC_OPTION_PRICE      = 57;
 const int REQ_GLOBAL_CANCEL             = 58;
 const int REQ_MARKET_DATA_TYPE          = 59;
+const int REQ_POSITIONS                 = 61;
+const int REQ_ACCOUNT_SUMMARY           = 62;
+const int CANCEL_ACCOUNT_SUMMARY        = 63;
+const int CANCEL_POSITIONS              = 64;
 
 //const int MIN_SERVER_VER_REAL_TIME_BARS       = 34;
 //const int MIN_SERVER_VER_SCALE_ORDERS         = 35;
@@ -176,6 +181,8 @@ const int MIN_SERVER_VER_SCALE_ORDERS3          = 60;
 const int MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE = 61;
 const int MIN_SERVER_VER_TRAILING_PERCENT       = 62;
 const int MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE = 66;
+const int MIN_SERVER_VER_POSITIONS              = 67;
+const int MIN_SERVER_VER_ACCOUNT_SUMMARY        = 67;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -213,6 +220,10 @@ const int DELTA_NEUTRAL_VALIDATION  = 56;
 const int TICK_SNAPSHOT_END         = 57;
 const int MARKET_DATA_TYPE          = 58;
 const int COMMISSION_REPORT         = 59;
+const int POSITION_DATA             = 61;
+const int POSITION_END              = 62;
+const int ACCOUNT_SUMMARY           = 63;
+const int ACCOUNT_SUMMARY_END       = 64;
 
 // TWS New Bulletins constants
 const int NEWS_MSG              = 1;    // standard IB news bulleting message
@@ -2132,6 +2143,106 @@ int EClientSocketBase::bufferedRead()
 	return nResult;
 }
 
+void EClientSocketBase::reqPositions()
+{
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if( m_serverVersion < MIN_SERVER_VER_POSITIONS) {
+		m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support positions request.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( REQ_POSITIONS);
+	ENCODE_FIELD( VERSION);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocketBase::cancelPositions()
+{
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if( m_serverVersion < MIN_SERVER_VER_POSITIONS) {
+		m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support positions cancellation.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( CANCEL_POSITIONS);
+	ENCODE_FIELD( VERSION);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocketBase::reqAccountSummary( int reqId, const IBString& groupName, const IBString& tags)
+{
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if( m_serverVersion < MIN_SERVER_VER_ACCOUNT_SUMMARY) {
+		m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support account summary request.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( REQ_ACCOUNT_SUMMARY);
+	ENCODE_FIELD( VERSION);
+	ENCODE_FIELD( reqId);
+	ENCODE_FIELD( groupName);
+	ENCODE_FIELD( tags);
+
+	bufferedSend( msg.str());
+}
+
+void EClientSocketBase::cancelAccountSummary( int reqId)
+{
+	// not connected?
+	if( !m_connected) {
+		m_pEWrapper->error( NO_VALID_ID, NOT_CONNECTED.code(), NOT_CONNECTED.msg());
+		return;
+	}
+
+	if( m_serverVersion < MIN_SERVER_VER_ACCOUNT_SUMMARY) {
+		m_pEWrapper->error(NO_VALID_ID, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+			"  It does not support account summary cancellation.");
+		return;
+	}
+
+	std::ostringstream msg;
+
+	const int VERSION = 1;
+
+	ENCODE_FIELD( CANCEL_ACCOUNT_SUMMARY);
+	ENCODE_FIELD( VERSION);
+	ENCODE_FIELD( reqId);
+
+	bufferedSend( msg.str());
+}
+
 bool EClientSocketBase::checkMessages()
 {
 	if( !isSocketOK())
@@ -3409,6 +3520,76 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( commissionReport.yieldRedemptionDate);
 
 				m_pEWrapper->commissionReport( commissionReport);
+				break;
+			}
+
+			case POSITION_DATA:
+			{
+				int version;
+				IBString account;
+				int position;
+
+				DECODE_FIELD( version);
+				DECODE_FIELD( account);
+
+				// decode contract fields
+				Contract contract;
+				DECODE_FIELD( contract.conId); // ver 5 field
+				DECODE_FIELD( contract.symbol);
+				DECODE_FIELD( contract.secType);
+				DECODE_FIELD( contract.expiry);
+				DECODE_FIELD( contract.strike);
+				DECODE_FIELD( contract.right);
+				DECODE_FIELD( contract.multiplier);
+				DECODE_FIELD( contract.exchange);
+				DECODE_FIELD( contract.currency);
+				DECODE_FIELD( contract.localSymbol);
+
+				DECODE_FIELD( position);
+
+				m_pEWrapper->position( account, contract, position);
+				break;
+			}
+
+			case POSITION_END:
+			{
+				int version;
+
+				DECODE_FIELD( version);
+
+				m_pEWrapper->positionEnd();
+				break;
+			}
+
+			case ACCOUNT_SUMMARY:
+			{
+				int version;
+				int reqId;
+				IBString account;
+				IBString tag;
+				IBString value;
+				IBString curency;
+
+				DECODE_FIELD( version);
+				DECODE_FIELD( reqId);
+				DECODE_FIELD( account);
+				DECODE_FIELD( tag);
+				DECODE_FIELD( value);
+				DECODE_FIELD( curency);
+
+				m_pEWrapper->accountSummary( reqId, account, tag, value, curency);
+				break;
+			}
+
+			case ACCOUNT_SUMMARY_END:
+			{
+				int version;
+				int reqId;
+
+				DECODE_FIELD( version);
+				DECODE_FIELD( reqId);
+
+				m_pEWrapper->accountSummaryEnd( reqId);
 				break;
 			}
 

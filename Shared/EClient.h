@@ -59,6 +59,11 @@ public:
    virtual void cancelCalculateOptionPrice( TickerId reqId) = 0;
    virtual void reqGlobalCancel() = 0;
    virtual void reqMarketDataType( int marketDataType) = 0;
+   virtual void reqPositions() = 0;
+   virtual void cancelPositions() = 0;
+   virtual void reqAccountSummary( int reqId, const IBString& groupName, const IBString& tags) = 0;
+   virtual void cancelAccountSummary( int reqId) = 0;
+
 private:
 };
 
