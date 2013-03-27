@@ -7,7 +7,12 @@ This twsapi is almost identical to the original IB C++ Posix API. It contains
 several bugfixes, usage improvements and it's using the autotools build system.
 For more details read "Changes of original IB API" below.
 
-Check out the latest version at https://github.com/rudimeier/twsapi
+The project homepage (bugtracker, latest git repo) is hosted on github
+ https://github.com/rudimeier/twsapi
+Released source tarballs download here
+ https://bitbucket.org/rudimeier/twsapi/downloads
+Binary rpms for various Linux distros here
+ http://software.opensuse.org/download.html?project=home:rudi_m&package=twsapi
 
 
 
