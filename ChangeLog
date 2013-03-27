@@ -4,13 +4,14 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 
 
-0.4.2 - not yet released  ------------------------------------------------------
+0.4.2 - 2013-03-27  ------------------------------------------------------------
 
 Maintenance release
 
   - build fixes for BSD
   - introduce new header twsapi_config.h to have version and configure
     informations about the twsapi library
+  - allow to initiate handshake and goodbye procedures on user-provided sockets
 
 
 
