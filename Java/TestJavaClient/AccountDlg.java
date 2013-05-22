@@ -174,7 +174,7 @@ class PortfolioTable extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 13;
+        return 18;
     }
 
     public Object getValueAt(int r, int c) {
@@ -188,34 +188,40 @@ class PortfolioTable extends AbstractTableModel {
     public String getColumnName(int c) {
         switch(c) {
             case 0:
-                return "Symbol";
+                return "ConId";
             case 1:
-                return "SecType";
+                return "Symbol";
             case 2:
-                return "Expiry";
+                return "SecType";
             case 3:
-                return "Strike";
+                return "Expiry";
             case 4:
-                return "Right";
+                return "Strike";
             case 5:
-            	return "Multiplier";
+                return "Right";
             case 6:
-            	return "Exchange";
+            	return "Multiplier";
             case 7:
-                return "Currency";
+            	return "Exchange";
             case 8:
-                return "Position";
+                return "Currency";
             case 9:
-                return "Market Price";
+                return "Local Symbol";
             case 10:
-                return "Market Value";
+                return "Trading Class";
             case 11:
-                return "Average Cost";
+                return "Position";
             case 12:
-                return "Unrealized P&L";
+                return "Market Price";
             case 13:
-                return "Realized P&L";
+                return "Market Value";
             case 14:
+                return "Average Cost";
+            case 15:
+                return "Unrealized P&L";
+            case 16:
+                return "Realized P&L";
+            case 17:
                 return "Account Name";
             default:
                 return null;
@@ -248,34 +254,40 @@ class PortfolioTable extends AbstractTableModel {
         Object getValue(int c) {
             switch(c) {
                 case 0:
-                    return m_contract.m_symbol;
+                    return m_contract.m_conId;
                 case 1:
-                    return m_contract.m_secType;
+                    return m_contract.m_symbol;
                 case 2:
-                    return m_contract.m_expiry;
+                    return m_contract.m_secType;
                 case 3:
-                    return m_contract.m_expiry == null ? null : "" + m_contract.m_strike;
+                    return m_contract.m_expiry;
                 case 4:
-                    return (m_contract.m_right != null && m_contract.m_right.equals("???")) ? null : m_contract.m_right;
+                    return m_contract.m_expiry == null ? null : "" + m_contract.m_strike;
                 case 5:
-                	return m_contract.m_multiplier;
+                    return (m_contract.m_right != null && m_contract.m_right.equals("???")) ? null : m_contract.m_right;
                 case 6:
-                	return (m_contract.m_primaryExch != null ? m_contract.m_primaryExch : "");
+                	return m_contract.m_multiplier;
                 case 7:
-                    return m_contract.m_currency;
+                	return (m_contract.m_primaryExch != null ? m_contract.m_primaryExch : "");
                 case 8:
-                    return "" + m_position;
+                    return m_contract.m_currency;
                 case 9:
-                    return "" + m_marketPrice;
+                    return (m_contract.m_localSymbol != null ? m_contract.m_localSymbol : "");
                 case 10:
-                    return "" + m_marketValue;
+                    return (m_contract.m_tradingClass != null ? m_contract.m_tradingClass : "");
                 case 11:
-                    return "" + m_averageCost;
+                    return "" + m_position;
                 case 12:
-                    return "" + m_unrealizedPNL;
+                    return "" + m_marketPrice;
                 case 13:
-                    return "" + m_realizedPNL;
+                    return "" + m_marketValue;
                 case 14:
+                    return "" + m_averageCost;
+                case 15:
+                    return "" + m_unrealizedPNL;
+                case 16:
+                    return "" + m_realizedPNL;
+                case 17:
                     return m_accountName;
                 default:
                     return null;

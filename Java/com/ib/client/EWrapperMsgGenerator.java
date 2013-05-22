@@ -66,9 +66,18 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         String msg = "open order: orderId=" + orderId +
         " action=" + order.m_action +
         " quantity=" + order.m_totalQuantity +
-        " symbol=" + contract.m_symbol +
-        " exchange=" + contract.m_exchange +
-        " secType=" + contract.m_secType +
+    	" conid=" + contract.m_conId + 
+        " symbol=" + contract.m_symbol + 
+        " secType=" + contract.m_secType + 
+        " expiry=" + contract.m_expiry + 
+        " strike=" + contract.m_strike + 
+        " right=" + contract.m_right + 
+        " multiplier=" + contract.m_multiplier + 
+        " exchange=" + contract.m_exchange + 
+        " primaryExch=" + contract.m_primaryExch + 
+        " currency=" + contract.m_currency + 
+        " localSymbol=" + contract.m_localSymbol + 
+        " tradingClass=" + contract.m_tradingClass + 
         " type=" + order.m_orderType +
         " lmtPrice=" + Util.DoubleMaxString(order.m_lmtPrice) +
         " auxPrice=" + Util.DoubleMaxString(order.m_auxPrice) +
@@ -270,7 +279,6 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     
     private static String contractDetailsMsg(ContractDetails contractDetails) {
     	String msg = "marketName = " + contractDetails.m_marketName + "\n"
-        + "tradingClass = " + contractDetails.m_tradingClass + "\n"
         + "minTick = " + contractDetails.m_minTick + "\n"
         + "price magnifier = " + contractDetails.m_priceMagnifier + "\n"
         + "orderTypes = " + contractDetails.m_orderTypes + "\n"
@@ -301,7 +309,8 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "exchange = " + contract.m_exchange + "\n"
         + "primaryExch = " + contract.m_primaryExch + "\n"
         + "currency = " + contract.m_currency + "\n"
-        + "localSymbol = " + contract.m_localSymbol + "\n";
+        + "localSymbol = " + contract.m_localSymbol + "\n"
+        + "tradingClass = " + contract.m_tradingClass + "\n";
     	return msg;
     }
 	
@@ -325,7 +334,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "exchange = " + contract.m_exchange + "\n"
         + "currency = " + contract.m_currency + "\n"
         + "marketName = " + contractDetails.m_marketName + "\n"
-        + "tradingClass = " + contractDetails.m_tradingClass + "\n"
+        + "tradingClass = " + contract.m_tradingClass + "\n"
         + "conid = " + contract.m_conId + "\n"
         + "minTick = " + contractDetails.m_minTick + "\n"
         + "orderTypes = " + contractDetails.m_orderTypes + "\n"
@@ -367,15 +376,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "reqId = " + reqId + "\n"
         + "orderId = " + execution.m_orderId + "\n"
         + "clientId = " + execution.m_clientId + "\n"
-        + "symbol = " + contract.m_symbol + "\n"
-        + "secType = " + contract.m_secType + "\n"
-        + "expiry = " + contract.m_expiry + "\n"
-        + "strike = " + contract.m_strike + "\n"
-        + "right = " + contract.m_right + "\n"
-        + "multiplier = " + contract.m_multiplier + "\n"
-        + "contractExchange = " + contract.m_exchange + "\n"
-        + "currency = " + contract.m_currency + "\n"
-        + "localSymbol = " + contract.m_localSymbol + "\n"
+    	+ contractMsg(contract)
         + "execId = " + execution.m_execId + "\n"
         + "time = " + execution.m_time + "\n"
         + "acctNumber = " + execution.m_acctNumber + "\n"
@@ -465,7 +466,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         " currency=" + contract.m_currency +
         " localSymbol=" + contract.m_localSymbol +
         " marketName=" + contractDetails.m_marketName +
-        " tradingClass=" + contractDetails.m_tradingClass +
+        " tradingClass=" + contract.m_tradingClass +
         " distance=" + distance +
         " benchmark=" + benchmark +
         " projection=" + projection +
@@ -513,16 +514,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
     static public String position( String account, Contract contract, int position) {
         String msg = " ---- Position begin ----\n"
         + "account = " + account + "\n"
-        + "conId = " + contract.m_conId + "\n"
-        + "symbol = " + contract.m_symbol + "\n"
-        + "secType = " + contract.m_secType + "\n"
-        + "expiry = " + contract.m_expiry + "\n"
-        + "strike = " + contract.m_strike + "\n"
-        + "right = " + contract.m_right + "\n"
-        + "multiplier = " + contract.m_multiplier + "\n"
-        + "contractExchange = " + contract.m_exchange + "\n"
-        + "currency = " + contract.m_currency + "\n"
-        + "localSymbol = " + contract.m_localSymbol + "\n"
+    	+ contractMsg(contract)
         + "position = " + Util.IntMaxString(position) + "\n"
         + " ---- Position end ----\n";
         return msg;

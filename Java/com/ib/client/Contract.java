@@ -22,6 +22,7 @@ public class Contract implements Cloneable {
 
     public String m_currency;
     public String m_localSymbol;
+    public String m_tradingClass;
     public String m_primaryExch;      // pick a non-aggregate (ie not the SMART exchange) exchange that the contract trades on.  DO NOT SET TO SMART.
     public boolean m_includeExpired;  // can not be set to true for orders.
     
@@ -49,7 +50,7 @@ public class Contract implements Cloneable {
 
     public Contract(int p_conId, String p_symbol, String p_secType, String p_expiry,
                     double p_strike, String p_right, String p_multiplier,
-                    String p_exchange, String p_currency, String p_localSymbol,
+                    String p_exchange, String p_currency, String p_localSymbol, String p_tradingClass,
                     Vector<ComboLeg> p_comboLegs, String p_primaryExch, boolean p_includeExpired, 
                     String p_secIdType, String p_secId) {
     	m_conId = p_conId;
@@ -63,6 +64,7 @@ public class Contract implements Cloneable {
         m_currency = p_currency;
         m_includeExpired = p_includeExpired;
         m_localSymbol = p_localSymbol;
+        m_tradingClass = p_tradingClass;
         m_comboLegs = p_comboLegs;
         m_primaryExch = p_primaryExch;
         m_secIdType = p_secIdType;
@@ -105,7 +107,8 @@ public class Contract implements Cloneable {
         	if (Util.StringCompare(m_expiry, l_theOther.m_expiry) != 0 ||
         		Util.StringCompare(m_right, l_theOther.m_right) != 0 ||
         		Util.StringCompare(m_multiplier, l_theOther.m_multiplier) != 0 ||
-        		Util.StringCompare(m_localSymbol, l_theOther.m_localSymbol) != 0) {
+        		Util.StringCompare(m_localSymbol, l_theOther.m_localSymbol) != 0 ||
+        		Util.StringCompare(m_tradingClass, l_theOther.m_tradingClass) != 0) {
         		return false;
         	}
         }

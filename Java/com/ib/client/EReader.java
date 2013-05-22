@@ -144,29 +144,23 @@ public class EReader extends Thread {
             case POSITION:{
                 int version = readInt();
                 String account = readStr();
-                int conid = readInt();
-                String symbol = readStr();
-                String secType = readStr();
-                String expiry = readStr();
-                double strike = readDouble();
-                String right = readStr();
-                String mult = readStr();
-                String exchange = readStr();
-                String currency = readStr();
-                String localSymbol = readStr();
-                int pos = readInt();
-                
+
                 Contract contract = new Contract();
-                contract.m_conId = conid;
-                contract.m_symbol = symbol;
-                contract.m_secType = secType;
-                contract.m_expiry = expiry;
-                contract.m_strike = strike;
-                contract.m_right = right;
-                contract.m_multiplier = mult;
-                contract.m_exchange = exchange;
-                contract.m_currency = currency;
-                contract.m_localSymbol = localSymbol;
+                contract.m_conId = readInt();
+                contract.m_symbol = readStr();
+                contract.m_secType = readStr();
+                contract.m_expiry = readStr();
+                contract.m_strike = readDouble();
+                contract.m_right = readStr();
+                contract.m_multiplier = readStr();
+                contract.m_exchange = readStr();
+                contract.m_currency = readStr();
+                contract.m_localSymbol = readStr();
+                if (version >= 2) {
+                	contract.m_tradingClass = readStr();
+                }
+
+                int pos = readInt();
                 
                 eWrapper().position( account, contract, pos);
                 break;
@@ -353,6 +347,9 @@ public class EReader extends Thread {
                 if ( version >= 2 ) {
                     contract.m_localSymbol = readStr();
                 }
+                if (version >= 8) {
+                	contract.m_tradingClass = readStr();
+                }
 
                 int position  = readInt();
                 double marketPrice = readDouble();
@@ -420,10 +417,16 @@ public class EReader extends Thread {
                 contract.m_expiry = readStr();
                 contract.m_strike = readDouble();
                 contract.m_right = readStr();
+                if ( version >= 32) {
+                	contract.m_multiplier = readStr();
+                }
                 contract.m_exchange = readStr();
                 contract.m_currency = readStr();
                 if ( version >= 2 ) {
                     contract.m_localSymbol = readStr();
+                }
+                if (version >= 32) {
+                	contract.m_tradingClass = readStr();
                 }
 
                 // read order fields
@@ -730,7 +733,7 @@ public class EReader extends Thread {
                     contract.m_summary.m_currency = readStr();
                     contract.m_summary.m_localSymbol = readStr();
                     contract.m_marketName = readStr();
-                    contract.m_tradingClass = readStr();
+                    contract.m_summary.m_tradingClass = readStr();
                     String distance = readStr();
                     String benchmark = readStr();
                     String projection = readStr();
@@ -763,7 +766,7 @@ public class EReader extends Thread {
                 contract.m_summary.m_currency = readStr();
                 contract.m_summary.m_localSymbol = readStr();
                 contract.m_marketName = readStr();
-                contract.m_tradingClass = readStr();
+                contract.m_summary.m_tradingClass = readStr();
                 contract.m_summary.m_conId = readInt();
                 contract.m_minTick = readDouble();
                 contract.m_summary.m_multiplier = readStr();
@@ -834,7 +837,7 @@ public class EReader extends Thread {
                 contract.m_summary.m_exchange = readStr();
                 contract.m_summary.m_currency = readStr();
                 contract.m_marketName = readStr();
-                contract.m_tradingClass = readStr();
+                contract.m_summary.m_tradingClass = readStr();
                 contract.m_summary.m_conId = readInt();
                 contract.m_minTick = readDouble();
                 contract.m_orderTypes = readStr();
@@ -894,6 +897,9 @@ public class EReader extends Thread {
                 contract.m_exchange = readStr();
                 contract.m_currency = readStr();
                 contract.m_localSymbol = readStr();
+                if (version >= 10) {
+                	contract.m_tradingClass = readStr();
+                }
 
                 Execution exec = new Execution();
                 exec.m_orderId = orderId;

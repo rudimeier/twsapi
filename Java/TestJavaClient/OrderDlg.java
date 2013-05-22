@@ -77,6 +77,7 @@ public class OrderDlg extends JDialog {
     private JTextField 	m_primaryExch = new JTextField( "ISLAND" );
     private JTextField 	m_currency = new JTextField("USD");
     private JTextField 	m_localSymbol = new JTextField();
+    private JTextField 	m_tradingClass = new JTextField();
     private JTextField 	m_includeExpired = new JTextField("0");
     private JTextField 	m_secIdType = new JTextField();
     private JTextField 	m_secId = new JTextField();
@@ -172,6 +173,8 @@ public class OrderDlg extends JDialog {
         addGBComponent(pContractDetails, m_currency, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
         addGBComponent(pContractDetails, new JLabel( "Local Symbol"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
         addGBComponent(pContractDetails, m_localSymbol, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
+        addGBComponent(pContractDetails, new JLabel( "Trading Class"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
+        addGBComponent(pContractDetails, m_tradingClass, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
         addGBComponent(pContractDetails, new JLabel( "Include Expired"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
         addGBComponent(pContractDetails, m_includeExpired, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
         addGBComponent(pContractDetails, new JLabel( "Sec Id Type"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE );
@@ -407,6 +410,7 @@ public class OrderDlg extends JDialog {
             m_contract.m_primaryExch = m_primaryExch.getText();
             m_contract.m_currency = m_currency.getText();
             m_contract.m_localSymbol = m_localSymbol.getText();
+            m_contract.m_tradingClass = m_tradingClass.getText();
             try {
             	int includeExpired = Integer.parseInt(m_includeExpired.getText());
             	m_contract.m_includeExpired = (includeExpired == 1);

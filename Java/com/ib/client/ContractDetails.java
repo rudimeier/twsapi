@@ -12,7 +12,6 @@ import java.util.Vector;
 public class ContractDetails {
     public Contract	m_summary;
     public String 	m_marketName;
-    public String 	m_tradingClass;
     public double 	m_minTick;
     public int      m_priceMagnifier;
     public String 	m_orderTypes;
@@ -55,14 +54,13 @@ public class ContractDetails {
         m_evMultiplier = 0;
     }
 
-    public ContractDetails( Contract p_summary, String p_marketName, String p_tradingClass,
+    public ContractDetails( Contract p_summary, String p_marketName, 
     		double p_minTick, String p_orderTypes, String p_validExchanges, int p_underConId, String p_longName,
     	    String p_contractMonth, String p_industry, String p_category, String p_subcategory,
     	    String p_timeZoneId, String	p_tradingHours, String p_liquidHours, 
     	    String p_evRule, double p_evMultiplier) {
         m_summary = p_summary;
     	m_marketName = p_marketName;
-    	m_tradingClass = p_tradingClass;
     	m_minTick = p_minTick;
     	m_orderTypes = p_orderTypes;
     	m_validExchanges = p_validExchanges;
