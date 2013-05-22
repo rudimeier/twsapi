@@ -106,8 +106,10 @@ namespace IB {
 // 60 = can receive deltaNeutralOpenClose, deltaNeutralShortSale, deltaNeutralShortSaleSlot 
 //      and deltaNeutralDesignatedLocation in openOrder
 //      can receive position, positionEnd, accountSummary and accountSummaryEnd
+// 61 = can receive multiplier in openOrder
+//      can receive tradingClass in openOrder, updatePortfolio, execDetails and position
 
-const int CLIENT_VERSION    = 60;
+const int CLIENT_VERSION    = 61;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -187,6 +189,7 @@ const int MIN_SERVER_VER_TRAILING_PERCENT       = 62;
 const int MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE = 66;
 const int MIN_SERVER_VER_POSITIONS              = 67;
 const int MIN_SERVER_VER_ACCOUNT_SUMMARY        = 67;
+const int MIN_SERVER_VER_TRADING_CLASS          = 68;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -526,9 +529,17 @@ void EClientSocketBase::reqMktData(TickerId tickerId, const Contract& contract,
 		}
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass)) {
+			m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support tradingClass parameter in reqMktData.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 9;
+	const int VERSION = 10;
 
 	// send req mkt data msg
 	ENCODE_FIELD( REQ_MKT_DATA);
@@ -551,6 +562,10 @@ void EClientSocketBase::reqMktData(TickerId tickerId, const Contract& contract,
 	ENCODE_FIELD( contract.currency);
 
 	ENCODE_FIELD( contract.localSymbol); // srv v2 and above
+
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
 
 	// Send combo legs for BAG requests (srv v8 and above)
 	if( Compare(contract.secType, "BAG") == 0)
@@ -624,9 +639,17 @@ void EClientSocketBase::reqMktDepth( TickerId tickerId, const Contract &contract
 	//	return;
 	//}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass) || (contract.conId > 0)) {
+			m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support conId and tradingClass parameters in reqMktDepth.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 3;
+	const int VERSION = 4;
 
 	// send req mkt data msg
 	ENCODE_FIELD( REQ_MKT_DEPTH);
@@ -634,6 +657,9 @@ void EClientSocketBase::reqMktDepth( TickerId tickerId, const Contract &contract
 	ENCODE_FIELD( tickerId);
 
 	// send contract fields
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.conId);
+	}
 	ENCODE_FIELD( contract.symbol);
 	ENCODE_FIELD( contract.secType);
 	ENCODE_FIELD( contract.expiry);
@@ -643,6 +669,10 @@ void EClientSocketBase::reqMktDepth( TickerId tickerId, const Contract &contract
 	ENCODE_FIELD( contract.exchange);
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol);
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
+
 	ENCODE_FIELD( numRows); // srv v19 and above
 
 	bufferedSend( msg.str());
@@ -693,15 +723,26 @@ void EClientSocketBase::reqHistoricalData( TickerId tickerId, const Contract &co
 	//	return;
 	//}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass) || (contract.conId > 0)) {
+			m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support conId and tradingClass parameters in reqHistoricalData.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 4;
+	const int VERSION = 5;
 
 	ENCODE_FIELD( REQ_HISTORICAL_DATA);
 	ENCODE_FIELD( VERSION);
 	ENCODE_FIELD( tickerId);
 
 	// send contract fields
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.conId);
+	}
 	ENCODE_FIELD( contract.symbol);
 	ENCODE_FIELD( contract.secType);
 	ENCODE_FIELD( contract.expiry);
@@ -712,6 +753,9 @@ void EClientSocketBase::reqHistoricalData( TickerId tickerId, const Contract &co
 	ENCODE_FIELD( contract.primaryExchange);
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol);
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
 	ENCODE_FIELD( contract.includeExpired); // srv v31 and above
 
 	ENCODE_FIELD( endDateTime); // srv v20 and above
@@ -785,15 +829,26 @@ void EClientSocketBase::reqRealTimeBars(TickerId tickerId, const Contract &contr
 	//	return;
 	//}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass) || (contract.conId > 0)) {
+			m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support conId and tradingClass parameters in reqRealTimeBars.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 1;
+	const int VERSION = 2;
 
 	ENCODE_FIELD( REQ_REAL_TIME_BARS);
 	ENCODE_FIELD( VERSION);
 	ENCODE_FIELD( tickerId);
 
 	// send contract fields
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.conId);
+	}
 	ENCODE_FIELD( contract.symbol);
 	ENCODE_FIELD( contract.secType);
 	ENCODE_FIELD( contract.expiry);
@@ -804,6 +859,9 @@ void EClientSocketBase::reqRealTimeBars(TickerId tickerId, const Contract &contr
 	ENCODE_FIELD( contract.primaryExchange);
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol);
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
 	ENCODE_FIELD( barSize);
 	ENCODE_FIELD( whatToShow);
 	ENCODE_FIELD( useRTH);
@@ -954,15 +1012,26 @@ void EClientSocketBase::reqFundamentalData(TickerId reqId, const Contract& contr
 		return;
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( contract.conId > 0) {
+			m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support conId parameter in reqFundamentalData.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 1;
+	const int VERSION = 2;
 
 	ENCODE_FIELD( REQ_FUNDAMENTAL_DATA);
 	ENCODE_FIELD( VERSION);
 	ENCODE_FIELD( reqId);
 
 	// send contract fields
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.conId);
+	}
 	ENCODE_FIELD( contract.symbol);
 	ENCODE_FIELD( contract.secType);
 	ENCODE_FIELD( contract.exchange);
@@ -1014,9 +1083,17 @@ void EClientSocketBase::calculateImpliedVolatility(TickerId reqId, const Contrac
 		return;
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass)) {
+			m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support tradingClass parameter in calculateImpliedVolatility.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 1;
+	const int VERSION = 2;
 
 	ENCODE_FIELD( REQ_CALC_IMPLIED_VOLAT);
 	ENCODE_FIELD( VERSION);
@@ -1034,6 +1111,9 @@ void EClientSocketBase::calculateImpliedVolatility(TickerId reqId, const Contrac
 	ENCODE_FIELD( contract.primaryExchange);
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol);
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
 
 	ENCODE_FIELD( optionPrice);
 	ENCODE_FIELD( underPrice);
@@ -1080,9 +1160,17 @@ void EClientSocketBase::calculateOptionPrice(TickerId reqId, const Contract &con
 		return;
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass)) {
+			m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support tradingClass parameter in calculateOptionPrice.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 1;
+	const int VERSION = 2;
 
 	ENCODE_FIELD( REQ_CALC_OPTION_PRICE);
 	ENCODE_FIELD( VERSION);
@@ -1100,6 +1188,9 @@ void EClientSocketBase::calculateOptionPrice(TickerId reqId, const Contract &con
 	ENCODE_FIELD( contract.primaryExchange);
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol);
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
 
 	ENCODE_FIELD( volatility);
 	ENCODE_FIELD( underPrice);
@@ -1153,10 +1244,17 @@ void EClientSocketBase::reqContractDetails( int reqId, const Contract& contract)
      		return;
      	}
     }
-        
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass)) {
+			m_pEWrapper->error( reqId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support tradingClass parameter in reqContractDetails.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 6;
+	const int VERSION = 7;
 
 	// send req mkt data msg
 	ENCODE_FIELD( REQ_CONTRACT_DATA);
@@ -1177,6 +1275,9 @@ void EClientSocketBase::reqContractDetails( int reqId, const Contract& contract)
 	ENCODE_FIELD( contract.exchange);
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol);
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
 	ENCODE_FIELD( contract.includeExpired); // srv v31 and above
 
 	if( m_serverVersion >= MIN_SERVER_VER_SEC_ID_TYPE){
@@ -1410,9 +1511,17 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		}
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass)) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support tradingClass parameter in placeOrder.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 39;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 40;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1433,6 +1542,9 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 	ENCODE_FIELD( contract.primaryExchange); // srv v14 and above
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol); // srv v2 and above
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
 
 	if( m_serverVersion >= MIN_SERVER_VER_SEC_ID_TYPE){
 		ENCODE_FIELD( contract.secIdType);
@@ -2021,15 +2133,26 @@ void EClientSocketBase::exerciseOptions( TickerId tickerId, const Contract &cont
 	//	return;
 	//}
 
+	if (m_serverVersion < MIN_SERVER_VER_TRADING_CLASS) {
+		if( !IsEmpty(contract.tradingClass) || (contract.conId > 0)) {
+			m_pEWrapper->error( tickerId, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+				"  It does not support conId, multiplier and tradingClass parameters in exerciseOptions.");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	const int VERSION = 1;
+	const int VERSION = 2;
 
 	ENCODE_FIELD( EXERCISE_OPTIONS);
 	ENCODE_FIELD( VERSION);
 	ENCODE_FIELD( tickerId);
 
 	// send contract fields
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.conId);
+	}
 	ENCODE_FIELD( contract.symbol);
 	ENCODE_FIELD( contract.secType);
 	ENCODE_FIELD( contract.expiry);
@@ -2039,6 +2162,9 @@ void EClientSocketBase::exerciseOptions( TickerId tickerId, const Contract &cont
 	ENCODE_FIELD( contract.exchange);
 	ENCODE_FIELD( contract.currency);
 	ENCODE_FIELD( contract.localSymbol);
+	if( m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+		ENCODE_FIELD( contract.tradingClass);
+	}
 	ENCODE_FIELD( exerciseAction);
 	ENCODE_FIELD( exerciseQuantity);
 	ENCODE_FIELD( account);
@@ -2597,9 +2723,15 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.expiry);
 				DECODE_FIELD( contract.strike);
 				DECODE_FIELD( contract.right);
+				if (version >= 32) {
+					DECODE_FIELD( contract.multiplier);
+				}
 				DECODE_FIELD( contract.exchange);
 				DECODE_FIELD( contract.currency);
 				DECODE_FIELD( contract.localSymbol); // ver 2 field
+				if (version >= 32) {
+					DECODE_FIELD( contract.tradingClass);
+				}
 
 				// read order fields
 				DECODE_FIELD( order.action);
@@ -2912,6 +3044,9 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 
 				DECODE_FIELD( contract.currency);
 				DECODE_FIELD( contract.localSymbol); // ver 2 field
+				if (version >= 8) {
+					DECODE_FIELD( contract.tradingClass);
+				}
 
 				int     position;
 				double  marketPrice;
@@ -2985,7 +3120,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.summary.currency);
 				DECODE_FIELD( contract.summary.localSymbol);
 				DECODE_FIELD( contract.marketName);
-				DECODE_FIELD( contract.tradingClass);
+				DECODE_FIELD( contract.summary.tradingClass);
 				DECODE_FIELD( contract.summary.conId);
 				DECODE_FIELD( contract.minTick);
 				DECODE_FIELD( contract.summary.multiplier);
@@ -3059,7 +3194,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.summary.exchange);
 				DECODE_FIELD( contract.summary.currency);
 				DECODE_FIELD( contract.marketName);
-				DECODE_FIELD( contract.tradingClass);
+				DECODE_FIELD( contract.summary.tradingClass);
 				DECODE_FIELD( contract.summary.conId);
 				DECODE_FIELD( contract.minTick);
 				DECODE_FIELD( contract.orderTypes);
@@ -3122,6 +3257,9 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.exchange);
 				DECODE_FIELD( contract.currency);
 				DECODE_FIELD( contract.localSymbol);
+				if (version >= 10) {
+					DECODE_FIELD( contract.tradingClass);
+				}
 
 				// decode execution fields
 				Execution exec;
@@ -3330,7 +3468,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 					DECODE_FIELD( data.contract.summary.currency);
 					DECODE_FIELD( data.contract.summary.localSymbol);
 					DECODE_FIELD( data.contract.marketName);
-					DECODE_FIELD( data.contract.tradingClass);
+					DECODE_FIELD( data.contract.summary.tradingClass);
 					DECODE_FIELD( data.distance);
 					DECODE_FIELD( data.benchmark);
 					DECODE_FIELD( data.projection);
@@ -3538,7 +3676,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 
 				// decode contract fields
 				Contract contract;
-				DECODE_FIELD( contract.conId); // ver 5 field
+				DECODE_FIELD( contract.conId);
 				DECODE_FIELD( contract.symbol);
 				DECODE_FIELD( contract.secType);
 				DECODE_FIELD( contract.expiry);
@@ -3548,6 +3686,9 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( contract.exchange);
 				DECODE_FIELD( contract.currency);
 				DECODE_FIELD( contract.localSymbol);
+				if (version >= 2) {
+					DECODE_FIELD( contract.tradingClass);
+				}
 
 				DECODE_FIELD( position);
 
