@@ -3,6 +3,10 @@ Original IB API Release Notes taken from their homepage
 http://www.interactivebrokers.com
 =======================================================
 
+Build 9.69 beta, March 7, 2013
+
+  * New Methods for Advisors
+
 Build 9.68, October 8, 2012
 
   * Support for Hedged Volatility Orders
