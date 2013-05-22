@@ -3,7 +3,11 @@ Original IB API Release Notes taken from their homepage
 http://www.interactivebrokers.com
 =======================================================
 
-Build 9.67, October 8, 2012
+Build 9.68, October 8, 2012
+
+  * Support for Hedged Volatility Orders
+
+Build 9.67, April 2, 2012
 
   * Contract Identifiers Added to Contract Details
   * Specify Per-Leg Combo Prices
