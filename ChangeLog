@@ -6,11 +6,11 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 0.5.0 - not yet released  ------------------------------------------------------
 
-Update to IB API 9.67 and minor build fixes
+Update to IB API 9.68 and minor build fixes
 
-  - update to IB API 9.67, see ChangeLog-IB for more details
+  - update to IB API 9.68, see ChangeLog-IB for more details
   - this release breaks source compatibility to any earlier version
-  - minor build chain cleanups regarding compiler warnings and CXXFLAGS
+  - remove obsolete libtwsapi.pc, use twsapi.pc instead
 
 
 
