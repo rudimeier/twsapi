@@ -3,6 +3,18 @@ Original IB API Release Notes taken from their homepage
 http://www.interactivebrokers.com
 =======================================================
 
+Build 9.68, October 8, 2012
+
+  * Support for Hedged Volatility Orders
+
+Build 9.67, April 2, 2012
+
+  * Contract Identifiers Added to Contract Details
+  * Specify Per-Leg Combo Prices
+  * Track Commissions with CommissionReport
+  * New Order Field: trailingPercent
+  * Support for Extended Scale Orders
+  * evRule and evMultiplier added to Execution and Contract Details
 
 Build 9.66, January 13, 2012
 
