@@ -23,12 +23,12 @@
 	};
 	inline bool SocketsDestroy() { return ( !WSACleanup()); };
 	inline int SocketClose(int sockfd) { return closesocket( sockfd); };
-	}
 
 	inline bool SetSocketNonBlocking(int sockfd) { 
 		unsigned long mode = 1;
 		return ( ioctlsocket( sockfd, FIONBIO, &mode) == 0);
 	};
+	}
 
 #else
 	// LINUX
@@ -43,7 +43,6 @@
 	inline bool SocketsInit() { return true; };
 	inline bool SocketsDestroy() { return true; };
 	inline int SocketClose(int sockfd) { return close( sockfd); };
-	}
 
 	inline bool SetSocketNonBlocking(int sockfd) { 
 		// get socket flags
@@ -54,6 +53,7 @@
 		// set non-blocking mode
 		return ( fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) == 0);
 	};
+	}
 
 #endif
 
