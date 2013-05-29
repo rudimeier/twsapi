@@ -30,7 +30,7 @@ static int resolveHost( const char *host, unsigned int port, int family,
 #if HAVE_DECL_AI_V4MAPPED
 	hints.ai_flags |= AI_V4MAPPED;
 #endif
-	hints.ai_protocol = 0; 
+	hints.ai_protocol = 0;
 
 	char strport[32];
 	/* Convert the port number into a string. */
@@ -47,7 +47,7 @@ static int wait_socket( int fd, int flag )
 {
 	errno = 0;
 	const int timeout_msecs = 5000;
-	
+
 	struct timeval tval;
 	tval.tv_usec = 1000 * (timeout_msecs % 1000);
 	tval.tv_sec = timeout_msecs / 1000;
@@ -77,7 +77,7 @@ static int wait_socket( int fd, int flag )
 		ret = 0;
 		break;
 	}
-	
+
 	return ret;
 }
 

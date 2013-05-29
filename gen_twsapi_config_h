@@ -92,7 +92,7 @@ fi
 
 ## export our version numbers
 TWSAPI_VERSION="${pack_ver}"
-TWSAPI_VERSION_NUMBER="`expr "${major_ver}" \* 10000 + "${minor_ver}" \* 100 + "${micro_ver}"`" 
+TWSAPI_VERSION_NUMBER="`expr "${major_ver}" \* 10000 + "${minor_ver}" \* 100 + "${micro_ver}"`"
 
 TWSAPI_IB_VERSION="${ib_ver}"
 TWSAPI_IB_VERSION_NUMBER="`expr "${ib_major}" \* 100 + "${ib_minor}"`"
