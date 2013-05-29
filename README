@@ -41,7 +41,7 @@ Beside the usual master branch I keep two important branches:
  - ib_orig: the original IB API code from upstream
  - ib_orig_plus: the original IB API plus namespace IB
 
-Both are used to commit upstream updates to be merged into master. 
+Both are used to commit upstream updates to be merged into master.
 
 BTW don't blame me for the strange project layout. This comes original from IB
 and I don't change it for simply git merging upstream updates.
@@ -62,7 +62,7 @@ Improvements:
    callbacks with code SOCKET_EXCEPTION are using standard message strings
    (errno/strerror).
  - Never throwing nor catching any Exceptions.
- - Using non-blocking sockets with well defined connection timeout. 
+ - Using non-blocking sockets with well defined connection timeout.
  - Hostnames will be resolved.
  - IPv6 support.
  - Source compatibility between API updates.

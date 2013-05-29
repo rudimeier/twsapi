@@ -32,6 +32,6 @@ distclean-local:
 pkgconfigdir = @libdir@/pkgconfig
 pkgconfig_DATA = @PACKAGE@.pc
 
-# Rule to build RPM distribution package
+## Rule to build RPM distribution package
 rpm: dist-gzip
 	rpmbuild -ta $(distdir).tar.gz
