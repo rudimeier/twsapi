@@ -39,9 +39,6 @@ CLEANFILES =
 CLEANFILES += *.s
 CLEANFILES += *.i
 
-# 
-# Help the developers get nice post-processed source files
-
 ## Create preprocessor output (debugging purposes only)
 .c.i:
 	$(COMPILE) -E -o $@ $<
