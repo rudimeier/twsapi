@@ -1,10 +1,6 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- * OrderDlg.java
- *
- */
 package TestJavaClient;
 
 import java.awt.BorderLayout;
@@ -101,7 +97,7 @@ public class OrderDlg extends JDialog {
     private JButton 	m_btnUnderComp = new JButton( "Delta Neutral");
     private JButton 	m_btnAlgoParams = new JButton( "Algo Params");
     private JButton 	m_btnSmartComboRoutingParams = new JButton( "Smart Combo Routing Params");
-    
+
     private JButton 	m_ok = new JButton( "OK");
     private JButton 	m_cancel = new JButton( "Cancel");
     private SampleFrame m_parent;
@@ -111,7 +107,7 @@ public class OrderDlg extends JDialog {
     private String      m_faMethod;
     private String      m_faPercentage;
 	public  String      m_genericTicks;
-	public  boolean     m_snapshotMktData;      
+	public  boolean     m_snapshotMktData;
 
     private static final int COL1_WIDTH = 30 ;
     private static final int COL2_WIDTH = 100 - COL1_WIDTH ;
@@ -256,7 +252,7 @@ public class OrderDlg extends JDialog {
         pMarketDataType.setBorder( BorderFactory.createTitledBorder( "Market Data Type") );
         addGBComponent(pMarketDataType, new JLabel( "Market Data Type"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE) ;
         addGBComponent(pMarketDataType, m_marketDataTypeCombo, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER) ;
-        
+
         // create mid Panel
         JPanel pMidPanel = new JPanel();
         pMidPanel.setLayout( new BoxLayout( pMidPanel, BoxLayout.Y_AXIS) );
@@ -267,7 +263,7 @@ public class OrderDlg extends JDialog {
         pMidPanel.add( pOptionsExercise, BorderLayout.CENTER);
         pMidPanel.add( pBackfill, BorderLayout.CENTER);
         pMidPanel.add( pMarketDataType, BorderLayout.CENTER);
-        
+
         // create order button panel
         JPanel pOrderButtonPanel = new JPanel();
         pOrderButtonPanel.add( m_sharesAlloc);
@@ -275,7 +271,7 @@ public class OrderDlg extends JDialog {
         pOrderButtonPanel.add( m_btnUnderComp);
         pOrderButtonPanel.add( m_btnAlgoParams);
         pOrderButtonPanel.add( m_btnSmartComboRoutingParams);
-        
+
         pMidPanel.add( pOrderButtonPanel, BorderLayout.CENTER);
 
         // create button panel
@@ -353,18 +349,18 @@ public class OrderDlg extends JDialog {
     }
 
     void onAddComboLegs() {
-    	
+
         ComboLegDlg comboLegDlg = new ComboLegDlg(
         		m_contract.m_comboLegs, m_order.m_orderComboLegs, m_exchange.getText(), this);
-        
+
         // show the combo leg dialog
         comboLegDlg.setVisible( true);
     }
-    
+
     void onBtnUnderComp() {
-    	
+
         UnderCompDlg underCompDlg = new UnderCompDlg(m_underComp, this);
-        
+
         // show delta neutral dialog
         underCompDlg.setVisible( true);
         if (underCompDlg.ok()) {
@@ -374,19 +370,19 @@ public class OrderDlg extends JDialog {
         	m_contract.m_underComp = null;
         }
     }
-    
+
     void onBtnAlgoParams() {
-    	
+
         AlgoParamsDlg algoParamsDlg = new AlgoParamsDlg(m_order, this);
-        
+
         // show delta neutral dialog
         algoParamsDlg.setVisible( true);
     }
 
     void onBtnSmartComboRoutingParams() {
-    	
+
         SmartComboRoutingParamsDlg smartComboRoutingParamsDlg = new SmartComboRoutingParamsDlg(m_order, this);
-        
+
         // show smart combo routing params dialog
         smartComboRoutingParamsDlg.setVisible( true);
     }
@@ -420,7 +416,7 @@ public class OrderDlg extends JDialog {
             }
             m_contract.m_secIdType = m_secIdType.getText();
             m_contract.m_secId = m_secId.getText();
-            
+
             // set order fields
             m_order.m_action = m_action.getText();
             m_order.m_totalQuantity = Integer.parseInt( m_totalQuantity.getText() );
@@ -450,7 +446,7 @@ public class OrderDlg extends JDialog {
             m_marketDepthRows = Integer.parseInt( m_marketDepthRowTextField.getText() );
             m_genericTicks = m_genericTicksTextField.getText();
             m_snapshotMktData = m_snapshotMktDataTextField.isSelected();
-            
+
             m_marketDataType = m_marketDataTypeCombo.getSelectedIndex() + 1;
         }
         catch( Exception e) {
@@ -484,7 +480,7 @@ public class OrderDlg extends JDialog {
             Main.inform( this, "Error - " + e);
         }
     }
-    
+
     private static int ParseInt(String text, int defValue) {
     	try {
     		return Integer.parseInt(text);
@@ -493,7 +489,7 @@ public class OrderDlg extends JDialog {
     		return defValue;
     	}
     }
-    
+
     private static double ParseDouble(String text, double defValue) {
     	try {
     		return Double.parseDouble(text);
@@ -502,7 +498,7 @@ public class OrderDlg extends JDialog {
     		return defValue;
     	}
     }
-    
+
     private double parseStringToMaxDouble(String value) {
         if (value.trim().length() == 0) {
             return Double.MAX_VALUE;
@@ -511,5 +507,5 @@ public class OrderDlg extends JDialog {
             return Double.parseDouble(value);
         }
     }
-    
+
 }

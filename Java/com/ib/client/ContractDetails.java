@@ -1,10 +1,6 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- * ContractDetails.java
- *
- */
 package com.ib.client;
 
 import java.util.Vector;
@@ -57,7 +53,7 @@ public class ContractDetails {
     public ContractDetails( Contract p_summary, String p_marketName, 
     		double p_minTick, String p_orderTypes, String p_validExchanges, int p_underConId, String p_longName,
     	    String p_contractMonth, String p_industry, String p_category, String p_subcategory,
-    	    String p_timeZoneId, String	p_tradingHours, String p_liquidHours, 
+    	    String p_timeZoneId, String	p_tradingHours, String p_liquidHours,
     	    String p_evRule, double p_evMultiplier) {
         m_summary = p_summary;
     	m_marketName = p_marketName;

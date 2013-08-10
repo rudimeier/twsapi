@@ -1,11 +1,6 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- *
- * AlgoDlg.java
- *
- */
 package TestJavaClient;
 
 import java.awt.BorderLayout;
@@ -30,45 +25,45 @@ import com.ib.client.Order;
 import com.ib.client.TagValue;
 
 public class AlgoParamsDlg extends JDialog {
-	
+
 	private Order m_order;
-	
+
     private JTextField 		m_algoStrategy = new JTextField( "");
-	
+
 	private Vector          m_algoParams;
 
     private JTextField 		m_tag = new JTextField( "");
     private JTextField 		m_value = new JTextField( "");
-    
+
     private JButton 		m_addParam = new JButton( "Add");
     private JButton	 	    m_removeParam = new JButton( "Remove");
-    
+
     private JButton 		m_ok = new JButton( "OK");
     private JButton	 	    m_cancel = new JButton( "Cancel");
-    
+
     private AlgoParamModel 	m_paramModel = new AlgoParamModel();
     private JTable 		    m_paramTable = new JTable(m_paramModel);
     private JScrollPane 	m_paramPane = new JScrollPane(m_paramTable);
-   
+
     public AlgoParamModel paramModel() { return m_paramModel; }
 
     public AlgoParamsDlg( Order order, JDialog owner) {
         super( owner, true);
-        
+
         m_order = order;
-        
+
         setTitle( "Algo Order Parameters");
-        
+
         JPanel pAlgoPanel = new JPanel( new GridLayout( 0, 2, 10, 10) );
         pAlgoPanel.setBorder( BorderFactory.createTitledBorder( "Algorithm") );
         pAlgoPanel.add( new JLabel( "Strategy:") );
         m_algoStrategy.setText(m_order.m_algoStrategy);
         pAlgoPanel.add(m_algoStrategy);
-        
+
         // create algo params panel
         JPanel pParamList = new JPanel( new GridLayout( 0, 1, 10, 10) );
         pParamList.setBorder( BorderFactory.createTitledBorder( "Parameters") );
-        
+
         Vector algoParams = m_order.m_algoParams;
         if (algoParams != null) {
         	m_paramModel.algoParams().addAll(algoParams);
@@ -156,9 +151,9 @@ public class AlgoParamsDlg extends JDialog {
     }
 
     void onOk() {
-    	
+
     	m_order.m_algoStrategy = m_algoStrategy.getText();
-    	
+
     	Vector algoParams = m_paramModel.algoParams();
     	m_order.m_algoParams = algoParams.isEmpty() ? null : algoParams;
 

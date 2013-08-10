@@ -1,14 +1,15 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 package samples.dnhedge;
 
-import samples.base.OptContract;
-import samples.base.StkContract;
-import samples.base.SimpleWrapper;
+
+import samples.rfq.SimpleWrapper;
 
 import com.ib.client.Contract;
 import com.ib.client.ContractDetails;
+import com.ib.contracts.OptContract;
+import com.ib.contracts.StkContract;
 
 
 public class SampleDNHedge extends SimpleWrapper {

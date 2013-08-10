@@ -1,9 +1,6 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- * DNHedgeOrder.java
- */
 package samples.dnhedge;
 
 import com.ib.client.Order;
@@ -15,7 +12,7 @@ public class DNHedgeOrder extends Order {
 
       m_clientId = clientId;
       m_orderId = id;
-      m_permId = id;            
+      m_permId = id;
 
       m_account = account;
       m_clearingIntent = "AWAY";
@@ -33,7 +30,7 @@ public class DNHedgeOrder extends Order {
       m_deltaNeutralConId = underConId;
       m_deltaNeutralOpenClose = "O";
       m_deltaNeutralShortSale = true;
-      
+
       m_deltaNeutralDesignatedLocation = designatedLocation;
       m_deltaNeutralShortSaleSlot =
          (m_deltaNeutralDesignatedLocation.length() == 0) ? 1 : 2;

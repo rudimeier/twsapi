@@ -1,11 +1,6 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- *
- * ComboLegDlg.java
- *
- */
 package TestJavaClient;
 
 import java.awt.BorderLayout;
@@ -31,11 +26,11 @@ import com.ib.client.OrderComboLeg;
 import com.ib.client.Contract;
 
 public class ComboLegDlg extends JDialog {
-	
+
     //private static String 	BUY = "BUY";
     //private static String 	SELL = "SELL";
     //private static String 	SSHORT = "SSHORT";
-	
+
 	private Vector          m_comboLegs;
 	private Vector          m_orderComboLegs;
 
@@ -48,21 +43,21 @@ public class ComboLegDlg extends JDialog {
     private JTextField      m_designatedLocation = new JTextField( "");
     private JTextField      m_exemptCode = new JTextField( "-1");
     private JTextField      m_price = new JTextField( "");
-    
+
     private JButton 		m_addLeg = new JButton( "Add");
     private JButton	 	    m_removeLeg = new JButton( "Remove");
     private JButton 		m_ok = new JButton( "OK");
     private JButton	 	    m_cancel = new JButton( "Cancel");
-    
+
     private ComboLegModel 	m_comboLegsModel = new ComboLegModel();
     private JTable 		    m_comboTable = new JTable(m_comboLegsModel);
     private JScrollPane 	m_comboLegsPane = new JScrollPane(m_comboTable);
-   
+
     public ComboLegModel comboLegModel() { return m_comboLegsModel; }
 
     public ComboLegDlg( Vector<ComboLeg> comboLegs, Vector<OrderComboLeg> orderComboLegs, String orderExchange, JDialog owner) {
         super( owner, true);
-        
+
         m_comboLegs = comboLegs;
         m_orderComboLegs = orderComboLegs;
 
@@ -74,7 +69,7 @@ public class ComboLegDlg extends JDialog {
         m_comboLegsModel.comboLegData().addAll(comboLegs);
         m_comboLegsModel.orderComboLegData().addAll(orderComboLegs);
         pLegList.add( m_comboLegsPane);
-        
+
         if (orderExchange != null && orderExchange.length() > 0) {
         	m_exchange.setText(orderExchange);
         }
@@ -154,7 +149,7 @@ public class ComboLegDlg extends JDialog {
             double price = parseStringToMaxDouble(m_price.getText());
             m_comboLegsModel.addComboLeg( new ComboLeg(conId, ratio,
                             m_action.getText(), m_exchange.getText(), openClose,
-                            shortSaleSlot, m_designatedLocation.getText(), exemptCode), 
+                            shortSaleSlot, m_designatedLocation.getText(), exemptCode),
                             				new OrderComboLeg(price) );
         }
         catch( Exception e) {
@@ -323,14 +318,14 @@ class ComboLegModel extends AbstractTableModel {
     public Vector comboLegData() {
         return m_comboLegData;
     }
-    
+
     public Vector orderComboLegData() {
         return m_orderComboLegData;
     }
-    
+
     private String parseMaxDoubleToString(double value) {
         return value == Double.MAX_VALUE ? "" : String.valueOf(value);
     }
 
-    
+
 }

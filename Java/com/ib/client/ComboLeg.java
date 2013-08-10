@@ -1,12 +1,7 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- * ComboLeg.java
- *
- */
 package com.ib.client;
-
 
 public class ComboLeg {
     public final static int 	SAME = 0; 	// open/close leg value is same as combo
@@ -19,7 +14,7 @@ public class ComboLeg {
     public String 				m_action; // BUY/SELL/SSHORT/SSHORTX
     public String 				m_exchange;
     public int 					m_openClose;
-    
+
     // for stock legs when doing short sale
     public int                  m_shortSaleSlot; // 1 = clearing broker, 2 = third party
     public String               m_designatedLocation;
@@ -37,13 +32,13 @@ public class ComboLeg {
 
     }
 
-    public ComboLeg(int p_conId, int p_ratio, String p_action, String p_exchange, 
+    public ComboLeg(int p_conId, int p_ratio, String p_action, String p_exchange,
     		int p_openClose, int p_shortSaleSlot, String p_designatedLocation) {
-    	this(p_conId, p_ratio, p_action, p_exchange, p_openClose, p_shortSaleSlot, p_designatedLocation, 
+    	this(p_conId, p_ratio, p_action, p_exchange, p_openClose, p_shortSaleSlot, p_designatedLocation,
     		/* exemptCode */ -1);
 
     }
-    
+
     public ComboLeg(int p_conId, int p_ratio, String p_action, String p_exchange,
     		int p_openClose, int p_shortSaleSlot, String p_designatedLocation, int p_exemptCode) {
         m_conId = p_conId;
@@ -65,11 +60,11 @@ public class ComboLeg {
         }
 
         ComboLeg l_theOther = (ComboLeg)p_other;
-        
+
         if (m_conId != l_theOther.m_conId ||
         	m_ratio != l_theOther.m_ratio ||
         	m_openClose != l_theOther.m_openClose ||
-        	m_shortSaleSlot != l_theOther.m_shortSaleSlot || 
+        	m_shortSaleSlot != l_theOther.m_shortSaleSlot ||
         	m_exemptCode != l_theOther.m_exemptCode) {
         	return false;
         }

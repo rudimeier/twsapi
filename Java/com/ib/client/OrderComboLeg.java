@@ -1,10 +1,6 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- * OrderComboLeg.java
- *
- */
 package com.ib.client;
 
 
@@ -29,7 +25,7 @@ public class OrderComboLeg {
         }
 
         OrderComboLeg l_theOther = (OrderComboLeg)p_other;
-        
+
         if (m_price != l_theOther.m_price) {
         	return false;
         }

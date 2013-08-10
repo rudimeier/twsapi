@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 package com.ib.client;
@@ -66,7 +66,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         String msg = "open order: orderId=" + orderId +
         " action=" + order.m_action +
         " quantity=" + order.m_totalQuantity +
-    	" conid=" + contract.m_conId + 
+        " conid=" + contract.m_conId + 
         " symbol=" + contract.m_symbol + 
         " secType=" + contract.m_secType + 
         " expiry=" + contract.m_expiry + 
@@ -376,7 +376,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         + "reqId = " + reqId + "\n"
         + "orderId = " + execution.m_orderId + "\n"
         + "clientId = " + execution.m_clientId + "\n"
-    	+ contractMsg(contract)
+        + contractMsg(contract)
         + "execId = " + execution.m_execId + "\n"
         + "time = " + execution.m_time + "\n"
         + "acctNumber = " + execution.m_acctNumber + "\n"
@@ -511,11 +511,12 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
         return msg;
     }
     
-    static public String position( String account, Contract contract, int position) {
+    static public String position( String account, Contract contract, int position, double avgCost) {
         String msg = " ---- Position begin ----\n"
         + "account = " + account + "\n"
-    	+ contractMsg(contract)
+        + contractMsg(contract)
         + "position = " + Util.IntMaxString(position) + "\n"
+        + "avgCost = " + Util.DoubleMaxString(avgCost) + "\n"
         + " ---- Position end ----\n";
         return msg;
     }    

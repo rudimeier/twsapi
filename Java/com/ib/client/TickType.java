@@ -1,10 +1,6 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- * TickType.java
- *
- */
 package com.ib.client;
 
 public class TickType {
@@ -61,13 +57,13 @@ public class TickType {
     public static final int HALTED = 49;
     public static final int BID_YIELD = 50;
     public static final int ASK_YIELD = 51;
-    public static final int LAST_YIELD = 52;    
-    public static final int CUST_OPTION_COMPUTATION = 53;    
+    public static final int LAST_YIELD = 52;
+    public static final int CUST_OPTION_COMPUTATION = 53;
     public static final int TRADE_COUNT = 54;
     public static final int TRADE_RATE = 55;
     public static final int VOLUME_RATE = 56;
     public static final int LAST_RTH_TRADE = 57;
-    public static final int REGULATORY_IMBALANCE = 61;    
+    public static final int REGULATORY_IMBALANCE = 61;
 
     public static String getField( int tickType) {
         switch( tickType) {
@@ -123,11 +119,11 @@ public class TickType {
             case HALTED:                      return "halted";
             case BID_YIELD:                   return "bidYield";
             case ASK_YIELD:                   return "askYield";
-            case LAST_YIELD:                  return "lastYield";             
-            case CUST_OPTION_COMPUTATION:     return "custOptComp";             
+            case LAST_YIELD:                  return "lastYield";
+            case CUST_OPTION_COMPUTATION:     return "custOptComp";
             case TRADE_COUNT:                 return "trades";
             case TRADE_RATE:                  return "trades/min";
-            case VOLUME_RATE:                 return "volume/min";             
+            case VOLUME_RATE:                 return "volume/min";
             case LAST_RTH_TRADE:              return "lastRTHTrade";
             case REGULATORY_IMBALANCE:        return "regulatoryImbalance";
             default:                          return "unknown";

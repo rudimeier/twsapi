@@ -1,11 +1,5 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
-
-/*
- *
- * AccountSummary.java
- *
- */
 
 package TestJavaClient;
 
@@ -23,9 +17,9 @@ import javax.swing.JTextField;
 
 
 public class AccountSummary extends JDialog {
-	
+
     public boolean m_rc;
-	
+
     public int m_reqId;
     public String m_groupName;
     public String m_tags;

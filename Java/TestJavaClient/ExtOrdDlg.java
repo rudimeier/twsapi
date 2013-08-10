@@ -1,11 +1,6 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-/*
- *
- * ExtOrdDlg.java
- *
- */
 package TestJavaClient;
 
 import java.awt.BorderLayout;
@@ -31,12 +26,12 @@ public class ExtOrdDlg extends JDialog {
     private JTextField 	m_tif = new JTextField( "DAY");
     private JTextField 	m_ocaGroup = new JTextField();
     private JTextField 	m_ocaType = new JTextField("0");
-    
+
     private JTextField 	m_account = new JTextField();
     private JTextField  m_settlingFirm = new JTextField();
     private JTextField  m_clearingAccount = new JTextField();
     private JTextField  m_clearingIntent = new JTextField();
-    
+
     private JTextField 	m_openClose = new JTextField( "O");
     private JTextField 	m_origin = new JTextField( "1");
     private JTextField 	m_orderRef = new JTextField();
@@ -83,7 +78,7 @@ public class ExtOrdDlg extends JDialog {
     private JTextField  m_VOLReferencePriceType = new JTextField();
     private JTextField  m_trailStopPrice = new JTextField();
     private JTextField  m_trailingPercent = new JTextField();
-    
+
     private JTextField 	m_scaleInitLevelSize = new JTextField();
     private JTextField 	m_scaleSubsLevelSize = new JTextField();
     private JTextField 	m_scalePriceIncrement = new JTextField();
@@ -220,7 +215,7 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add(m_VOLContinuousUpdate);
         extOrderDetailsPanel.add(new JLabel("VOL: Reference Price Type (1 or 2)"));
         extOrderDetailsPanel.add(m_VOLReferencePriceType);
-        
+
         extOrderDetailsPanel.add(new JLabel("SCALE: Init Level Size"));
         extOrderDetailsPanel.add(m_scaleInitLevelSize);
         extOrderDetailsPanel.add(new JLabel("SCALE: Subs Level Size"));
@@ -268,10 +263,10 @@ public class ExtOrdDlg extends JDialog {
         // create dlg box
         getContentPane().add( extOrderDetailsPanel, BorderLayout.CENTER);
         getContentPane().add( buttonPanel, BorderLayout.SOUTH);
-        
+
         JScrollPane scroller = new JScrollPane(extOrderDetailsPanel);
         this.add( scroller, BorderLayout.CENTER);
-        
+
         pack();
     }
 
@@ -283,12 +278,12 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_tif = m_tif.getText().trim();
             m_order.m_ocaGroup = m_ocaGroup.getText().trim();
             m_order.m_ocaType = parseInt( m_ocaType);
-            
+
             m_order.m_account = m_account.getText().trim();
             m_order.m_settlingFirm = m_settlingFirm.getText().trim();
             m_order.m_clearingAccount = m_clearingAccount.getText().trim();
             m_order.m_clearingIntent = m_clearingIntent.getText().trim();
-            
+
             m_order.m_openClose = m_openClose.getText().trim();
             m_order.m_origin = parseInt( m_origin );
             m_order.m_orderRef = m_orderRef.getText().trim();
@@ -336,7 +331,7 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_referencePriceType = parseMaxInt(m_VOLReferencePriceType);
             m_order.m_trailStopPrice = parseMaxDouble(m_trailStopPrice);
             m_order.m_trailingPercent = parseMaxDouble(m_trailingPercent);
-            
+
             m_order.m_scaleInitLevelSize = parseMaxInt(m_scaleInitLevelSize);
             m_order.m_scaleSubsLevelSize = parseMaxInt(m_scaleSubsLevelSize);
             m_order.m_scalePriceIncrement = parseMaxDouble(m_scalePriceIncrement);

@@ -1,10 +1,5 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved.  This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
-
-/*
- * EReader.java
- *
- */
 
 package com.ib.client;
 
@@ -60,11 +55,11 @@ public class EReader extends Thread {
 
     protected EClientSocket parent()    { return m_parent; }
     private EWrapper eWrapper()         { return (EWrapper)parent().wrapper(); }
-    
+
     public EReader( EClientSocket parent, DataInputStream dis) {
         this("EReader", parent, dis);
     }
-    
+
     protected EReader( String name, EClientSocket parent, DataInputStream dis) {
         setName( name);
         m_parent = parent;
@@ -95,7 +90,7 @@ public class EReader extends Thread {
     /** Overridden in subclass. */
     protected boolean processMsg(int msgId) throws IOException{
         if( msgId == -1) return false;
-        
+
         switch( msgId) {
             case TICK_PRICE: {
                 int version = readInt();
@@ -161,17 +156,21 @@ public class EReader extends Thread {
                 }
 
                 int pos = readInt();
-                
-                eWrapper().position( account, contract, pos);
+                double avgCost = 0;
+                if (version >= 3) {
+                	avgCost = readDouble();
+                }
+
+                eWrapper().position( account, contract, pos, avgCost);
                 break;
             }
-            
+
             case POSITION_END:{
                 int version = readInt();
                 eWrapper().positionEnd();
                 break;
             }
-            
+
             case ACCOUNT_SUMMARY:{
                 int version = readInt();
                 int reqId = readInt();
@@ -182,14 +181,14 @@ public class EReader extends Thread {
                 eWrapper().accountSummary(reqId, account, tag, value, currency);
                 break;
             }
-            
+
             case ACCOUNT_SUMMARY_END:{
                 int version = readInt();
                 int reqId = readInt();
                 eWrapper().accountSummaryEnd(reqId);
                 break;
             }
-            
+
             case TICK_OPTION_COMPUTATION: {
                 int version = readInt();
                 int tickerId = readInt();
@@ -203,7 +202,7 @@ public class EReader extends Thread {
             		delta = Double.MAX_VALUE;
             	}
             	double optPrice = Double.MAX_VALUE;
-            	double pvDividend = Double.MAX_VALUE; 
+            	double pvDividend = Double.MAX_VALUE;
             	double gamma = Double.MAX_VALUE;
             	double vega = Double.MAX_VALUE;
             	double theta = Double.MAX_VALUE;
@@ -230,17 +229,17 @@ public class EReader extends Thread {
             		theta = readDouble();
             		if (Math.abs(theta) > 1) { // -2 is the "not yet computed" indicator
             			theta = Double.MAX_VALUE;
-            		}                
+            		}
             		undPrice = readDouble();
             		if (undPrice < 0) { // -1 is the "not yet computed" indicator
             			undPrice = Double.MAX_VALUE;
             		}
             	}
-            	
+
             	eWrapper().tickOptionComputation( tickerId, tickType, impliedVol, delta, optPrice, pvDividend, gamma, vega, theta, undPrice);
             	break;
             }
-            	
+
             case TICK_GENERIC: {
                 int version = readInt();
                 int tickerId = readInt();
@@ -276,7 +275,7 @@ public class EReader extends Thread {
                 					impliedFuturesPrice, holdDays, futureExpiry, dividendImpact, dividendsToExpiry);
                 break;
             }
-            	
+
             case ORDER_STATUS: {
                 int version = readInt();
                 int id = readInt();
@@ -304,7 +303,7 @@ public class EReader extends Thread {
                 if( version >= 5) {
                     clientId = readInt();
                 }
-                
+
                 String whyHeld = null;
                 if( version >= 6) {
                 	whyHeld = readStr();
@@ -348,7 +347,7 @@ public class EReader extends Thread {
                     contract.m_localSymbol = readStr();
                 }
                 if (version >= 8) {
-                	contract.m_tradingClass = readStr();
+                    contract.m_tradingClass = readStr();
                 }
 
                 int position  = readInt();
@@ -367,7 +366,7 @@ public class EReader extends Thread {
                 if( version >= 4) {
                     accountName = readStr();
                 }
-                
+
                 if(version == 6 && m_parent.serverVersion() == 39) {
                 	contract.m_primaryExch = readStr();
                 }
@@ -418,7 +417,7 @@ public class EReader extends Thread {
                 contract.m_strike = readDouble();
                 contract.m_right = readStr();
                 if ( version >= 32) {
-                	contract.m_multiplier = readStr();
+                   contract.m_multiplier = readStr();
                 }
                 contract.m_exchange = readStr();
                 contract.m_currency = readStr();
@@ -426,20 +425,20 @@ public class EReader extends Thread {
                     contract.m_localSymbol = readStr();
                 }
                 if (version >= 32) {
-                	contract.m_tradingClass = readStr();
+                    contract.m_tradingClass = readStr();
                 }
 
                 // read order fields
                 order.m_action = readStr();
                 order.m_totalQuantity = readInt();
                 order.m_orderType = readStr();
-                if (version < 29) { 
+                if (version < 29) {
                     order.m_lmtPrice = readDouble();
                 }
                 else {
                     order.m_lmtPrice = readDoubleMax();
                 }
-                if (version < 30) { 
+                if (version < 30) {
                     order.m_auxPrice = readDouble();
                 }
                 else {
@@ -532,7 +531,7 @@ public class EReader extends Thread {
                     order.m_volatilityType = readInt();
                     if (version == 11) {
                     	int receivedInt = readInt();
-                    	order.m_deltaNeutralOrderType = ( (receivedInt == 0) ? "NONE" : "MKT" ); 
+                    	order.m_deltaNeutralOrderType = ( (receivedInt == 0) ? "NONE" : "MKT" );
                     } else { // version 12 and up
                     	order.m_deltaNeutralOrderType = readStr();
                     	order.m_deltaNeutralAuxPrice = readDoubleMax();
@@ -543,7 +542,7 @@ public class EReader extends Thread {
                             order.m_deltaNeutralClearingAccount = readStr();
                             order.m_deltaNeutralClearingIntent = readStr();
                         }
-                        
+
                         if (version >= 31 && !Util.StringIsEmpty(order.m_deltaNeutralOrderType)) {
                             order.m_deltaNeutralOpenClose = readStr();
                             order.m_deltaNeutralShortSale = readBoolFromInt();
@@ -558,7 +557,7 @@ public class EReader extends Thread {
                     }
                     order.m_referencePriceType = readInt();
                 }
-                
+
                 if (version >= 13) {
                 	order.m_trailStopPrice = readDoubleMax();
                 }
@@ -572,7 +571,7 @@ public class EReader extends Thread {
                 	order.m_basisPointsType = readIntMax();
                 	contract.m_comboLegsDescrip = readStr();
                 }
-                
+
                 if (version >= 29) {
                 	int comboLegsCount = readInt();
                 	if (comboLegsCount > 0) {
@@ -586,25 +585,25 @@ public class EReader extends Thread {
                 			int shortSaleSlot = readInt();
                 			String designatedLocation = readStr();
                 			int exemptCode = readInt();
-                			
-                			ComboLeg comboLeg = new ComboLeg(conId, ratio, action, exchange, openClose, 
+
+                			ComboLeg comboLeg = new ComboLeg(conId, ratio, action, exchange, openClose,
                 					shortSaleSlot, designatedLocation, exemptCode);
                 			contract.m_comboLegs.add(comboLeg);
                 		}
                 	}
-                	
+
                 	int orderComboLegsCount = readInt();
                 	if (orderComboLegsCount > 0) {
                 		order.m_orderComboLegs = new Vector(orderComboLegsCount);
                 		for (int i = 0; i < orderComboLegsCount; ++i) {
-                			double price = readDoubleMax(); 
-                			
+                			double price = readDoubleMax();
+
                 			OrderComboLeg orderComboLeg = new OrderComboLeg(price);
                 			order.m_orderComboLegs.add(orderComboLeg);
                 		}
                 	}
                 }
-                
+
                 if (version >= 26) {
                 	int smartComboRoutingParamsCount = readInt();
                 	if (smartComboRoutingParamsCount > 0) {
@@ -629,7 +628,7 @@ public class EReader extends Thread {
                 	}
                 	order.m_scalePriceIncrement = readDoubleMax();
                 }
-                
+
                 if (version >= 28 && order.m_scalePriceIncrement > 0.0 && order.m_scalePriceIncrement != Double.MAX_VALUE) {
                     order.m_scalePriceAdjustValue = readDoubleMax();
                     order.m_scalePriceAdjustInterval = readIntMax();
@@ -639,7 +638,7 @@ public class EReader extends Thread {
                     order.m_scaleInitFillQty = readIntMax();
                     order.m_scaleRandomPercent = readBoolFromInt();
                 }
-                
+
                 if (version >= 24) {
                 	order.m_hedgeType = readStr();
                 	if (!Util.StringIsEmpty(order.m_hedgeType)) {
@@ -659,7 +658,7 @@ public class EReader extends Thread {
                 if (version >= 22) {
                 	order.m_notHeld = readBoolFromInt();
                 }
-                
+
                 if (version >= 20) {
                     if (readBoolFromInt()) {
                         UnderComp underComp = new UnderComp();
@@ -669,7 +668,7 @@ public class EReader extends Thread {
                         contract.m_underComp = underComp;
                     }
                 }
-                
+
                 if (version >= 21) {
                 	order.m_algoStrategy = readStr();
                 	if (!Util.StringIsEmpty(order.m_algoStrategy)) {
@@ -685,9 +684,9 @@ public class EReader extends Thread {
                 		}
                 	}
                 }
-                
+
                 OrderState orderState = new OrderState();
-                
+
                 if (version >= 16) {
 
                 	order.m_whatIf = readBoolFromInt();
@@ -750,7 +749,7 @@ public class EReader extends Thread {
 
             case CONTRACT_DATA: {
                 int version = readInt();
-                
+
                 int reqId = -1;
                 if (version >= 3) {
                 	reqId = readInt();
@@ -813,12 +812,12 @@ public class EReader extends Thread {
             }
             case BOND_CONTRACT_DATA: {
                 int version = readInt();
-                
+
                 int reqId = -1;
                 if (version >= 3) {
                 	reqId = readInt();
                 }
-                
+
                 ContractDetails contract = new ContractDetails();
 
                 contract.m_summary.m_symbol = readStr();
@@ -873,12 +872,12 @@ public class EReader extends Thread {
             }
             case EXECUTION_DATA: {
                 int version = readInt();
-                
+
                 int reqId = -1;
                 if (version >= 7) {
                 	reqId = readInt();
                 }
-                
+
                 int orderId = readInt();
 
                 // read contract fields
@@ -898,7 +897,7 @@ public class EReader extends Thread {
                 contract.m_currency = readStr();
                 contract.m_localSymbol = readStr();
                 if (version >= 10) {
-                	contract.m_tradingClass = readStr();
+                    contract.m_tradingClass = readStr();
                 }
 
                 Execution exec = new Execution();
@@ -930,7 +929,7 @@ public class EReader extends Thread {
                     exec.m_evRule = readStr();
                     exec.m_evMultiplier = readDouble();
                 }
-                
+
                 eWrapper().execDetails( reqId, contract, exec);
                 break;
             }
@@ -1080,12 +1079,12 @@ public class EReader extends Thread {
             case DELTA_NEUTRAL_VALIDATION: {
                 /*int version =*/ readInt();
                 int reqId = readInt();
-                
+
                 UnderComp underComp = new UnderComp();
                 underComp.m_conId = readInt();
                 underComp.m_delta = readDouble();
                 underComp.m_price = readDouble();
-                
+
                 eWrapper().deltaNeutralValidation( reqId, underComp);
                 break;
             }
@@ -1152,13 +1151,13 @@ public class EReader extends Thread {
         String str = readStr();
         return str == null ? 0 : Integer.parseInt( str);
     }
-    
+
     protected int readIntMax() throws IOException {
         String str = readStr();
         return (str == null || str.length() == 0) ? Integer.MAX_VALUE
         	                                      : Integer.parseInt( str);
     }
-    
+
     protected long readLong() throws IOException {
         String str = readStr();
         return str == null ? 0l : Long.parseLong(str);
@@ -1168,7 +1167,7 @@ public class EReader extends Thread {
         String str = readStr();
         return str == null ? 0 : Double.parseDouble( str);
     }
-    
+
     protected double readDoubleMax() throws IOException {
         String str = readStr();
         return (str == null || str.length() == 0) ? Double.MAX_VALUE
