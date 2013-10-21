@@ -276,10 +276,6 @@ public class OptionChainsPanel extends JPanel {
 					m_c = contract;
 				}
 		
-				public double price() {
-					return (m_bid + m_ask) / 2;
-				}
-		
 				@Override public void tickPrice(NewTickType tickType, double price, int canAutoExecute) {
 					switch( tickType) {
 						case BID:
@@ -292,11 +288,13 @@ public class OptionChainsPanel extends JPanel {
 				}
 		
 				@Override public void tickOptionComputation( NewTickType tickType, double impVol, double delta, double optPrice, double pvDividend, double gamma, double vega, double theta, double undPrice) {
-					m_impVol = impVol;
-					m_delta = delta;
-					m_gamma = gamma;
-					m_vega = vega;
-					m_theta = theta;
+					if (tickType == NewTickType.MODEL_OPTION) {
+						m_impVol = impVol;
+						m_delta = delta;
+						m_gamma = gamma;
+						m_vega = vega;
+						m_theta = theta;
+					}
 				}
 				
 				@Override public void tickSnapshotEnd() {

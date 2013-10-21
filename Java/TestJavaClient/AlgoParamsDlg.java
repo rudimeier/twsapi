@@ -27,20 +27,13 @@ import com.ib.client.TagValue;
 public class AlgoParamsDlg extends JDialog {
 
 	private Order m_order;
-
     private JTextField 		m_algoStrategy = new JTextField( "");
-
-	private Vector          m_algoParams;
-
     private JTextField 		m_tag = new JTextField( "");
     private JTextField 		m_value = new JTextField( "");
-
     private JButton 		m_addParam = new JButton( "Add");
     private JButton	 	    m_removeParam = new JButton( "Remove");
-
     private JButton 		m_ok = new JButton( "OK");
     private JButton	 	    m_cancel = new JButton( "Cancel");
-
     private AlgoParamModel 	m_paramModel = new AlgoParamModel();
     private JTable 		    m_paramTable = new JTable(m_paramModel);
     private JScrollPane 	m_paramPane = new JScrollPane(m_paramTable);
@@ -64,7 +57,7 @@ public class AlgoParamsDlg extends JDialog {
         JPanel pParamList = new JPanel( new GridLayout( 0, 1, 10, 10) );
         pParamList.setBorder( BorderFactory.createTitledBorder( "Parameters") );
 
-        Vector algoParams = m_order.m_algoParams;
+        Vector<TagValue> algoParams = m_order.m_algoParams;
         if (algoParams != null) {
         	m_paramModel.algoParams().addAll(algoParams);
         }
@@ -154,7 +147,7 @@ public class AlgoParamsDlg extends JDialog {
 
     	m_order.m_algoStrategy = m_algoStrategy.getText();
 
-    	Vector algoParams = m_paramModel.algoParams();
+    	Vector<TagValue> algoParams = m_paramModel.algoParams();
     	m_order.m_algoParams = algoParams.isEmpty() ? null : algoParams;
 
         setVisible( false);
@@ -169,7 +162,7 @@ public class AlgoParamsDlg extends JDialog {
         Main.inform( this, msg + " --" + e);
     }
 
-    private void centerOnOwner( Window window) {
+    private static void centerOnOwner( Window window) {
         Window owner = window.getOwner();
         if( owner == null) {
             return;
@@ -184,16 +177,14 @@ public class AlgoParamsDlg extends JDialog {
 
 class AlgoParamModel extends AbstractTableModel {
 
-    private Vector  m_allData = new Vector();
+    private Vector<TagValue> m_allData = new Vector<TagValue>();
 
-    synchronized public void addParam( TagValue tagValue)
-    {
+    synchronized public void addParam( TagValue tagValue) {
         m_allData.add( tagValue);
         fireTableDataChanged();
     }
 
-    synchronized public void removeParam( int index)
-    {
+    synchronized public void removeParam( int index) {
         m_allData.remove( index);
         fireTableDataChanged();
     }
@@ -212,7 +203,7 @@ class AlgoParamModel extends AbstractTableModel {
     }
 
     synchronized public Object getValueAt(int r, int c) {
-        TagValue tagValue = (TagValue)m_allData.get(r);
+        TagValue tagValue = m_allData.get(r);
 
         switch (c) {
             case 0:
@@ -240,7 +231,7 @@ class AlgoParamModel extends AbstractTableModel {
         }
     }
 
-    public Vector algoParams() {
+    public Vector<TagValue> algoParams() {
         return m_allData;
     }
 }

@@ -32,7 +32,7 @@ public class AdvisorUtil {
 		BufferedReader reader = new BufferedReader( new StringReader( xml) );
 		String line;
 		int state = 0; // 0=none; 1=list of groups; 2=reading group 3=listOfAccts
-		for( int lc = 0; ((line=reader.readLine()) != null); lc++) {
+		while ( (line=reader.readLine()) != null) {
 			line = line.trim();
 
 			switch( state) {
@@ -110,7 +110,7 @@ public class AdvisorUtil {
 		BufferedReader reader = new BufferedReader( new StringReader( xml) );
 		String line;
 		int state = 0; // 0=none; 1=list of groups; 2=reading group 3=listOfAllocations 4=allocation
-		for( int lc = 0; ((line=reader.readLine()) != null); lc++) {
+		while ( (line=reader.readLine() ) != null) {
 			line = line.trim();
 
 			switch( state) {
@@ -212,7 +212,7 @@ public class AdvisorUtil {
 		BufferedReader reader = new BufferedReader( new StringReader( xml) );
 		String line;
 		int state = 0; // 0=none; 1=list of aliases; 2=reading alias
-		for( int lc = 0; ((line=reader.readLine()) != null); lc++) {
+		while ( (line=reader.readLine() ) != null) {
 			line = line.trim();
 
 			switch( state) {

@@ -13,10 +13,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 
 public class HtmlButton extends JLabel {
 	static Color light = new Color( 220, 220, 220);

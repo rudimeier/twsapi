@@ -16,18 +16,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-
 import apidemo.util.HtmlButton;
 import apidemo.util.NewTabbedPanel;
+import apidemo.util.NewTabbedPanel.INewTab;
 import apidemo.util.TCombo;
 import apidemo.util.VerticalPanel;
-import apidemo.util.NewTabbedPanel.INewTab;
-import apidemo.util.VerticalPanel.HorzPanel;
 
-import com.ib.controller.NewContract;
-import com.ib.controller.NewContractDetails;
 import com.ib.controller.ApiController.IContractDetailsHandler;
 import com.ib.controller.ApiController.IFundamentalsHandler;
+import com.ib.controller.NewContract;
+import com.ib.controller.NewContractDetails;
 import com.ib.controller.Types.FundamentalType;
 
 public class ContractInfoPanel extends JPanel {
@@ -157,6 +155,7 @@ public class ContractInfoPanel extends JPanel {
 				FileWriter writer = new FileWriter( file);
 				writer.write( m_text.getText() );
 				writer.flush();
+				writer.close();
 				Desktop.getDesktop().open( file);
 			}
 			catch( Exception e) {

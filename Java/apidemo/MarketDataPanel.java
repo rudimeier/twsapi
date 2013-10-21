@@ -120,13 +120,6 @@ public class MarketDataPanel extends JPanel {
 			add( butPanel, BorderLayout.SOUTH);
 		}
 		
-		protected void onDesub() {
-			int i = m_tab.getSelectedRow();
-			if (i != -1) {
-				m_model.cancel( i);
-			}
-		}
-
 		/** Called when the tab is first visited. */
 		@Override public void activated() {
 		}

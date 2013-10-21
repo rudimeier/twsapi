@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 
 import com.ib.client.Contract;
@@ -58,7 +59,7 @@ public class AccountDlg extends JDialog {
         timePanel.add(m_close);
 
         m_updateTime.setEditable(false);
-        m_updateTime.setHorizontalAlignment(JTextField.CENTER);
+        m_updateTime.setHorizontalAlignment(SwingConstants.CENTER);
         m_updateTime.setPreferredSize(new Dimension(80, 26));
         m_close.addActionListener( new ActionListener() {
             public void actionPerformed( ActionEvent e) {
@@ -137,7 +138,7 @@ public class AccountDlg extends JDialog {
 
 
 class PortfolioTable extends AbstractTableModel {
-    Vector m_allData = new Vector();
+    Vector<PortfolioTableRow> m_allData = new Vector<PortfolioTableRow>();
 
     void updatePortfolio(Contract contract, int position, double marketPrice, double marketValue,
                          double averageCost, double unrealizedPNL, double realizedPNL, String accountName) {
@@ -145,7 +146,7 @@ class PortfolioTable extends AbstractTableModel {
          new PortfolioTableRow(contract, position, marketPrice, marketValue, averageCost, unrealizedPNL, realizedPNL, accountName);
          int size = m_allData.size();
          for ( int i = 0; i < size; i++ ) {
-             PortfolioTableRow test = (PortfolioTableRow)m_allData.get(i);
+             PortfolioTableRow test = m_allData.get(i);
              if ( test.m_contract.equals(newData.m_contract) ) {
                  if ( newData.m_position == 0 )
                      m_allData.remove(i);
@@ -174,7 +175,7 @@ class PortfolioTable extends AbstractTableModel {
     }
 
     public Object getValueAt(int r, int c) {
-        return ((PortfolioTableRow) m_allData.get(r)).getValue(c);
+        return m_allData.get(r).getValue(c);
     }
 
     public boolean isCellEditable(int r, int c) {
@@ -293,13 +294,13 @@ class PortfolioTable extends AbstractTableModel {
 }
 
 class AcctValueModel extends AbstractTableModel {
-    Vector m_allData = new Vector();
+    Vector<AccountTableRow> m_allData = new Vector<AccountTableRow>();
 
     void updateAccountValue(String key, String val, String currency, String accountName) {
          AccountTableRow newData = new AccountTableRow(key, val, currency, accountName);
          int size = m_allData.size();
          for ( int i = 0; i < size; i++ ) {
-             AccountTableRow test = (AccountTableRow)m_allData.get(i);
+             AccountTableRow test = m_allData.get(i);
                if (test.m_key != null &&
                    test.m_key.equals(newData.m_key) &&
                    test.m_currency != null &&
@@ -327,7 +328,7 @@ class AcctValueModel extends AbstractTableModel {
     }
 
     public Object getValueAt(int r, int c) {
-        return ((AccountTableRow)m_allData.get(r)).getValue(c);
+        return m_allData.get(r).getValue(c);
     }
 
 

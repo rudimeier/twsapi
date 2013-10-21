@@ -6,7 +6,6 @@ package TestJavaClient;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
@@ -17,17 +16,17 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.JComboBox;
 
 import com.ib.client.Contract;
+import com.ib.client.MarketDataType;
 import com.ib.client.Order;
 import com.ib.client.UnderComp;
-import com.ib.client.MarketDataType;
 
 public class OrderDlg extends JDialog {
     final static String ALL_GENERIC_TICK_TAGS = "100,101,104,105,106,107,165,221,225,233,236,258,293,294,295,318";
@@ -499,13 +498,10 @@ public class OrderDlg extends JDialog {
     	}
     }
 
-    private double parseStringToMaxDouble(String value) {
+    private static double parseStringToMaxDouble(String value) {
         if (value.trim().length() == 0) {
             return Double.MAX_VALUE;
-            }
-        else {
-            return Double.parseDouble(value);
         }
+        return Double.parseDouble(value);
     }
-
 }

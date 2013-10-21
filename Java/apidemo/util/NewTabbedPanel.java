@@ -22,6 +22,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 
@@ -221,8 +222,8 @@ public class NewTabbedPanel extends JPanel {
 		public But(String text, boolean canClose, ActionListener v) {
 			super(text, v);
 			m_canClose = canClose;
-			setHorizontalAlignment(JLabel.CENTER);
-			setHorizontalTextPosition(JLabel.LEFT);
+			setHorizontalAlignment(SwingConstants.CENTER);
+			setHorizontalTextPosition(SwingConstants.LEFT);
 		}
 		
 		@Override public Dimension getPreferredSize() {

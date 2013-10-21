@@ -25,17 +25,12 @@ import com.ib.client.Order;
 import com.ib.client.TagValue;
 
 public class SmartComboRoutingParamsDlg extends JDialog {
-
     private Order m_order;
-
-    private Vector          m_smartComboRoutingParams;
 
     private JTextField 		m_tag = new JTextField( "");
     private JTextField 		m_value = new JTextField( "");
-
     private JButton 		m_addParam = new JButton( "Add");
     private JButton	 	    m_removeParam = new JButton( "Remove");
-
     private JButton 		m_ok = new JButton( "OK");
     private JButton	 	    m_cancel = new JButton( "Cancel");
 
@@ -56,7 +51,7 @@ public class SmartComboRoutingParamsDlg extends JDialog {
         JPanel pParamList = new JPanel( new GridLayout( 0, 1, 10, 10) );
         pParamList.setBorder( BorderFactory.createTitledBorder( "Smart Combo Routing Parameters") );
 
-        Vector smartComboRoutingParams = m_order.m_smartComboRoutingParams;
+        Vector<TagValue> smartComboRoutingParams = m_order.m_smartComboRoutingParams;
         if (smartComboRoutingParams != null) {
         	m_paramModel.smartComboRoutingParams().addAll(smartComboRoutingParams);
         }
@@ -142,7 +137,7 @@ public class SmartComboRoutingParamsDlg extends JDialog {
     }
 
     void onOk() {
-    	Vector smartComboRoutingParams = m_paramModel.smartComboRoutingParams();
+    	Vector<TagValue> smartComboRoutingParams = m_paramModel.smartComboRoutingParams();
     	m_order.m_smartComboRoutingParams = smartComboRoutingParams.isEmpty() ? null : smartComboRoutingParams;
 
         setVisible( false);
@@ -157,7 +152,7 @@ public class SmartComboRoutingParamsDlg extends JDialog {
         Main.inform( this, msg + " --" + e);
     }
 
-    private void centerOnOwner( Window window) {
+    private static void centerOnOwner( Window window) {
         Window owner = window.getOwner();
         if( owner == null) {
             return;
@@ -172,16 +167,14 @@ public class SmartComboRoutingParamsDlg extends JDialog {
 
 class SmartComboRoutingParamModel extends AbstractTableModel {
 
-    private Vector  m_allData = new Vector();
+    private Vector<TagValue> m_allData = new Vector<TagValue>();
 
-    synchronized public void addParam( TagValue tagValue)
-    {
+    synchronized public void addParam( TagValue tagValue) {
         m_allData.add( tagValue);
         fireTableDataChanged();
     }
 
-    synchronized public void removeParam( int index)
-    {
+    synchronized public void removeParam( int index) {
         m_allData.remove( index);
         fireTableDataChanged();
     }
@@ -200,7 +193,7 @@ class SmartComboRoutingParamModel extends AbstractTableModel {
     }
 
     synchronized public Object getValueAt(int r, int c) {
-        TagValue tagValue = (TagValue)m_allData.get(r);
+        TagValue tagValue = m_allData.get(r);
 
         switch (c) {
             case 0:
@@ -228,7 +221,7 @@ class SmartComboRoutingParamModel extends AbstractTableModel {
         }
     }
 
-    public Vector smartComboRoutingParams() {
+    public Vector<TagValue> smartComboRoutingParams() {
         return m_allData;
     }
 }

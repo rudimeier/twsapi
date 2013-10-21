@@ -24,6 +24,8 @@ public class ExtOrdDlg extends JDialog {
     public boolean 		m_rc;
 
     private JTextField 	m_tif = new JTextField( "DAY");
+    private JTextField 	m_activeStartTime = new JTextField();
+    private JTextField 	m_activeStopTime = new JTextField();
     private JTextField 	m_ocaGroup = new JTextField();
     private JTextField 	m_ocaType = new JTextField("0");
 
@@ -89,6 +91,7 @@ public class ExtOrdDlg extends JDialog {
     private JTextField 	m_scaleInitPosition = new JTextField();
     private JTextField 	m_scaleInitFillQty = new JTextField();
     private JCheckBox   m_scaleRandomPercent = new JCheckBox("SCALE: Random Percent", false);
+    private JTextField 	m_scaleTable = new JTextField();
 
     private JTextField 	m_hedgeType = new JTextField();
     private JTextField 	m_hedgeParam = new JTextField();
@@ -107,6 +110,10 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.setBorder( BorderFactory.createTitledBorder( "Extended Order Info") );
         extOrderDetailsPanel.add( new JLabel( "TIF") );
         extOrderDetailsPanel.add( m_tif);
+        extOrderDetailsPanel.add(new JLabel("Active Start Time"));
+        extOrderDetailsPanel.add(m_activeStartTime);
+        extOrderDetailsPanel.add(new JLabel("Active Stop Time"));
+        extOrderDetailsPanel.add(m_activeStopTime);
         extOrderDetailsPanel.add( new JLabel( "OCA Group") );
         extOrderDetailsPanel.add( m_ocaGroup);
         extOrderDetailsPanel.add( new JLabel( "OCA Type") );
@@ -236,6 +243,8 @@ public class ExtOrdDlg extends JDialog {
         extOrderDetailsPanel.add(m_scaleInitFillQty);
         extOrderDetailsPanel.add(m_scaleRandomPercent);
         extOrderDetailsPanel.add( new JLabel(""));
+        extOrderDetailsPanel.add(new JLabel("SCALE: Scale Table"));
+        extOrderDetailsPanel.add(m_scaleTable);
 
         extOrderDetailsPanel.add(new JLabel("HEDGE: Type"));
         extOrderDetailsPanel.add(m_hedgeType);
@@ -276,6 +285,8 @@ public class ExtOrdDlg extends JDialog {
         try {
             // set extended order fields
             m_order.m_tif = m_tif.getText().trim();
+            m_order.m_activeStartTime = m_activeStartTime.getText().trim();
+            m_order.m_activeStopTime = m_activeStopTime.getText().trim();
             m_order.m_ocaGroup = m_ocaGroup.getText().trim();
             m_order.m_ocaType = parseInt( m_ocaType);
 
@@ -342,6 +353,7 @@ public class ExtOrdDlg extends JDialog {
             m_order.m_scaleInitPosition = parseMaxInt(m_scaleInitPosition);
             m_order.m_scaleInitFillQty = parseMaxInt(m_scaleInitFillQty);
             m_order.m_scaleRandomPercent = m_scaleRandomPercent.isSelected();
+            m_order.m_scaleTable = m_scaleTable.getText().trim();
             m_order.m_hedgeType = m_hedgeType.getText().trim();
             m_order.m_hedgeParam = m_hedgeParam.getText().trim();
         }
@@ -354,44 +366,36 @@ public class ExtOrdDlg extends JDialog {
         setVisible( false);
     }
 
-    private int parseMaxInt(JTextField textField) {
+    private static int parseMaxInt(JTextField textField) {
         String text = textField.getText().trim();
         if (text.length() == 0) {
             return Integer.MAX_VALUE;
-            }
-        else {
-            return Integer.parseInt(text);
         }
+        return Integer.parseInt(text);
     }
 
-    private double parseMaxDouble(JTextField textField) {
+    private static double parseMaxDouble(JTextField textField) {
         String text = textField.getText().trim();
         if (text.length() == 0) {
             return Double.MAX_VALUE;
-            }
-        else {
-            return Double.parseDouble(text);
         }
+        return Double.parseDouble(text);
     }
 
-    private int parseInt(JTextField textField) {
+    private static int parseInt(JTextField textField) {
         String text = textField.getText().trim();
         if (text.length() == 0) {
             return 0;
-            }
-        else {
-            return Integer.parseInt(text);
         }
+        return Integer.parseInt(text);
     }
 
-    private double parseDouble(JTextField textField) {
+    private static double parseDouble(JTextField textField) {
         String text = textField.getText().trim();
         if (text.length() == 0) {
             return 0;
-            }
-        else {
-            return Double.parseDouble(text);
         }
+        return Double.parseDouble(text);
     }
 
     void onCancel() {

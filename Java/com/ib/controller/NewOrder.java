@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ib.client.Order;
-import com.ib.client.OrderComboLeg;
 import com.ib.client.TagValue;
 import com.ib.controller.Types.Action;
 import com.ib.controller.Types.AlgoStrategy;
@@ -92,6 +91,7 @@ public class NewOrder {
 	private int m_scaleInitPosition = Integer.MAX_VALUE;
 	private int m_scaleInitFillQty = Integer.MAX_VALUE;
 	private boolean m_scaleRandomPercent;
+	private String m_scaleTable;
 
 	// hedge orders
 	private HedgeType m_hedgeType = HedgeType.None;
@@ -198,6 +198,7 @@ public class NewOrder {
 	public TriggerMethod triggerMethod() { return m_triggerMethod; }
 	public ArrayList<TagValue> algoParams() { return m_algoParams; }
 	public ArrayList<Double> orderComboLegs() { return m_orderComboLegs; }
+	public String scaleTable() { return m_scaleTable; }
 
 	// setters
 	public void account(String v) { m_account = v; }
@@ -266,6 +267,7 @@ public class NewOrder {
 	public void volatility(double v) { m_volatility = v; }
 	public void volatilityType(VolatilityType v) { m_volatilityType = v; }
 	public void whatIf(boolean v) { m_whatIf = v; }
+	public void scaleTable(String v) { m_scaleTable = v; }
 
 	public int auctionStrategy() { return 0; }
 

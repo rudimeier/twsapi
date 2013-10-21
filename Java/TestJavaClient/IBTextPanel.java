@@ -27,7 +27,6 @@ class IBTextPanel extends JPanel {
 
     private JTextArea m_textArea = new JTextArea();
     private JScrollPane m_scrollPane = new JScrollPane(m_textArea);
-    private final static String CRLF = "\r\n" ;
     private final static String LF = "\n" ;
     private final static String TAB = "\t" ;
     private final static String EIGHT_SPACES = "        ";
@@ -85,9 +84,9 @@ class IBTextPanel extends JPanel {
         m_textArea.setCaretPosition(0);
     }
 
-    public void add(Collection lines) {
-        for (Iterator iter = lines.iterator(); iter.hasNext(); ) {
-            add((String)iter.next());
+    public void add(Collection<String> lines) {
+        for (Iterator<String> iter = lines.iterator(); iter.hasNext(); ) {
+            add(iter.next());
         }
     }
 
@@ -95,8 +94,8 @@ class IBTextPanel extends JPanel {
         add(tokenizedIntoArrayList(detabbed(text), LF));
     }
 
-    public static ArrayList tokenizedIntoArrayList(String source, String delimiter) {
-        ArrayList list = new ArrayList();
+    public static ArrayList<String> tokenizedIntoArrayList(String source, String delimiter) {
+        ArrayList<String> list = new ArrayList<String>();
         StringTokenizer st = new StringTokenizer(source, delimiter);
         while (st.hasMoreTokens()) {
             String temp = st.nextToken();
@@ -105,7 +104,7 @@ class IBTextPanel extends JPanel {
         return list;
     }
 
-    private String detabbed(String text) {
+    private static String detabbed(String text) {
         return text.replaceAll(TAB, EIGHT_SPACES);
     }
 }

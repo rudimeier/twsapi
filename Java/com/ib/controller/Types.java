@@ -15,6 +15,13 @@ import static com.ib.controller.Types.AlgoParam.riskAversion;
 import static com.ib.controller.Types.AlgoParam.startTime;
 import static com.ib.controller.Types.AlgoParam.strategyType;
 import static com.ib.controller.Types.AlgoParam.useOddLots;
+import static com.ib.controller.Types.AlgoParam.componentSize;
+import static com.ib.controller.Types.AlgoParam.timeBetweenOrders;
+import static com.ib.controller.Types.AlgoParam.randomizeTime20;
+import static com.ib.controller.Types.AlgoParam.randomizeSize55;
+import static com.ib.controller.Types.AlgoParam.giveUp;
+import static com.ib.controller.Types.AlgoParam.catchUp;
+import static com.ib.controller.Types.AlgoParam.waitForFill;
 
 import com.ib.client.IApiEnum;
 
@@ -24,7 +31,8 @@ public class Types {
 	}
 
 	public static enum AlgoParam {
-		startTime, endTime, allowPastEndTime, maxPctVol, pctVol, strategyType, noTakeLiq, riskAversion, forceCompletion, displaySize, getDone, noTradeAhead, useOddLots
+		startTime, endTime, allowPastEndTime, maxPctVol, pctVol, strategyType, noTakeLiq, riskAversion, forceCompletion, displaySize, getDone, noTradeAhead, useOddLots,
+		componentSize, timeBetweenOrders, randomizeTime20, randomizeSize55, giveUp, catchUp, waitForFill	
 	}
 
 	public static enum AlgoStrategy implements IApiEnum {
@@ -33,7 +41,8 @@ public class Types {
 		Twap( startTime, endTime, allowPastEndTime, strategyType),
 		ArrivalPx( startTime, endTime, allowPastEndTime, maxPctVol, riskAversion, forceCompletion),
 		DarkIce( startTime, endTime, allowPastEndTime, displaySize),
-		PctVol( startTime, endTime, pctVol, noTakeLiq);
+		PctVol( startTime, endTime, pctVol, noTakeLiq),
+		AD( startTime, endTime, componentSize, timeBetweenOrders, randomizeTime20, randomizeSize55, giveUp, catchUp, waitForFill);
 
 		private AlgoParam[] m_params;
 

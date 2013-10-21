@@ -23,7 +23,6 @@ import javax.swing.table.AbstractTableModel;
 
 import com.ib.client.ComboLeg;
 import com.ib.client.OrderComboLeg;
-import com.ib.client.Contract;
 
 public class ComboLegDlg extends JDialog {
 
@@ -190,7 +189,7 @@ public class ComboLegDlg extends JDialog {
         Main.inform( this, msg + " --" + e);
     }
 
-    private void centerOnOwner( Window window) {
+    private static void centerOnOwner( Window window) {
         Window owner = window.getOwner();
         if( owner == null) {
             return;
@@ -202,39 +201,34 @@ public class ComboLegDlg extends JDialog {
         window.setLocation( x, y);
     }
 
-    private double parseStringToMaxDouble(String value) {
+    private static double parseStringToMaxDouble(String value) {
         if (value.trim().length() == 0) {
             return Double.MAX_VALUE;
-            }
-        else {
-            return Double.parseDouble(value);
         }
+        return Double.parseDouble(value);
     }
 
 }
 
 class ComboLegModel extends AbstractTableModel {
-    private Vector  m_comboLegData = new Vector();
-    private Vector  m_orderComboLegData = new Vector();
+    private Vector m_comboLegData = new Vector();
+    private Vector m_orderComboLegData = new Vector();
 
-    synchronized public void addComboLeg( ComboLeg comboLeg, OrderComboLeg orderComboLeg)
-    {
+    synchronized public void addComboLeg( ComboLeg comboLeg, OrderComboLeg orderComboLeg) {
         m_comboLegData.add( comboLeg);
         m_orderComboLegData.add( orderComboLeg);
         fireTableDataChanged();
     }
 
-    synchronized public void removeComboLeg( int index)
-    {
+    synchronized public void removeComboLeg( int index) {
         m_comboLegData.remove(index);
         m_orderComboLegData.remove(index);
         fireTableDataChanged();
     }
 
-    synchronized public void removeComboLeg( ComboLeg comboLeg)
-    {
+    synchronized public void removeComboLeg( ComboLeg comboLeg) {
         for ( int i=0; i < m_comboLegData.size(); i++ ) {
-                if ( comboLeg.equals( (ComboLeg)m_comboLegData.get(i)) ) {
+                if ( comboLeg.equals( m_comboLegData.get(i)) ) {
                         m_comboLegData.remove(i);
                         m_orderComboLegData.remove(i);
                         break;
@@ -323,9 +317,8 @@ class ComboLegModel extends AbstractTableModel {
         return m_orderComboLegData;
     }
 
-    private String parseMaxDoubleToString(double value) {
+    private static String parseMaxDoubleToString(double value) {
         return value == Double.MAX_VALUE ? "" : String.valueOf(value);
     }
-
 
 }

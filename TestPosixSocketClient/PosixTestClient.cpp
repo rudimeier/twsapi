@@ -285,7 +285,7 @@ void PosixTestClient::deltaNeutralValidation(int reqId, const UnderComp& underCo
 void PosixTestClient::tickSnapshotEnd(int reqId) {}
 void PosixTestClient::marketDataType(TickerId reqId, int marketDataType) {}
 void PosixTestClient::commissionReport( const CommissionReport& commissionReport) {}
-void PosixTestClient::position( const IBString& account, const Contract& contract, int position, double avgCost) {}
+void PosixTestClient::position( const IBString& account, const Contract& contract, int position) {}
 void PosixTestClient::positionEnd() {}
 void PosixTestClient::accountSummary( int reqId, const IBString& account, const IBString& tag, const IBString& value, const IBString& curency) {}
 void PosixTestClient::accountSummaryEnd( int reqId) {}

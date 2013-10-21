@@ -23,6 +23,8 @@ import com.ib.controller.Types.AlgoStrategy;
 import com.ib.controller.Types.HedgeType;
 import com.ib.controller.Types.SecType;
 
+// NOTE: TWS 936 SERVER_VERSION is 67.
+
 public class ApiConnection extends EClientSocket {
 	public interface ILogger {
 		void log(String valueOf);
@@ -44,14 +46,16 @@ public class ApiConnection extends EClientSocket {
 		super.eConnect(socket, clientId);
 
 		// replace the output stream with one that logs all data to m_outLogger
-		try {
-			Field realOsField = FilterOutputStream.class.getDeclaredField( "out");
-			realOsField.setAccessible( true);
-			OutputStream realOs = (OutputStream)realOsField.get( m_dos);
-			realOsField.set( m_dos, new MyOS( realOs) );
-		}
-		catch( Exception e) {
-			e.printStackTrace();
+		if (isConnected()) {
+			try {
+				Field realOsField = FilterOutputStream.class.getDeclaredField( "out");
+				realOsField.setAccessible( true);
+				OutputStream realOs = (OutputStream)realOsField.get( m_dos);
+				realOsField.set( m_dos, new MyOS( realOs) );
+			}
+			catch( Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -84,11 +88,11 @@ public class ApiConnection extends EClientSocket {
 
 		Builder b = new Builder();
 
-		int VERSION = 38;
+		int VERSION = 41;
 
 		// send place order msg
 		try {
-			b.send( 3);
+			b.send( PLACE_ORDER);
 			b.send( VERSION);
 			b.send( order.orderId() );
 			b.send( contract.conid() );
@@ -102,6 +106,9 @@ public class ApiConnection extends EClientSocket {
 			b.send( contract.primaryExch() );
 			b.send( contract.currency() );
 			b.send( contract.localSymbol() );
+            if (m_serverVersion >= MIN_SERVER_VER_TRADING_CLASS) {
+                b.send(contract.tradingClass() );
+            }
 			b.send( contract.secIdType() );
 			b.send( contract.secId() );
 			b.send( order.action() );
@@ -188,15 +195,19 @@ public class ApiConnection extends EClientSocket {
 				b.send( ""); //deltaNeutralSettlingFirm
 				b.send( ""); //deltaNeutralClearingAccount
 				b.send( ""); //deltaNeutralClearingIntent
+				b.send( ""); //deltaNeutralOpenClose
+                b.send( ""); //deltaNeutralShortSale
+                b.send( ""); //deltaNeutralShortSaleSlot
+                b.send( ""); //deltaNeutralDesignatedLocation
 			}
-
+			
 			b.send( order.continuousUpdate() );
 			b.send( order.referencePriceType() );
 			b.send( order.trailStopPrice() );
 			b.send( order.trailingPercent() );
-			b.send (order.scaleInitLevelSize() );
-			b.send (order.scaleSubsLevelSize() );
-			b.send (order.scalePriceIncrement() );
+			b.send( order.scaleInitLevelSize() );
+			b.send( order.scaleSubsLevelSize() );
+			b.send( order.scalePriceIncrement() );
 
 			if (order.scalePriceIncrement() != 0 && order.scalePriceIncrement() != Double.MAX_VALUE) {
 				b.send( order.scalePriceAdjustValue() );
@@ -208,7 +219,13 @@ public class ApiConnection extends EClientSocket {
 				b.send( order.scaleRandomPercent() );
 			}
 
-			b.send( order.hedgeType() );
+			if (m_serverVersion >= MIN_SERVER_VER_SCALE_TABLE) {
+				b.send( order.scaleTable() );
+				b.send( ""); // active start time
+				b.send( ""); // active stop time
+			}
+
+	        b.send( order.hedgeType() );
 			if (order.hedgeType() != HedgeType.None) {
 				b.send( order.hedgeParam() );
 			}

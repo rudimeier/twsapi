@@ -141,7 +141,7 @@ public class OrdersPanel extends JPanel {
 		onRefresh();
 	}
 	
-	private void onPlaceOrder() {
+	private static void onPlaceOrder() {
 		TicketDlg dlg = new TicketDlg( null, null);
 		dlg.setVisible( true);
 	}

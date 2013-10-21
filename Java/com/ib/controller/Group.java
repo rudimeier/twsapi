@@ -25,7 +25,7 @@ public class Group {
 	public void setAllAccounts(String val) {
 		m_accounts.clear();
 
-		StringTokenizer st = new StringTokenizer( (String)val, " ,");
+		StringTokenizer st = new StringTokenizer( val, " ,");
 		while( st.hasMoreTokens() ) {
 			m_accounts.add( st.nextToken() );
 		}

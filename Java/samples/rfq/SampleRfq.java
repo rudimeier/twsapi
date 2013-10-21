@@ -138,19 +138,17 @@ public class SampleRfq extends SimpleWrapper {
       case 4:
          {
             m_contract = new ComboContract("Z", "GBP", "LIFFE");
-            m_contract.m_comboLegs = new Vector(2);
+            m_contract.m_comboLegs = new Vector<ComboLeg>(2);
             m_contract.m_comboLegs.setSize(2);
 
             {
-               Contract l1 = new OptContract(
-                     "Z", "LIFFE", "200809", 54.75, "CALL");
+               Contract l1 = new OptContract("Z", "LIFFE", "200809", 54.75, "CALL");
                l1.m_currency = "GBP";
                submitSecDef(1, l1);
             }
 
             {
-               Contract l2 = new OptContract(
-                     "Z", "LIFFE", "200810", 55.00, "CALL");
+               Contract l2 = new OptContract("Z", "LIFFE", "200810", 55.00, "CALL");
                l2.m_currency = "GBP";
                submitSecDef(2, l2);
             }
@@ -161,7 +159,7 @@ public class SampleRfq extends SimpleWrapper {
       case 5:
          {
             m_contract = new ComboContract("IBM");
-            m_contract.m_comboLegs = new Vector(1);
+            m_contract.m_comboLegs = new Vector<ComboLeg>(1);
             m_contract.m_comboLegs.setSize(1);
 
             m_contract.m_underComp = new UnderComp();
@@ -179,7 +177,7 @@ public class SampleRfq extends SimpleWrapper {
       case 6:
          {
             m_contract = new ComboContract("RUT");
-            m_contract.m_comboLegs = new Vector(1);
+            m_contract.m_comboLegs = new Vector<ComboLeg>(1);
             m_contract.m_comboLegs.setSize(1);
 
             m_contract.m_underComp = new UnderComp();
@@ -196,7 +194,7 @@ public class SampleRfq extends SimpleWrapper {
       case 7:
          {
             m_contract = new ComboContract("Z", "GBP", "LIFFE");
-            m_contract.m_comboLegs = new Vector(1);
+            m_contract.m_comboLegs = new Vector<ComboLeg>(1);
             m_contract.m_comboLegs.setSize(1);
 
             m_contract.m_underComp = new UnderComp();
@@ -217,20 +215,16 @@ public class SampleRfq extends SimpleWrapper {
    }
 
    private void submitSecDef(int reqId, Contract contract) {
-
       consoleMsg("REQ: secDef " + reqId);
-
       client().reqContractDetails(reqId, contract);
    }
 
    private void submitRfq() {
-
       consoleMsg("REQ: rfq " + m_rfqId);
 
       m_status = m_contract.m_underComp != null ? Status.Rfq : Status.Ticks;
 
-      client().placeOrder(m_rfqId, m_contract,
-            new RfqOrder(m_clientId, m_rfqId, 1));
+      client().placeOrder(m_rfqId, m_contract, new RfqOrder(m_clientId, m_rfqId, 1));
    }
 
    private void checkReceivedAllTicks() {

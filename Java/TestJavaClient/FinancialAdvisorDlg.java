@@ -15,7 +15,6 @@ import javax.swing.JDialog;
 public class FinancialAdvisorDlg extends JDialog {
     private int DIALOG_WIDTH = 500;
     private int EDITOR_HEIGHT = 240;
-    private int BUTTON_PANEL_HEIGHT = 60;
     private JButton 	m_ok = new JButton( "OK");
     private JButton 	m_cancel = new JButton( "Cancel");
     private IBTextPanel groupTextEditor = new IBTextPanel("Groups", true) ;

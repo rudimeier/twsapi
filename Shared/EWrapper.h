@@ -127,7 +127,7 @@ public:
    virtual void tickSnapshotEnd( int reqId) = 0;
    virtual void marketDataType( TickerId reqId, int marketDataType) = 0;
    virtual void commissionReport( const CommissionReport &commissionReport) = 0;
-   virtual void position( const IBString& account, const Contract& contract, int position, double avgCost) = 0;
+   virtual void position( const IBString& account, const Contract& contract, int position) = 0;
    virtual void positionEnd() = 0;
    virtual void accountSummary( int reqId, const IBString& account, const IBString& tag, const IBString& value, const IBString& curency) = 0;
    virtual void accountSummaryEnd( int reqId) = 0;

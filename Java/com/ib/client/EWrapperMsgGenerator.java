@@ -160,7 +160,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
            	msg += " comboLegs={";
             if (contract.m_comboLegs != null) {
             	for (int i = 0; i < contract.m_comboLegs.size(); ++i) {
-            		ComboLeg comboLeg = (ComboLeg)contract.m_comboLegs.get(i);
+            		ComboLeg comboLeg = contract.m_comboLegs.get(i);
             		msg += " leg " + (i+1) + ": "; 
             		msg += "conId=" +  comboLeg.m_conId;
             		msg += " ratio=" +  comboLeg.m_ratio;
@@ -171,7 +171,7 @@ public class EWrapperMsgGenerator extends AnyWrapperMsgGenerator {
             		msg += " designatedLocation=" +  comboLeg.m_designatedLocation;
             		msg += " exemptCode=" +  comboLeg.m_exemptCode;
             		if (order.m_orderComboLegs != null && contract.m_comboLegs.size() == order.m_orderComboLegs.size()) {
-            			OrderComboLeg orderComboLeg = (OrderComboLeg)order.m_orderComboLegs.get(i);
+            			OrderComboLeg orderComboLeg = order.m_orderComboLegs.get(i);
             			msg += " price=" +  Util.DoubleMaxString(orderComboLeg.m_price);
             		}
             		msg += ";";

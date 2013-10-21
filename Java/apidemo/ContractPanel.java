@@ -6,18 +6,11 @@ package apidemo;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import javax.swing.border.TitledBorder;
-
 
 import apidemo.util.TCombo;
 import apidemo.util.UpperField;
 import apidemo.util.VerticalPanel;
-import apidemo.util.VerticalPanel.HorzPanel;
 
 import com.ib.controller.NewContract;
 import com.ib.controller.Types.Right;
@@ -33,6 +26,7 @@ public class ContractPanel extends JPanel {
 	protected UpperField m_exchange = new UpperField();
 	protected UpperField m_currency = new UpperField();
 	protected UpperField m_localSymbol = new UpperField();
+	protected UpperField m_tradingClass = new UpperField();
 
 	private NewContract m_contract;
 
@@ -55,6 +49,7 @@ public class ContractPanel extends JPanel {
 			m_exchange.setText( m_contract.exchange()); 
 			m_currency.setText( m_contract.currency());
 			m_localSymbol.setText( m_contract.localSymbol());
+			m_tradingClass.setText( m_contract.tradingClass() );
 		}
 		
 		VerticalPanel p = new VerticalPanel();
@@ -67,6 +62,7 @@ public class ContractPanel extends JPanel {
     	p.add( "Exchange", m_exchange);
     	p.add( "Currency", m_currency);
     	p.add( "Local symbol", m_localSymbol);
+    	p.add( "Trading class", m_tradingClass);
     	
     	setLayout( new BorderLayout() );
     	add( p);
@@ -90,5 +86,6 @@ public class ContractPanel extends JPanel {
 		m_contract.exchange( m_exchange.getText().toUpperCase() ); 
 		m_contract.currency( m_currency.getText().toUpperCase() ); 
 		m_contract.localSymbol( m_localSymbol.getText().toUpperCase() );
+		m_contract.tradingClass( m_tradingClass.getText().toUpperCase() );
 	}
 }

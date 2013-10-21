@@ -116,7 +116,7 @@ public class EClientSocket {
     // outgoing msg id's
     private static final int REQ_MKT_DATA = 1;
     private static final int CANCEL_MKT_DATA = 2;
-    private static final int PLACE_ORDER = 3;
+    protected static final int PLACE_ORDER = 3;
     private static final int CANCEL_ORDER = 4;
     private static final int REQ_OPEN_ORDERS = 5;
     private static final int REQ_ACCOUNT_DATA = 6;
@@ -187,15 +187,16 @@ public class EClientSocket {
     private static final int MIN_SERVER_VER_SCALE_ORDERS3 = 60;
     private static final int MIN_SERVER_VER_ORDER_COMBO_LEGS_PRICE = 61;
     private static final int MIN_SERVER_VER_TRAILING_PERCENT = 62;
-    private static final int MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE = 66;
+    protected static final int MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE = 66;
     private static final int MIN_SERVER_VER_ACCT_SUMMARY = 67;
-    private static final int MIN_SERVER_VER_TRADING_CLASS = 68;
+    protected static final int MIN_SERVER_VER_TRADING_CLASS = 68;
+    protected static final int MIN_SERVER_VER_SCALE_TABLE = 69;
 
     private AnyWrapper m_anyWrapper;    // msg handler
     protected DataOutputStream m_dos;   // the socket output stream
     private boolean m_connected;        // true if we are connected
     private EReader m_reader;           // thread which reads msgs from socket
-    private int m_serverVersion;
+    protected int m_serverVersion;
     private String m_TwsTime;
 
     public int serverVersion()          { return m_serverVersion;   }
@@ -499,7 +500,7 @@ public class EClientSocket {
 
                     ComboLeg comboLeg;
                     for (int i=0; i < contract.m_comboLegs.size(); i ++) {
-                        comboLeg = (ComboLeg)contract.m_comboLegs.get(i);
+                        comboLeg = contract.m_comboLegs.get(i);
                         send( comboLeg.m_conId);
                         send( comboLeg.m_ratio);
                         send( comboLeg.m_action);
@@ -666,7 +667,7 @@ public class EClientSocket {
 
                   ComboLeg comboLeg;
                   for (int i = 0; i < contract.m_comboLegs.size(); i++) {
-                      comboLeg = (ComboLeg) contract.m_comboLegs.get(i);
+                      comboLeg = contract.m_comboLegs.get(i);
                       send(comboLeg.m_conId);
                       send(comboLeg.m_ratio);
                       send(comboLeg.m_action);
@@ -995,7 +996,7 @@ public class EClientSocket {
         	if (!contract.m_comboLegs.isEmpty()) {
                 ComboLeg comboLeg;
                 for (int i = 0; i < contract.m_comboLegs.size(); ++i) {
-                    comboLeg = (ComboLeg)contract.m_comboLegs.get(i);
+                    comboLeg = contract.m_comboLegs.get(i);
                     if (comboLeg.m_shortSaleSlot != 0 ||
                     	!IsEmpty(comboLeg.m_designatedLocation)) {
                 		error(id, EClientErrors.UPDATE_TWS,
@@ -1074,7 +1075,7 @@ public class EClientSocket {
         	if (!contract.m_comboLegs.isEmpty()) {
                 ComboLeg comboLeg;
                 for (int i = 0; i < contract.m_comboLegs.size(); ++i) {
-                    comboLeg = (ComboLeg)contract.m_comboLegs.get(i);
+                    comboLeg = contract.m_comboLegs.get(i);
                     if (comboLeg.m_exemptCode != -1) {
                 		error(id, EClientErrors.UPDATE_TWS,
                 			"  It does not support exemptCode parameter.");
@@ -1145,7 +1146,7 @@ public class EClientSocket {
         	if (!order.m_orderComboLegs.isEmpty()) {
         		OrderComboLeg orderComboLeg;
         		for (int i = 0; i < order.m_orderComboLegs.size(); ++i) {
-        			orderComboLeg = (OrderComboLeg)order.m_orderComboLegs.get(i);
+        			orderComboLeg = order.m_orderComboLegs.get(i);
         			if (orderComboLeg.m_price != Double.MAX_VALUE) {
         			error(id, EClientErrors.UPDATE_TWS,
         				"  It does not support per-leg prices for order combo legs.");
@@ -1171,7 +1172,15 @@ public class EClientSocket {
             }
         }
 
-        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 40;
+        if (m_serverVersion < MIN_SERVER_VER_SCALE_TABLE) {
+            if (!IsEmpty(order.m_scaleTable) || !IsEmpty(order.m_activeStartTime) || !IsEmpty(order.m_activeStopTime)) {
+                  error(id, EClientErrors.UPDATE_TWS,
+                      "  It does not support scaleTable, activeStartTime and activeStopTime parameters.");
+                  return;
+            }
+        }
+
+        int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 41;
 
         // send place order msg
         try {
@@ -1264,7 +1273,7 @@ public class EClientSocket {
 
                     ComboLeg comboLeg;
                     for (int i=0; i < contract.m_comboLegs.size(); i ++) {
-                        comboLeg = (ComboLeg)contract.m_comboLegs.get(i);
+                        comboLeg = contract.m_comboLegs.get(i);
                         send( comboLeg.m_conId);
                         send( comboLeg.m_ratio);
                         send( comboLeg.m_action);
@@ -1291,7 +1300,7 @@ public class EClientSocket {
                     send( order.m_orderComboLegs.size());
 
                     for (int i = 0; i < order.m_orderComboLegs.size(); i++) {
-                        OrderComboLeg orderComboLeg = (OrderComboLeg)order.m_orderComboLegs.get(i);
+                        OrderComboLeg orderComboLeg = order.m_orderComboLegs.get(i);
                         sendMax( orderComboLeg.m_price);
                     }
                 }
@@ -1436,6 +1445,12 @@ public class EClientSocket {
                sendMax (order.m_scaleInitPosition);
                sendMax (order.m_scaleInitFillQty);
                send (order.m_scaleRandomPercent);
+           }
+
+           if (m_serverVersion >= MIN_SERVER_VER_SCALE_TABLE) {
+               send (order.m_scaleTable);
+               send (order.m_activeStartTime);
+               send (order.m_activeStopTime);
            }
 
            if (m_serverVersion >= MIN_SERVER_VER_HEDGE_ORDERS) {

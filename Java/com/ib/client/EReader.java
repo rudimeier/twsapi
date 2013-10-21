@@ -575,7 +575,7 @@ public class EReader extends Thread {
                 if (version >= 29) {
                 	int comboLegsCount = readInt();
                 	if (comboLegsCount > 0) {
-                		contract.m_comboLegs = new Vector(comboLegsCount);
+                		contract.m_comboLegs = new Vector<ComboLeg>(comboLegsCount);
                 		for (int i = 0; i < comboLegsCount; ++i) {
                 			int conId = readInt();
                 			int ratio = readInt();
@@ -594,7 +594,7 @@ public class EReader extends Thread {
 
                 	int orderComboLegsCount = readInt();
                 	if (orderComboLegsCount > 0) {
-                		order.m_orderComboLegs = new Vector(orderComboLegsCount);
+                		order.m_orderComboLegs = new Vector<OrderComboLeg>(orderComboLegsCount);
                 		for (int i = 0; i < orderComboLegsCount; ++i) {
                 			double price = readDoubleMax();
 
@@ -607,7 +607,7 @@ public class EReader extends Thread {
                 if (version >= 26) {
                 	int smartComboRoutingParamsCount = readInt();
                 	if (smartComboRoutingParamsCount > 0) {
-                		order.m_smartComboRoutingParams = new Vector(smartComboRoutingParamsCount);
+                		order.m_smartComboRoutingParams = new Vector<TagValue>(smartComboRoutingParamsCount);
                 		for (int i = 0; i < smartComboRoutingParamsCount; ++i) {
                 			TagValue tagValue = new TagValue();
                 			tagValue.m_tag = readStr();
@@ -674,7 +674,7 @@ public class EReader extends Thread {
                 	if (!Util.StringIsEmpty(order.m_algoStrategy)) {
                 		int algoParamsCount = readInt();
                 		if (algoParamsCount > 0) {
-                			order.m_algoParams = new Vector(algoParamsCount);
+                			order.m_algoParams = new Vector<TagValue>(algoParamsCount);
                 			for (int i = 0; i < algoParamsCount; ++i) {
                 				TagValue tagValue = new TagValue();
                 				tagValue.m_tag = readStr();
@@ -797,7 +797,7 @@ public class EReader extends Thread {
                 if (version >= 7) {
                     int secIdListCount = readInt();
                         if (secIdListCount  > 0) {
-                            contract.m_secIdList = new Vector(secIdListCount);
+                            contract.m_secIdList = new Vector<TagValue>(secIdListCount);
                             for (int i = 0; i < secIdListCount; ++i) {
                                 TagValue tagValue = new TagValue();
                                 tagValue.m_tag = readStr();
@@ -857,7 +857,7 @@ public class EReader extends Thread {
                 if (version >= 5) {
                     int secIdListCount = readInt();
                         if (secIdListCount  > 0) {
-                            contract.m_secIdList = new Vector(secIdListCount);
+                            contract.m_secIdList = new Vector<TagValue>(secIdListCount);
                             for (int i = 0; i < secIdListCount; ++i) {
                                 TagValue tagValue = new TagValue();
                                 tagValue.m_tag = readStr();

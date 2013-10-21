@@ -27,7 +27,7 @@ public class Util {
 		}
 		
 		DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-		FontMetrics fm = table.getGraphics().getFontMetrics( renderer.getFont() );
+		FontMetrics fm = table.getFontMetrics( renderer.getFont() );
 
 		TableColumnModel mod = table.getColumnModel();
 		for (int iCol = 0; iCol < mod.getColumnCount(); iCol++) {

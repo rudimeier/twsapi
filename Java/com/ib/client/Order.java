@@ -32,6 +32,8 @@ public class Order {
 
     // extended order fields
     public String 	m_tif;  // "Time in Force" - DAY, GTC, etc.
+    public String   m_activeStartTime; // GTC orders
+    public String   m_activeStopTime; // GTC orders
     public String 	m_ocaGroup; // one cancels all group name
     public int      m_ocaType;  // 1 = CANCEL_WITH_BLOCK, 2 = REDUCE_WITH_BLOCK, 3 = REDUCE_NON_BLOCK
     public String 	m_orderRef;
@@ -116,6 +118,7 @@ public class Order {
     public int      m_scaleInitPosition;
     public int      m_scaleInitFillQty;
     public boolean  m_scaleRandomPercent;
+    public String   m_scaleTable;
 
     // HEDGE ORDERS ONLY
     public String   m_hedgeType; // 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
@@ -146,6 +149,8 @@ public class Order {
     public Order() {
         m_lmtPrice = Double.MAX_VALUE;
         m_auxPrice = Double.MAX_VALUE;
+        m_activeStartTime = EMPTY_STR;
+        m_activeStopTime = EMPTY_STR;
     	m_outsideRth = false;
         m_openClose	= "O";
         m_origin = CUSTOMER;
@@ -188,6 +193,7 @@ public class Order {
         m_scaleInitPosition = Integer.MAX_VALUE;
         m_scaleInitFillQty = Integer.MAX_VALUE;
         m_scaleRandomPercent = false;
+        m_scaleTable = EMPTY_STR;
         m_whatIf = false;
         m_notHeld = false;
     }
@@ -268,6 +274,8 @@ public class Order {
         if (Util.StringCompare(m_action, l_theOther.m_action) != 0 ||
         	Util.StringCompare(m_orderType, l_theOther.m_orderType) != 0 ||
         	Util.StringCompare(m_tif, l_theOther.m_tif) != 0 ||
+        	Util.StringCompare(m_activeStartTime, l_theOther.m_activeStartTime) != 0 ||
+        	Util.StringCompare(m_activeStopTime, l_theOther.m_activeStopTime) != 0 ||
         	Util.StringCompare(m_ocaGroup, l_theOther.m_ocaGroup) != 0 ||
         	Util.StringCompare(m_orderRef,l_theOther.m_orderRef) != 0 ||
         	Util.StringCompare(m_goodAfterTime, l_theOther.m_goodAfterTime) != 0 ||
@@ -291,7 +299,8 @@ public class Order {
         	Util.StringCompare(m_settlingFirm, l_theOther.m_settlingFirm) != 0 ||
         	Util.StringCompare(m_clearingAccount, l_theOther.m_clearingAccount) != 0 ||
         	Util.StringCompare(m_clearingIntent, l_theOther.m_clearingIntent) != 0 ||
-        	Util.StringCompare(m_algoStrategy, l_theOther.m_algoStrategy) != 0) {
+        	Util.StringCompare(m_algoStrategy, l_theOther.m_algoStrategy) != 0 ||
+        	Util.StringCompare(m_scaleTable, l_theOther.m_scaleTable) != 0) {
         	return false;
         }
 

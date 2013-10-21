@@ -24,6 +24,7 @@ public class NewContract implements Cloneable {
     private String m_exchange;
     private String m_currency;
     private String m_localSymbol;
+    private String m_tradingClass;
     private String m_primaryExch;
     private SecIdType m_secIdType = SecIdType.None;
     private String m_secId;
@@ -38,6 +39,7 @@ public class NewContract implements Cloneable {
     public String exchange() { return m_exchange; }
     public String expiry() { return m_expiry; }
     public String localSymbol() { return m_localSymbol; }
+    public String tradingClass() { return m_tradingClass; }
     public String multiplier() { return m_multiplier; }
     public String primaryExch() { return m_primaryExch; }
     public Right right() { return m_right; }
@@ -51,6 +53,7 @@ public class NewContract implements Cloneable {
     public void exchange(String v) { m_exchange = v; }
     public void expiry(String v) { m_expiry = v; }
     public void localSymbol(String v) { m_localSymbol = v; }
+    public void tradingClass(String v) { m_tradingClass = v; }
     public void multiplier(String v) { m_multiplier = v; }
     public void primaryExch(String v) { m_primaryExch = v; }
     public void right(Right v) { m_right = v; }
@@ -77,6 +80,7 @@ public class NewContract implements Cloneable {
     	m_exchange = c.m_exchange;
     	m_currency = c.m_currency;
     	m_localSymbol = c.m_localSymbol;
+    	m_tradingClass = c.m_tradingClass;
     	m_primaryExch = c.m_primaryExch;
     	m_secIdType = SecIdType.get( c.m_secIdType);
     	m_secId = c.m_secId;
@@ -102,6 +106,7 @@ public class NewContract implements Cloneable {
 		c.m_exchange = m_exchange;
 		c.m_currency = m_currency;
 		c.m_localSymbol = m_localSymbol;
+		c.m_tradingClass = m_tradingClass;
 		c.m_primaryExch = m_primaryExch;
 		c.m_secIdType = m_secIdType.getApiString();
 		c.m_secId = m_secId;
@@ -157,7 +162,7 @@ public class NewContract implements Cloneable {
 		return sb.toString();
 	}
 
-	private void app(StringBuilder buf, Object obj) {
+	private static void app(StringBuilder buf, Object obj) {
 		if (obj != null) {
 			buf.append( " ");
 			buf.append( obj);
@@ -181,6 +186,7 @@ public class NewContract implements Cloneable {
 	    add( sb, "exchange", m_exchange);
 	    add( sb, "currency", m_currency);
 	    add( sb, "localSymbol", m_localSymbol);
+	    add( sb, "tradingClass", m_tradingClass);
 	    add( sb, "primaryExch", m_primaryExch);
 	    add( sb, "secIdType", m_secIdType);
 	    add( sb, "secId", m_secId);

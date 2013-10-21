@@ -9,7 +9,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.JCheckBox;
@@ -19,7 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-
 
 import apidemo.util.HtmlButton;
 import apidemo.util.NewTabbedPanel;
@@ -31,11 +29,11 @@ import apidemo.util.VerticalPanel.HorzPanel;
 import apidemo.util.VerticalPanel.StackPanel;
 
 import com.ib.client.TagValue;
+import com.ib.controller.ApiController.IOrderHandler;
 import com.ib.controller.NewContract;
 import com.ib.controller.NewOrder;
 import com.ib.controller.NewOrderState;
 import com.ib.controller.OrderType;
-import com.ib.controller.ApiController.IOrderHandler;
 import com.ib.controller.Types.Action;
 import com.ib.controller.Types.AlgoParam;
 import com.ib.controller.Types.AlgoStrategy;
@@ -580,9 +578,9 @@ public class TicketDlg extends JDialog {
 		UpperField m_initPosition = new UpperField();
 		UpperField m_initFillQty = new UpperField();
 		JCheckBox m_randomPercent = new JCheckBox();
+		UpperField m_table = new UpperField();
 
 		ScalePanel() {
-
 			m_initLevelSize.setText( m_order.scaleInitLevelSize() );
 			m_subsLevelSize.setText( m_order.scaleSubsLevelSize() );
 			m_priceIncrement.setText( m_order.scalePriceIncrement() );
@@ -593,6 +591,7 @@ public class TicketDlg extends JDialog {
 			m_initPosition.setText( m_order.scaleInitPosition() );
 			m_initFillQty.setText( m_order.scaleInitFillQty() );
 			m_randomPercent.setSelected( m_order.scaleRandomPercent() );
+			m_table.setText( m_order.scaleTable() );
 
 			add( "Initial comp size", m_initLevelSize);
 			add( "Subsequent comp size", m_subsLevelSize);
@@ -606,6 +605,8 @@ public class TicketDlg extends JDialog {
 			add( "Filled init comp size", m_initFillQty);
 			add( Box.createVerticalStrut( 10) );
 			add( "Increase price by", m_priceAdjustValue, new JLabel( "every"), m_priceAdjustInterval, new JLabel( "seconds") );
+			add( Box.createVerticalStrut( 10) );
+			add( "Manual table", m_table);
 		}
 	
 		void onOK() {
@@ -618,7 +619,8 @@ public class TicketDlg extends JDialog {
 			m_order.scaleAutoReset( m_autoReset.isSelected()); 
 			m_order.scaleInitPosition( m_initPosition.getInt()); 
 			m_order.scaleInitFillQty( m_initFillQty.getInt()); 
-			m_order.scaleRandomPercent( m_randomPercent.isSelected()); 
+			m_order.scaleRandomPercent( m_randomPercent.isSelected());
+			m_order.scaleTable( m_table.getText() );
 		}
 	}
 

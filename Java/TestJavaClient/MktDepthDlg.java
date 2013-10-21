@@ -167,7 +167,7 @@ class MktDepthModel extends AbstractTableModel {
     }
 
     synchronized public MktDepthTableRow getOrderAt(int orderPosition) {
-        return (MktDepthTableRow)getIteratorAt(orderPosition).next();
+        return getIteratorAt(orderPosition).next();
     }
 
     synchronized public ListIterator<MktDepthTableRow> getIteratorAt(int orderPosition) {
@@ -181,14 +181,14 @@ class MktDepthModel extends AbstractTableModel {
         MktDepthTableRow	tmpRow = null;
 
         if (baseRow > 0) {
-            tmpRow = (MktDepthTableRow)m_allData.get(baseRow - 1);
+            tmpRow = m_allData.get(baseRow - 1);
             cumSize = tmpRow.m_cumSize;
             totalPrice = tmpRow.m_price * cumSize;
         }
 
         for (int ctr = baseRow ; ctr < m_allData.size() ; ctr++)
         {
-            tmpRow = (MktDepthTableRow) m_allData.get(ctr);
+            tmpRow = m_allData.get(ctr);
             cumSize += tmpRow.m_size;
             totalPrice += (tmpRow.m_price * tmpRow.m_size);
             tmpRow.m_cumSize = cumSize;
@@ -215,7 +215,7 @@ class MktDepthModel extends AbstractTableModel {
         if (r >= m_allData.size()) {
             return null;
         }
-        return ((MktDepthTableRow)m_allData.get(r)).getValue(c);
+        return m_allData.get(r).getValue(c);
     }
 
     public boolean isCellEditable(int r, int c) {

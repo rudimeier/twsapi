@@ -55,10 +55,9 @@ public class ScannerDlg extends JDialog {
     private JButton 	m_requestParameters = new JButton( "Request Parameters");
     private JButton 	m_subscribe = new JButton( "Subscribe");
     private JButton 	m_cancel = new JButton( "Cancel Subscription");
-    private SampleFrame m_parent;
 
-    private static final int COL1_WIDTH = 30 ;
-    private static final int COL2_WIDTH = 100 - COL1_WIDTH ;
+    private static final int COL1_WIDTH = 30;
+    private static final int COL2_WIDTH = 100 - COL1_WIDTH;
 
     private static void addGBComponent(IBGridBagPanel panel, Component comp,
                                        GridBagConstraints gbc, int weightx, int gridwidth)
@@ -72,21 +71,20 @@ public class ScannerDlg extends JDialog {
     public ScannerDlg( SampleFrame owner) {
         super( owner, true);
 
-        m_parent = owner;
         setTitle( "Sample");
 
-        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints() ;
-        gbc.fill = gbc.BOTH ;
-        gbc.anchor = gbc.CENTER ;
-        gbc.weighty = 100 ;
-        gbc.fill = GridBagConstraints.BOTH ;
-        gbc.gridheight = 1 ;
+        java.awt.GridBagConstraints gbc = new java.awt.GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.weighty = 100;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridheight = 1;
         // create id panel
         IBGridBagPanel pId = new IBGridBagPanel();
         pId.setBorder( BorderFactory.createTitledBorder( "Message Id") );
 
-        addGBComponent(pId, new JLabel( "Id"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE) ;
-        addGBComponent(pId, m_Id, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER) ;
+        addGBComponent(pId, new JLabel( "Id"), gbc, COL1_WIDTH, GridBagConstraints.RELATIVE);
+        addGBComponent(pId, m_Id, gbc, COL2_WIDTH, GridBagConstraints.REMAINDER);
 
         // create contract panel
         IBGridBagPanel pSubscriptionDetails = new IBGridBagPanel();
@@ -169,11 +167,7 @@ public class ScannerDlg extends JDialog {
         pack();
     }
 
-    private static String pad( int val) {
-        return val < 10 ? "0" + val : "" + val;
-    }
-
-    private double parseDouble(JTextField textfield) {
+    private static double parseDouble(JTextField textfield) {
         try {
             return Double.parseDouble(textfield.getText().trim());
         }
@@ -182,7 +176,7 @@ public class ScannerDlg extends JDialog {
         }
     }
 
-    private int parseInt(JTextField textfield) {
+    private static int parseInt(JTextField textfield) {
         try {
             return Integer.parseInt(textfield.getText().trim());
         }

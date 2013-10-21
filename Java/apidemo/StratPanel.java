@@ -48,7 +48,7 @@ public class StratPanel extends StackPanel implements IHistoricalDataHandler, IR
 	final private Chart m_chart = new Chart( m_rows);
 	private boolean m_req;
 	
-	private Component sp(int n) { return Box.createHorizontalStrut(n); }
+	private static Component sp(int n) { return Box.createHorizontalStrut(n); }
 
 	StratPanel() {
 		m_contractPanel.setBorder( new TitledBorder( "Define Contract"));
@@ -129,7 +129,6 @@ public class StratPanel extends StackPanel implements IHistoricalDataHandler, IR
 		m_chart.repaint();
 	}
 	
-	private boolean m_gotHist;
 	TreeMap<Long,Bar> m_map = new TreeMap<Long,Bar>();
 	
 	@Override public void historicalData(Bar bar, boolean hasGaps) {
@@ -144,7 +143,6 @@ public class StratPanel extends StackPanel implements IHistoricalDataHandler, IR
 	}
 
 	@Override public void historicalDataEnd() {
-		m_gotHist = true;
 		m_chart.repaint();
 	}
 

@@ -5,6 +5,7 @@ package apidemo;
 
 import static com.ib.controller.Formats.fmt;
 import static com.ib.controller.Formats.fmtPct;
+import static com.ib.controller.Formats.*;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ class TopModel extends AbstractTableModel {
 	}
 	
 	@Override public int getColumnCount() {
-		return 8;
+		return 9;
 	}
 	
 	@Override public String getColumnName(int col) {
@@ -56,8 +57,9 @@ class TopModel extends AbstractTableModel {
 			case 3: return "Ask";
 			case 4: return "Ask Size";
 			case 5: return "Last";
-			case 6: return "Change";
-			case 7: return "Volume";
+			case 6: return "Time";
+			case 7: return "Change";
+			case 8: return "Volume";
 			default: return null;
 		}
 	}
@@ -71,8 +73,9 @@ class TopModel extends AbstractTableModel {
 			case 3: return fmt( row.m_ask);
 			case 4: return row.m_askSize;
 			case 5: return fmt( row.m_last);
-			case 6: return row.change();
-			case 7: return Formats.fmt0( row.m_volume);
+			case 6: return fmtTime( row.m_lastTime);
+			case 7: return row.change();
+			case 8: return Formats.fmt0( row.m_volume);
 			default: return null;
 		}
 	}
@@ -93,6 +96,7 @@ class TopModel extends AbstractTableModel {
 		double m_bid;
 		double m_ask;
 		double m_last;
+		long m_lastTime;
 		int m_bidSize;
 		int m_askSize;
 		double m_close;
@@ -139,6 +143,14 @@ class TopModel extends AbstractTableModel {
 					break;
 			}
 			m_model.fireTableDataChanged();
+		}
+		
+		@Override public void tickString(NewTickType tickType, String value) {
+			switch( tickType) {
+				case LAST_TIMESTAMP:
+					m_lastTime = Long.parseLong( value) * 1000;
+					break;
+			}
 		}
 		
 		@Override public void marketDataType(MktDataType marketDataType) {
