@@ -116,8 +116,9 @@ namespace IB {
 //      can receive position, positionEnd, accountSummary and accountSummaryEnd
 // 61 = can receive multiplier in openOrder
 //      can receive tradingClass in openOrder, updatePortfolio, execDetails and position
+// 62 = can receive avgCost in position message
 
-const int CLIENT_VERSION    = 61;
+const int CLIENT_VERSION    = 62;
 const int SERVER_VERSION    = 38;
 
 // outgoing msg id's
@@ -3676,6 +3677,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				int version;
 				IBString account;
 				int position;
+				double avgCost = 0;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( account);
@@ -3697,8 +3699,11 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				}
 
 				DECODE_FIELD( position);
+				if (version >= 3) {
+					DECODE_FIELD( avgCost);
+				}
 
-				m_pEWrapper->position( account, contract, position);
+				m_pEWrapper->position( account, contract, position, avgCost);
 				break;
 			}
 
