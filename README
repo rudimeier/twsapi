@@ -24,7 +24,7 @@ Installation
  GNU gcc/g++ and Intel icc/icpc on various Linux distros, MacOSX and
  Windows/Cygwin. Native Windows/Mingw is also supported.
 
- When building from git checkout you need the autotools and don't forget to
+ When building from git checkout you need both autotools and libtool.  Also, Don't forget to
  type "autoreconf -vfi" first.
 
  ./configure
