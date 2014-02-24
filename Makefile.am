@@ -18,7 +18,7 @@ dist_doc_DATA =
 dist_doc_DATA += API_VersionNum.txt
 dist_doc_DATA += ChangeLog
 dist_doc_DATA += ChangeLog-IB
-dist_doc_DATA += README
+dist_doc_DATA += README.md
 
 EXTRA_DIST =
 EXTRA_DIST += @PACKAGE@.spec
