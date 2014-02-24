@@ -57,7 +57,7 @@ Changes of original IB API
 Here I point out some of the most important things about our modified TWS API.
 (This documentation may not be entirely complete.)
 
-__Improvements:__
+**Improvements:**
  - Comfortable `autotools` build chain and `pkg-config` support to make developers
    happy.
  - Generally the socket error handling is stable and reliable now. Error message
@@ -73,7 +73,7 @@ __Improvements:__
 Below are some details about the improved reliability of the API interface functions
 and callbacks.
 
-__eConnect():__
+**eConnect():**
  1. It's blocking and returns either connected or disconnected.
  2. It may callback informative error messages only. No more checking of
     regular messages.
@@ -86,14 +86,14 @@ __eConnect():__
     fore sure.
 
 
-__onReceive():__
+**onReceive():**
  1. Any callback (except `connectionClosed()`) will be fired in state connected,
     even if we are going to be disconnected.
  2. Before `connectionClosed()` is fired we will get a `SOCKET_EXCEPTION`
     callback still in state connected.
 
 
-__all other req*() functions:__
+**all other req*() functions:**
  1. If called while disconnected then it sends a `NOT_CONNECTED` callback (we
     could have known before).
  2. On error it sends a `SOCKET_EXCEPTION` (still in state connected) and
@@ -102,22 +102,22 @@ __all other req*() functions:__
 
 
 
-__Thus we know about callbacks:__
+**Thus we know about callbacks:**
  1. Within `connectionClosed()` we are disconnected for sure.
  2. Within `error()` we could be disconnected only if code is `CONNECT_FAIL`,
     `UPDATE_TWS` or `NOT_CONNECTED`.
  3. In any other case callbacks will be received in state connected.
 
 
-__TODO__: In opposite to the statements above `SOCKET_EXCEPTION` may still be fired in
+**TODO:** In opposite to the statements above `SOCKET_EXCEPTION` may still be fired in
       state connected if `onReceive()` or `onSend()` are called while disconnected
       (we could have known before). To be safe we could return early and send
       `NOT_CONNECTED`.
 
 
-_API internal implementation notes:_
+*API internal implementation notes:*
 
-__bufferedRead()__
+**bufferedRead():**
  1. Behaves like `::recv()` regarding errno and return value:
       -1: error, errno set
        0: EOF, disconnectd
