@@ -140,4 +140,4 @@ Contact Information
 -------------------
 
   If you have questions, bug reports, patches etc., contact
-  Ruediger Meier <sweet_f_a@gmx.de> (in English or German).
+  Ruediger Meier \<sweet_f_a@gmx.de> (in English or German).
