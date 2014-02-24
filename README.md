@@ -24,8 +24,8 @@ Installation
  GNU gcc/g++ and Intel icc/icpc on various Linux distros, MacOSX and
  Windows/Cygwin. Native Windows/Mingw is also supported.
 
- When building from git checkout you need both autotools and libtool.  Also, Don't forget to
- type `autoreconf -vfi` first.
+ When building from git checkout you need both autotools and libtool.  Also,
+ don't forget to type `autoreconf -vfi` first.
 
 ```bash
  ./configure
@@ -58,8 +58,8 @@ Here I point out some of the most important things about our modified TWS API.
 (This documentation may not be entirely complete.)
 
 **Improvements:**
- - Comfortable `autotools` build chain and `pkg-config` support to make developers
-   happy.
+ - Comfortable `autotools` build chain and `pkg-config` support to make
+   developers happy.
  - Generally the socket error handling is stable and reliable now. Error message
    callbacks with code `SOCKET_EXCEPTION` are using standard message strings
    (errno/strerror).
@@ -70,8 +70,8 @@ Here I point out some of the most important things about our modified TWS API.
  - Source compatibility between API updates.
 
 
-Below are some details about the improved reliability of the API interface functions
-and callbacks.
+Below are some details about the improved reliability of the API interface
+functions and callbacks.
 
 **eConnect():**
  1. It's blocking and returns either connected or disconnected.
@@ -109,10 +109,10 @@ and callbacks.
  3. In any other case callbacks will be received in state connected.
 
 
-**TODO:** In opposite to the statements above `SOCKET_EXCEPTION` may still be fired in
-      state connected if `onReceive()` or `onSend()` are called while disconnected
-      (we could have known before). To be safe we could return early and send
-      `NOT_CONNECTED`.
+**TODO:** In opposite to the statements above `SOCKET_EXCEPTION` may still be
+ fired in state connected if `onReceive()` or `onSend()` are called while
+ disconnected (we could have known before). To be safe we could return early and
+ send `NOT_CONNECTED`.
 
 
 *API internal implementation notes:*
