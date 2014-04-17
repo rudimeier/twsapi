@@ -100,6 +100,10 @@ public:
 	void positionEnd();
 	void accountSummary( int reqId, const IBString& account, const IBString& tag, const IBString& value, const IBString& curency);
 	void accountSummaryEnd( int reqId);
+	void verifyMessageAPI( const IBString& apiData);
+	void verifyCompleted( bool isSuccessful, const IBString& errorText);
+	void displayGroupList( int reqId, const IBString& groups);
+	void displayGroupUpdated( int reqId, const IBString& contractInfo);
 
 private:
 

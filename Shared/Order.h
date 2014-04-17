@@ -262,6 +262,8 @@ struct Order
 
 	OrderComboLegListSPtr orderComboLegs;
 
+	TagValueListSPtr orderMiscOptions;
+
 public:
 
 	// Helpers

@@ -131,6 +131,10 @@ public:
    virtual void positionEnd() = 0;
    virtual void accountSummary( int reqId, const IBString& account, const IBString& tag, const IBString& value, const IBString& curency) = 0;
    virtual void accountSummaryEnd( int reqId) = 0;
+   virtual void verifyMessageAPI( const IBString& apiData) = 0;
+   virtual void verifyCompleted( bool isSuccessful, const IBString& errorText) = 0;
+   virtual void displayGroupList( int reqId, const IBString& groups) = 0;
+   virtual void displayGroupUpdated( int reqId, const IBString& contractInfo) = 0;
 };
 
 
