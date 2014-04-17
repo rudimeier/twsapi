@@ -35,6 +35,7 @@
 	#include <errno.h>
 	#include <sys/select.h>
 	#include <sys/fcntl.h>
+	#include <unistd.h>
 
 	// helpers
 	inline bool SocketsInit() { return true; };

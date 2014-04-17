@@ -199,7 +199,8 @@ const int MIN_SERVER_VER_POSITIONS              = 67;
 const int MIN_SERVER_VER_ACCOUNT_SUMMARY        = 67;
 const int MIN_SERVER_VER_TRADING_CLASS          = 68;
 const int MIN_SERVER_VER_SCALE_TABLE            = 69;
-const int MIN_SERVER_VER_LINKING            = 70;
+const int MIN_SERVER_VER_LINKING                = 70;
+const int MIN_SERVER_VER_ALGO_ID                = 71;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -1624,9 +1625,17 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		}
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_ALGO_ID) {
+		if( !IsEmpty(order.algoId)) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+					"  It does not support algoId parameter");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 42;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 43;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1934,6 +1943,11 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 				}
 			}
 		}
+
+	}
+
+	if( m_serverVersion >= MIN_SERVER_VER_ALGO_ID) {
+		ENCODE_FIELD( order.algoId);
 	}
 
 	ENCODE_FIELD( order.whatIf); // srv v36 and above

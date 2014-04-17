@@ -250,6 +250,8 @@ struct Order
 	TagValueListSPtr algoParams;
 	TagValueListSPtr smartComboRoutingParams;
 
+	IBString algoId;
+
 	// What-if
 	bool     whatIf;
 
