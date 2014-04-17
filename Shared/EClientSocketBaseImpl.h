@@ -190,6 +190,7 @@ const int MIN_SERVER_VER_DELTA_NEUTRAL_OPEN_CLOSE = 66;
 const int MIN_SERVER_VER_POSITIONS              = 67;
 const int MIN_SERVER_VER_ACCOUNT_SUMMARY        = 67;
 const int MIN_SERVER_VER_TRADING_CLASS          = 68;
+const int MIN_SERVER_VER_SCALE_TABLE            = 69;
 
 // incoming msg id's
 const int TICK_PRICE                = 1;
@@ -1519,9 +1520,17 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		}
 	}
 
+	if (m_serverVersion < MIN_SERVER_VER_SCALE_TABLE) {
+		if( !IsEmpty(order.scaleTable) || !IsEmpty(order.activeStartTime) || !IsEmpty(order.activeStopTime)) {
+			m_pEWrapper->error( id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+					"  It does not support scaleTable, activeStartTime and activeStopTime parameters");
+			return;
+		}
+	}
+
 	std::ostringstream msg;
 
-	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 40;
+	int VERSION = (m_serverVersion < MIN_SERVER_VER_NOT_HELD) ? 27 : 41;
 
 	// send place order msg
 	ENCODE_FIELD( PLACE_ORDER);
@@ -1772,6 +1781,12 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 		ENCODE_FIELD_MAX( order.scaleInitPosition);
 		ENCODE_FIELD_MAX( order.scaleInitFillQty);
 		ENCODE_FIELD( order.scaleRandomPercent);
+	}
+
+	if( m_serverVersion >= MIN_SERVER_VER_SCALE_TABLE) {
+		ENCODE_FIELD( order.scaleTable);
+		ENCODE_FIELD( order.activeStartTime);
+		ENCODE_FIELD( order.activeStopTime);
 	}
 
 	// HEDGE orders
