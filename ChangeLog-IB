@@ -3,6 +3,13 @@ Original IB API Release Notes taken from their homepage
 http://www.interactivebrokers.com
 =======================================================
 
+Build 9.69, September 9, 2013
+
+  * New Java API Sample Client
+  * Support for Mini Options Added to DDE for Excel API
+  * Support for Mini Options Added to Active X, Java and C++ APIs
+  * New Methods for Advisors
+
 Build 9.68, October 8, 2012
 
   * Support for Hedged Volatility Orders

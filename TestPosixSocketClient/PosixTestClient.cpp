@@ -1,3 +1,6 @@
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+ * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
+
 #include "PosixTestClient.h"
 
 #include "EPosixClientSocket.h"
@@ -283,5 +286,9 @@ void PosixTestClient::deltaNeutralValidation(int reqId, const UnderComp& underCo
 void PosixTestClient::tickSnapshotEnd(int reqId) {}
 void PosixTestClient::marketDataType(TickerId reqId, int marketDataType) {}
 void PosixTestClient::commissionReport( const CommissionReport& commissionReport) {}
+void PosixTestClient::position( const IBString& account, const Contract& contract, int position, double avgCost) {}
+void PosixTestClient::positionEnd() {}
+void PosixTestClient::accountSummary( int reqId, const IBString& account, const IBString& tag, const IBString& value, const IBString& curency) {}
+void PosixTestClient::accountSummaryEnd( int reqId) {}
 
 }
