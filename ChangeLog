@@ -4,7 +4,7 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 
 
-0.6.0 - not yet released  ------------------------------------------------------
+0.6.0 - 2014-12-14  ------------------------------------------------------------
 
 Update to IB API 9.69
   - update to IB API 9.69, see ChangeLog-IB for more details
