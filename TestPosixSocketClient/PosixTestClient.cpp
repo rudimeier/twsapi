@@ -8,6 +8,8 @@
 #include "Contract.h"
 #include "Order.h"
 
+#include <stdio.h>
+
 namespace IB {
 
 const int PING_DEADLINE = 2; // seconds
@@ -32,7 +34,7 @@ bool PosixTestClient::connect(const char *host, unsigned int port, int clientId)
 	// trying to connect
 	printf( "Connecting to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
 
-	bool bRes = m_pClient->eConnect( host, port, clientId);
+	bool bRes = m_pClient->eConnect( host, port, clientId, /* extraAuth */ false);
 
 	if (bRes) {
 		printf( "Connected to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);
@@ -108,7 +110,7 @@ void PosixTestClient::processMessages()
 		if( !m_pClient->isOutBufferEmpty())
 			FD_SET( m_pClient->fd(), &writeSet);
 
-		FD_CLR( m_pClient->fd(), &errorSet);
+		FD_SET( m_pClient->fd(), &errorSet);
 
 		int ret = select( m_pClient->fd() + 1, &readSet, &writeSet, &errorSet, &tval);
 
@@ -166,7 +168,7 @@ void PosixTestClient::placeOrder()
 	Contract contract;
 	Order order;
 
-	contract.symbol = "MSFT";
+	contract.symbol = "IBM";
 	contract.secType = "STK";
 	contract.exchange = "SMART";
 	contract.currency = "USD";
@@ -290,5 +292,9 @@ void PosixTestClient::position( const IBString& account, const Contract& contrac
 void PosixTestClient::positionEnd() {}
 void PosixTestClient::accountSummary( int reqId, const IBString& account, const IBString& tag, const IBString& value, const IBString& curency) {}
 void PosixTestClient::accountSummaryEnd( int reqId) {}
+void PosixTestClient::verifyMessageAPI( const IBString& apiData) {}
+void PosixTestClient::verifyCompleted( bool isSuccessful, const IBString& errorText) {}
+void PosixTestClient::displayGroupList( int reqId, const IBString& groups) {}
+void PosixTestClient::displayGroupUpdated( int reqId, const IBString& contractInfo) {}
 
 }

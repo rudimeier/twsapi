@@ -37,6 +37,7 @@
 	#include <errno.h>
 	#include <sys/select.h>
 	#include <sys/fcntl.h>
+	#include <unistd.h>
 
 	namespace IB {
 	// helpers

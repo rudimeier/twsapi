@@ -22,7 +22,7 @@ EPosixClientSocket::~EPosixClientSocket()
 {
 }
 
-bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId)
+bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId, bool extraAuth)
 {
 	// reset errno
 	errno = 0;
@@ -65,6 +65,8 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 	// try to connect
 	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
 		// error connecting
+		SocketClose( m_fd);
+		m_fd = -1;
 		// uninitialize Winsock DLL (only for Windows)
 		SocketsDestroy();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
@@ -73,6 +75,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
 
 	// set client id
 	setClientId( clientId);
+	setExtraAuth( extraAuth);
 
 	onConnectBase();
 

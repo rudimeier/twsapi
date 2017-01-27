@@ -8,6 +8,8 @@
 # include <unistd.h>
 #endif
 
+#include <stdio.h>
+
 #include "PosixTestClient.h"
 
 const unsigned MAX_ATTEMPTS = 50;
