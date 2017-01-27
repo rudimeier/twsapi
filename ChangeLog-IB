@@ -3,6 +3,14 @@ Original IB API Release Notes taken from their homepage
 http://www.interactivebrokers.com
 =======================================================
 
+Build 9.71, November 24, 2014
+
+  * Choose to View Native Index Prices
+  * New API Requests and Callbacks
+  * New Parameters
+  * ActiveX Component Migration
+  * DDE for Excel API Update - "set" Keyword
+
 Build 9.69, September 9, 2013
 
   * New Java API Sample Client

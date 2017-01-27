@@ -18,8 +18,8 @@ public:
 	~EPosixClientSocket();
 
 	// override virtual funcs from EClient
-	bool eConnect( const char *host, unsigned int port, int clientId=0);
-	bool eConnect2( const char *host, unsigned int port, int clientId=0,
+	bool eConnect( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
+	bool eConnect2( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false,
 		int family=0 );
 	void eDisconnect();
 

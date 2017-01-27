@@ -13,6 +13,7 @@
 
 #include <time.h>
 #include <sys/time.h>
+#include <stdio.h>
 
 #if defined __INTEL_COMPILER
 # pragma warning (disable:869)
@@ -166,7 +167,7 @@ void PosixTestClient::placeOrder()
 	Contract contract;
 	Order order;
 
-	contract.symbol = "MSFT";
+	contract.symbol = "IBM";
 	contract.secType = "STK";
 	contract.exchange = "SMART";
 	contract.currency = "USD";
@@ -290,5 +291,9 @@ void PosixTestClient::position( const IBString& account, const Contract& contrac
 void PosixTestClient::positionEnd() {}
 void PosixTestClient::accountSummary( int reqId, const IBString& account, const IBString& tag, const IBString& value, const IBString& curency) {}
 void PosixTestClient::accountSummaryEnd( int reqId) {}
+void PosixTestClient::verifyMessageAPI( const IBString& apiData) {}
+void PosixTestClient::verifyCompleted( bool isSuccessful, const IBString& errorText) {}
+void PosixTestClient::displayGroupList( int reqId, const IBString& groups) {}
+void PosixTestClient::displayGroupUpdated( int reqId, const IBString& contractInfo) {}
 
 }
