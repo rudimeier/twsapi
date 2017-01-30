@@ -52,7 +52,7 @@ public:
 	int serverVersion();
 	IBString TwsConnectionTime();
 	void reqMktData(TickerId id, const Contract &contract,
-		const IBString &genericTicks, bool snapshot, const TagValueListSPtr& mktDataOptions);
+		const IBString &genericTicks, bool snapshot, const TagValueListSPtr& mktDataOptions=TagValueListSPtr(NULL));
 	void cancelMktData(TickerId id);
 	void placeOrder(OrderId id, const Contract &contract, const Order &order);
 	void cancelOrder(OrderId id) ;
@@ -76,7 +76,7 @@ public:
 	void reqHistoricalData( TickerId id, const Contract &contract,
 		const IBString &endDateTime, const IBString &durationStr,
 		const IBString & barSizeSetting, const IBString &whatToShow,
-		int useRTH, int formatDate, const TagValueListSPtr& chartOptions);
+		int useRTH, int formatDate, const TagValueListSPtr& chartOptions=TagValueListSPtr(NULL));
 	void exerciseOptions(TickerId tickerId, const Contract &contract,
 		int exerciseAction, int exerciseQuantity,
 		const IBString &account, int override);

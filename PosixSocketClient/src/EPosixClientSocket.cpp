@@ -130,7 +130,7 @@ EPosixClientSocket::~EPosixClientSocket()
 bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId, bool extraAuth)
 {
 	/* after test period we'll change the default to AF_UNSPEC */
-	return eConnect2( host, port, clientId, extraAuth, AF_INET );
+	return eConnect2( host, port, clientId, AF_INET, extraAuth );
 }
 
 /**
@@ -140,7 +140,7 @@ bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clie
  * is pure virtual declared in EClientSocketBase. Thanks C++ design crap ...
  */
 bool EPosixClientSocket::eConnect2( const char *host, unsigned int port,
-	int clientId, bool extraAuth, int family )
+	int clientId, int family, bool extraAuth )
 {
 	// already connected?
 	if( m_fd >= 0) {
