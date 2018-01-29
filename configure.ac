@@ -3,7 +3,7 @@ AC_INIT([twsapi], [0.7.0], [http://www.ga-group.nl/])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_HEADER([./config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([PosixSocketClient/])
+AC_CONFIG_SRCDIR([cpp/client/Contract.h])
 
 AM_INIT_AUTOMAKE([-Wall foreign dist-xz no-dist-gzip subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -19,6 +19,7 @@ AC_PROG_CXX_C_O
 
 AC_LANG([C++])
 AX_COMPILER_VENDOR
+AX_CXX_COMPILE_STDCXX([11],[noext])
 
 # enable some warnings
 AX_CHECK_COMPILE_FLAG([-Wall],[warnflags="-Wall"])
@@ -27,7 +28,7 @@ AX_CHECK_COMPILE_FLAG([-Wextra],[warnflags="$warnflags -Wextra"])
 if test "$ax_cv_cxx_compiler_vendor" = "intel"; then
     AX_CHECK_COMPILE_FLAG([-diag-disable=11074],[warnflags="$warnflags -diag-disable=11074,11076"])
 fi
-DEFAULT_CXXFLAGS="$warnflags"
+DEFAULT_CXXFLAGS="-pthread $warnflags"
 AC_SUBST([DEFAULT_CXXFLAGS])
 
 
@@ -72,8 +73,7 @@ AC_SUBST([headerdir])
 
 ## output
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_FILES([PosixSocketClient/Makefile])
-AC_CONFIG_FILES([TestPosixSocketClient/Makefile])
+AC_CONFIG_FILES([cpp/Makefile])
 AC_CONFIG_FILES([twsapi.pc])
 AC_CONFIG_FILES([twsapi.spec])
 AC_OUTPUT

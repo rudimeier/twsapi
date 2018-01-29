@@ -17,6 +17,7 @@ micro_ver="-1"
 pack_ver=""
 ib_major="-1"
 ib_minor="-1"
+ib_micro="-1"
 ib_ver=""
 ib_client_version=""
 
@@ -53,18 +54,20 @@ API_Version="none"
 . "${api_version_txt}" || exit 1
 ib_ver="${API_Version}"
 
-version_cmd="`sed -n -e 's/^API_Version=\([^\.]*\)\.\([^\.]*\)$/ib_major="\1";ib_minor="\2"/p' "${api_version_txt}"`"
+version_cmd="`sed -n -e 's/^API_Version=\([^\.]*\)\.\([^\.]*\)\.\([^\.]*\)$/ib_major="\1";ib_minor="\2";ib_micro="\3"/p' "${api_version_txt}"`"
 test "${debug}" != "0" && echo "eval ${version_cmd}" 1>&2
 eval "${version_cmd}" || exit 1
 
 fail="0"
 test "${ib_major}" -ge "0" || fail=1
 test "${ib_minor}" -ge "0" || fail=1
-test "${ib_ver}" = "${ib_major}.${ib_minor}" || fail=1
+test "${ib_micro}" -ge "0" || fail=1
+test "${ib_ver}" = "${ib_major}.${ib_minor}.${ib_micro}" || fail=1
 
 if test ${fail} != "0" -o "${debug}" != "0" ; then
         echo "ib_major: '${ib_major}'" 1>&2
         echo "ib_minor: '${ib_minor}'" 1>&2
+        echo "ib_minor: '${ib_micro}'" 1>&2
         echo "ib_ver: '${ib_ver}'" 1>&2
 fi
 
@@ -95,7 +98,7 @@ TWSAPI_VERSION="${pack_ver}"
 TWSAPI_VERSION_NUMBER="`expr "${major_ver}" \* 10000 + "${minor_ver}" \* 100 + "${micro_ver}"`"
 
 TWSAPI_IB_VERSION="${ib_ver}"
-TWSAPI_IB_VERSION_NUMBER="`expr "${ib_major}" \* 100 + "${ib_minor}"`"
+TWSAPI_IB_VERSION_NUMBER="`expr "${ib_major}" \* 10000 + "${ib_minor}" \* 100 + "${ib_micro}"`"
 
 TWSAPI_IB_CLIENT_VERSION="${ib_client_version}"
 

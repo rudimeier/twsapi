@@ -9,8 +9,11 @@
 *.kdevses
 Makefile
 Doxyfile
+
 TestPosixSocketClient/TestPosixSocketClient
 twsapi_config.h
+testclient
+testclientssl
 
 ## autotools
 .deps/
