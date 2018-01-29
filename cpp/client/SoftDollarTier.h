@@ -1,5 +1,7 @@
 #pragma once
 
+#include "StdAfx.h"
+
 class TWSAPIDLLEXP SoftDollarTier
 {
 	std::string m_name, m_val, m_displayName;
