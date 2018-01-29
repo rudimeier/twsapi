@@ -1,12 +1,13 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
+#pragma once
 #ifndef tagvalue_def
 #define tagvalue_def
 
 #include "shared_ptr.h"
-#include "IBString.h"
 
+#include <string>
 #include <vector>
 
 struct TagValue
@@ -20,9 +21,9 @@ struct TagValue
 	std::string value;
 };
 
-typedef shared_ptr<TagValue> TagValueSPtr;
+typedef ibapi::shared_ptr<TagValue> TagValueSPtr;
 typedef std::vector<TagValueSPtr> TagValueList;
-typedef shared_ptr<TagValueList> TagValueListSPtr;
+typedef ibapi::shared_ptr<TagValueList> TagValueListSPtr;
 
 #endif
 

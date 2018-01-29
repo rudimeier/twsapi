@@ -1,6 +1,7 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
+#pragma once
 #ifndef contract_def
 #define contract_def
 
@@ -37,16 +38,16 @@ struct ComboLeg
 	std::string	designatedLocation;
 	int			exemptCode;
 
-	bool operator==( const ComboLeg &other) const
+	bool operator==( const ComboLeg& other) const
 	{
 		return (conId == other.conId &&
 			ratio == other.ratio &&
 			openClose == other.openClose &&
 			shortSaleSlot == other.shortSaleSlot &&
-			(Compare(action, other.action) == 0) &&
-			(Compare(exchange, other.exchange) == 0) &&
-			(Compare(designatedLocation, other.designatedLocation) == 0) &&
-			exemptCode == other.exemptCode);
+			exemptCode == other.exemptCode &&
+			action == other.action &&
+			exchange == other.exchange &&
+			designatedLocation == other.designatedLocation);
 	}
 };
 
@@ -63,7 +64,7 @@ struct UnderComp
 	double	price;
 };
 
-typedef shared_ptr<ComboLeg> ComboLegSPtr;
+typedef ibapi::shared_ptr<ComboLeg> ComboLegSPtr;
 
 struct Contract
 {
@@ -79,7 +80,7 @@ struct Contract
 	long		conId;
 	std::string	symbol;
 	std::string	secType;
-	std::string	expiry;
+	std::string	lastTradeDateOrContractMonth;
 	double		strike;
 	std::string	right;
 	std::string	multiplier;
@@ -97,7 +98,7 @@ struct Contract
 
 	// combo legs
 	typedef std::vector<ComboLegSPtr> ComboLegList;
-	typedef shared_ptr<ComboLegList> ComboLegListSPtr;
+	typedef ibapi::shared_ptr<ComboLegList> ComboLegListSPtr;
 
 	ComboLegListSPtr comboLegs;
 

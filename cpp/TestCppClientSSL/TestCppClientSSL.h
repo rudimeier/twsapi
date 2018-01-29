@@ -1,14 +1,17 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
- * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
+﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+* and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
-#ifndef posixtestclient_h__INCLUDED
-#define posixtestclient_h__INCLUDED
+#pragma once
+#ifndef testcppclient_h__INCLUDED
+#define testcppclient_h__INCLUDED
 
 #include "EWrapper.h"
+#include "EReaderOSSignal.h"
+#include "../ssl/EReaderSSL.h"
 
 #include <memory>
 
-class EPosixClientSocket;
+class EClientSocketSSL;
 
 enum State {
 	ST_CONNECT,
@@ -22,13 +25,14 @@ enum State {
 };
 
 
-class PosixTestClient : public EWrapper
+class TestCppClient : public EWrapper
 {
 public:
 
-	PosixTestClient();
-	~PosixTestClient();
+	TestCppClient();
+	~TestCppClient();
 
+	void setConnectOptions(const std::string&);
 	void processMessages();
 
 public:
@@ -52,17 +56,17 @@ public:
 	void tickGeneric(TickerId tickerId, TickType tickType, double value);
 	void tickString(TickerId tickerId, TickType tickType, const std::string& value);
 	void tickEFP(TickerId tickerId, TickType tickType, double basisPoints, const std::string& formattedBasisPoints,
-		double totalDividends, int holdDays, const std::string& futureExpiry, double dividendImpact, double dividendsToExpiry);
-	void orderStatus(OrderId orderId, const std::string &status, int filled,
-		int remaining, double avgFillPrice, int permId, int parentId,
+		double totalDividends, int holdDays, const std::string& futureLastTradeDate, double dividendImpact, double dividendsToLastTradeDate);
+	void orderStatus(OrderId orderId, const std::string& status, double filled,
+		double remaining, double avgFillPrice, int permId, int parentId,
 		double lastFillPrice, int clientId, const std::string& whyHeld);
 	void openOrder(OrderId orderId, const Contract&, const Order&, const OrderState&);
 	void openOrderEnd();
-	void winError(const std::string &str, int lastError);
+	void winError(const std::string& str, int lastError);
 	void connectionClosed();
 	void updateAccountValue(const std::string& key, const std::string& val,
 		const std::string& currency, const std::string& accountName);
-	void updatePortfolio(const Contract& contract, int position,
+	void updatePortfolio(const Contract& contract, double position,
 		double marketPrice, double marketValue, double averageCost,
 		double unrealizedPNL, double realizedPNL, const std::string& accountName);
 	void updateAccountTime(const std::string& timeStamp);
@@ -83,10 +87,10 @@ public:
 	void receiveFA(faDataType pFaDataType, const std::string& cxml);
 	void historicalData(TickerId reqId, const std::string& date, double open, double high,
 		double low, double close, int volume, int barCount, double WAP, int hasGaps);
-	void scannerParameters(const std::string &xml);
-	void scannerData(int reqId, int rank, const ContractDetails &contractDetails,
-		const std::string &distance, const std::string &benchmark, const std::string &projection,
-		const std::string &legsStr);
+	void scannerParameters(const std::string& xml);
+	void scannerData(int reqId, int rank, const ContractDetails& contractDetails,
+		const std::string& distance, const std::string& benchmark, const std::string& projection,
+		const std::string& legsStr);
 	void scannerDataEnd(int reqId);
 	void realtimeBar(TickerId reqId, long time, double open, double high, double low, double close,
 		long volume, double wap, int count);
@@ -96,22 +100,34 @@ public:
 	void tickSnapshotEnd(int reqId);
 	void marketDataType(TickerId reqId, int marketDataType);
 	void commissionReport( const CommissionReport& commissionReport);
-	void position( const std::string& account, const Contract& contract, int position, double avgCost);
+	void position( const std::string& account, const Contract& contract, double position, double avgCost);
 	void positionEnd();
 	void accountSummary( int reqId, const std::string& account, const std::string& tag, const std::string& value, const std::string& curency);
 	void accountSummaryEnd( int reqId);
 	void verifyMessageAPI( const std::string& apiData);
 	void verifyCompleted( bool isSuccessful, const std::string& errorText);
+	void verifyAndAuthMessageAPI( const std::string& apiData, const std::string& xyzChallenge);
+	void verifyAndAuthCompleted( bool isSuccessful, const std::string& errorText);
 	void displayGroupList( int reqId, const std::string& groups);
 	void displayGroupUpdated( int reqId, const std::string& contractInfo);
+    void connectAck();
+	void positionMulti( int reqId, const std::string& account,const std::string& modelCode, const Contract& contract, double pos, double avgCost);
+	void positionMultiEnd( int reqId);
+	void accountUpdateMulti( int reqId, const std::string& account, const std::string& modelCode, const std::string& key, const std::string& value, const std::string& currency);
+	void accountUpdateMultiEnd( int reqId);
+    void securityDefinitionOptionalParameter(int reqId, int underlyingConId, const std::string& tradingClass, const std::string& multiplier, std::set<std::string> expirations, std::set<double> strikes);
+    void securityDefinitionOptionalParameterEnd(int reqId);
 
 private:
 
-	std::auto_ptr<EPosixClientSocket> m_pClient;
+	EClientSocketSSL * const m_pClient;
 	State m_state;
 	time_t m_sleepDeadline;
 
 	OrderId m_orderId;
+	EReaderSSL *m_pReader;
+	EReaderOSSignal m_osSignal;
+    bool m_extraAuth;
 };
 
 #endif

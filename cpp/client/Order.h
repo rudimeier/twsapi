@@ -1,10 +1,13 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
+#pragma once
 #ifndef order_def
 #define order_def
 
 #include "TagValue.h"
+#include "OrderCondition.h"
+#include "SoftDollarTier.h"
 
 #include <float.h>
 #include <limits.h>
@@ -30,17 +33,18 @@ struct OrderComboLeg
 
 	double price;
 
-	bool operator==( const OrderComboLeg &other) const
+	bool operator==( const OrderComboLeg& other) const
 	{
 		return (price == other.price);
 	}
 };
 
-typedef shared_ptr<OrderComboLeg> OrderComboLegSPtr;
+typedef ibapi::shared_ptr<OrderComboLeg> OrderComboLegSPtr;
 
 struct Order
 {
-	Order()
+	Order() :
+		softDollarTier("", "", "")
 	{
 		// order identifier
 		orderId  = 0;
@@ -94,6 +98,9 @@ struct Order
 		stockRangeLower = UNSET_DOUBLE;
 		stockRangeUpper = UNSET_DOUBLE;
 
+        randomizePrice = false;
+        randomizeSize = false;
+
 		// VOLATILITY ORDERS ONLY
 		volatility            = UNSET_DOUBLE;
 		volatilityType        = UNSET_INTEGER;     // 1=daily, 2=annual
@@ -132,6 +139,14 @@ struct Order
 
 		// Not Held
 		notHeld = false;
+		solicited = false;
+
+		triggerPrice = UNSET_DOUBLE;
+		adjustedStopPrice = UNSET_DOUBLE;
+		adjustedStopLimitPrice = UNSET_DOUBLE;
+		adjustedTrailingAmount = UNSET_DOUBLE;
+		lmtPriceOffset = UNSET_DOUBLE;
+		extOperator = "";
 	}
 
 	// order identifier
@@ -141,7 +156,7 @@ struct Order
 
 	// main order fields
 	std::string action;
-	long     totalQuantity;
+	double     totalQuantity;
 	std::string orderType;
 	double   lmtPrice;
 	double   auxPrice;
@@ -201,6 +216,9 @@ struct Order
 	double   stockRangeLower;
 	double   stockRangeUpper;
 
+    bool randomizeSize;
+    bool randomizePrice;
+
 	// VOLATILITY ORDERS ONLY
 	double   volatility;
 	int      volatilityType;     // 1=daily, 2=annual
@@ -257,14 +275,41 @@ struct Order
 
 	// Not Held
 	bool     notHeld;
+	bool     solicited;
+
+	// models
+	std::string modelCode;
 
 	// order combo legs
 	typedef std::vector<OrderComboLegSPtr> OrderComboLegList;
-	typedef shared_ptr<OrderComboLegList> OrderComboLegListSPtr;
+	typedef ibapi::shared_ptr<OrderComboLegList> OrderComboLegListSPtr;
 
 	OrderComboLegListSPtr orderComboLegs;
 
 	TagValueListSPtr orderMiscOptions;
+
+	//VER PEG2BENCH fields:
+	int referenceContractId;
+	double peggedChangeAmount;
+	bool isPeggedChangeAmountDecrease;
+	double referenceChangeAmount;
+	std::string referenceExchangeId;
+	std::string adjustedOrderType;
+	double triggerPrice;
+	double adjustedStopPrice;
+	double adjustedStopLimitPrice;
+	double adjustedTrailingAmount;
+	int adjustableTrailingUnit;
+	double lmtPriceOffset;
+
+	std::vector<ibapi::shared_ptr<OrderCondition>> conditions;
+	bool conditionsCancelOrder;
+	bool conditionsIgnoreRth;
+
+	// ext operator
+	std::string extOperator;
+
+	SoftDollarTier softDollarTier;
 
 public:
 

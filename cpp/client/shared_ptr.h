@@ -1,6 +1,7 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
+#pragma once
 #ifndef shared_ptr_h_INCLUDED
 #define shared_ptr_h_INCLUDED
 
@@ -13,6 +14,9 @@
 // See "Handles and Exception Safety, Part 4: Tracking References without Counters"
 // by Andrew Koenig and Barbara E. Moo, Feb. 2003 C++ Users Journal
 //
+
+namespace ibapi {
+
 namespace shared_ptr_defs {
 
 class Use {
@@ -92,4 +96,11 @@ private:
    Use use_;
 };
 
+
+} //end of namespace ibapi
+
+
+#else
+//#include <memory>
+//using std::shared_ptr;
 #endif /* shared_ptr_h_INCLUDED */

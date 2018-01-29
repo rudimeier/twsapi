@@ -1,10 +1,10 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
+#pragma once
 #ifndef execution_def
 #define execution_def
 
-#include "IBString.h"
 
 struct Execution
 {
@@ -25,7 +25,7 @@ struct Execution
 	std::string	acctNumber;
 	std::string	exchange;
 	std::string	side;
-	int			shares;
+	double		shares;
 	double		price;
 	int			permId;
 	long		clientId;
@@ -36,6 +36,7 @@ struct Execution
 	std::string	orderRef;
 	std::string	evRule;
 	double		evMultiplier;
+	std::string modelCode;
 };
 
 struct ExecutionFilter
