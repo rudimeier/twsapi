@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
@@ -11,23 +11,17 @@
 #endif
 #endif
 
-
 EReaderOSSignal::EReaderOSSignal(unsigned long waitTimeout) throw (std::runtime_error)
 {
-    bool ok = false;
+    bool ok = true;
     m_waitTimeout = waitTimeout;
 #if defined(IB_POSIX)
-    int rc1 = pthread_mutex_init(&m_mutex, NULL);
-    int rc2 = pthread_cond_init(&m_evMsgs, NULL);
+    ok = ok && !pthread_mutex_init(&m_mutex, NULL);
+    ok = ok && !pthread_condattr_init(&m_condattr);
 #if defined(IBAPI_MONOTONIC_TIME)
-    pthread_condattr_t attr;
-    int rc3 = pthread_condattr_init(&attr);
-    int rc4 = pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
-    pthread_condattr_destroy(&attr);
-    ok = rc1 == 0 && rc2 == 0 && rc3 == 0 && rc4 == 0;
-#else
-    ok = rc1 == 0 && rc2 == 0;
+    ok = ok && !pthread_condattr_setclock(&m_condattr, CLOCK_MONOTONIC);
 #endif
+    ok = ok && !pthread_cond_init(&m_evMsgs, &m_condattr);
     open = false; 
 #elif defined(IB_WIN32)
 	m_evMsgs = CreateEvent(0, false, false, 0);
@@ -44,6 +38,7 @@ EReaderOSSignal::~EReaderOSSignal(void)
 {
 #if defined(IB_POSIX)
     pthread_cond_destroy(&m_evMsgs);
+    pthread_condattr_destroy(&m_condattr);
     pthread_mutex_destroy(&m_mutex);
 #elif defined(IB_WIN32)
 	CloseHandle(m_evMsgs);
