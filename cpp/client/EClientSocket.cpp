@@ -238,6 +238,7 @@ int EClientSocket::receive(char* buf, size_t sz)
 		return 0;
 
 	int nResult = ::recv( m_fd, buf, sz, 0);
+	TWS_DEBUG(1, "received: %s %d (tried %zu)", thread_str(), nResult, sz);
 
 	if( nResult == -1 && !handleSocketError()) {
 		return -1;
@@ -254,7 +255,7 @@ int EClientSocket::receive(char* buf, size_t sz)
 void EClientSocket::serverVersion(int version, const char *time) {
     m_serverVersion = version;
     m_TwsTime = time;
-
+	TWS_DEBUG(1, "xserverVersion %d", version);
     if( usingV100Plus() ? (m_serverVersion < MIN_CLIENT_VER || m_serverVersion > MAX_CLIENT_VER) : m_serverVersion < MIN_SERVER_VER_SUPPORTED ) {
         eDisconnect();
         getWrapper()->error( NO_VALID_ID, UNSUPPORTED_VERSION.code(), UNSUPPORTED_VERSION.msg());

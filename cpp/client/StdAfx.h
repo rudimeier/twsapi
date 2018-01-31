@@ -21,6 +21,17 @@
 
 #include <unistd.h> // defines _POSIX_THREADS, @see http://bit.ly/1pWJ8KQ#tag_13_80_03_02
 
+extern const char* thread_str();
+
+// debug verbosity 0...n
+#if ! defined tws_debug_level
+# define tws_debug_level 1
+#endif
+#define TWS_DEBUG( _level, _fmt, _msg... )        \
+	if( tws_debug_level >= _level ) {    \
+		fprintf (stderr, "TWS_DEBUG: " _fmt "\n" , ## _msg); \
+	}
+
 #if defined(_POSIX_THREADS) && (_POSIX_THREADS > 0)
     #include <pthread.h>
     #define IB_POSIX

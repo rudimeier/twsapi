@@ -61,6 +61,7 @@ int ESocket::send(const char* buf, size_t sz)
 		return 0;
 
 	int nResult = ::send( m_fd, buf, sz, 0);
+	TWS_DEBUG(1, "send %s %d", thread_str(), nResult);
 
 	if( nResult == -1) {
 		return -1;

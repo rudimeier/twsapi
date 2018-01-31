@@ -71,6 +71,7 @@ DWORD WINAPI EReader::readToQueueThread(LPVOID lpParam)
 void EReader::readToQueue() {
 	//EMessage *msg = 0;
 
+	TWS_DEBUG(1, "readToQueue start %s %d", thread_str(), errno);
 	while (m_isAlive) {
 		if (m_buf.size() == 0 && !processNonBlockingSelect() && m_pClientSocket->isSocketOK())
 			continue;
@@ -79,6 +80,7 @@ void EReader::readToQueue() {
 			break;
 	}
 
+	TWS_DEBUG(1, "readToQueue end %s %d", thread_str(), errno);
 	m_pClientSocket->handleSocketError();
 	m_pEReaderSignal->issueSignal(); //letting client know that socket was closed
 }
@@ -172,7 +174,6 @@ void EReader::onReceive() {
 	m_buf.resize(m_nMaxBufSize);
 	
 	int nRes = m_pClientSocket->receive(m_buf.data() + nOffset, m_buf.size() - nOffset);
-
 	if (nRes <= 0)
 		return;
 
