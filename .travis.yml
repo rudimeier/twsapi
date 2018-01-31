@@ -1,18 +1,48 @@
 language: cpp
 
+sudo: false
+
+git:
+  depth: 1500
+
+os:
+  - linux
+  - osx
+
 compiler:
   - gcc
+  - clang
+
+env:
+  - CONFOPTS=""
+
+matrix:
+  include:
+    ## make distcheck
+    - os: linux
+      compiler: gcc
+      env: DISTCHECK="yes"
+           CONFOPTS=""
+    # test old Ubuntu 12.04 and OSX for compatibility
+    - dist: precise
+      compiler: gcc
+      env: PRECISE="yes" CONFOPTS=""
+
+install:
+  - env | grep -v "encrypted" | LC_ALL=C sort
+  - lscpu || sysctl hw
+  - source ./.travis-functions.sh
+  - travis_have_sudo
 
 before_script:
+  - travis_before_script
 
-script: autoreconf -vfi && ./configure && make && make check
+script:
+  - travis_script
 
-## whitelist
 branches:
   only:
     - master
     - next
-
-notifications:
-  email:
-    - sweet_f_a@gmx.de
+    - /^travis.*/
+    - /^tmp.*/
