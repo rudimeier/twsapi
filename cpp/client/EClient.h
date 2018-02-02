@@ -199,7 +199,6 @@ struct ScannerSubscription;
 struct ETransport;
 
 class EWrapper;
-typedef std::vector<char> BytesVec;
 
 
 class TWSAPIDLLEXP EClient
@@ -353,18 +352,6 @@ protected:
 	virtual bool closeAndSend(std::string msg, unsigned offset = 0) = 0;
 	virtual int bufferedSend(const std::string& msg);
 
-protected:
-	int bufferedRead();
-
-	// try to process connection request ack
-private:
-	// try to process single msg
-	int processMsgImpl(const char*& ptr, const char* endPtr);
-	int processMsg(const char*& ptr, const char* endPtr);
-
-	typedef int (EClient::*messageHandler)(const char*& ptr, const char* endPtr);
-	int processOnePrefixedMsg(const char*& ptr, const char* endPtr, messageHandler);
-
 public:
 	void startApi();
 
@@ -395,8 +382,6 @@ protected:
 	std::unique_ptr<ETransport> m_transport;
 
 private:
-	BytesVec m_inBuffer;
-
 	std::string m_host;
 	int m_port;
 

@@ -208,13 +208,6 @@ struct ScanData {
 
 } // end of anonymous namespace
 
-///////////////////////////////////////////////////////////
-// utility funcs
-static inline std::string errMsg(std::exception e) {
-   // return the error associated with this exception
-   return std::string(e.what());
-}
-
 class EWrapper;
 class EClient;
 struct EClientMsgSink;

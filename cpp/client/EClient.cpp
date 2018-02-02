@@ -154,7 +154,6 @@ void EClient::eDisconnectBase()
 	m_connState = CS_DISCONNECTED;
 	m_extraAuth = false;
 	m_clientId = -1;
-	m_inBuffer.clear();
 }
 
 int EClient::serverVersion()
@@ -2206,18 +2205,6 @@ void EClient::reqMarketDataType( int marketDataType)
 	closeAndSend( msg.str());
 }
 
-int EClient::bufferedRead()
-{
-	char buf[8192];
-	int nResult = receive( buf, sizeof(buf));
-
-	if( nResult > 0) {
-		m_inBuffer.insert( m_inBuffer.end(), &buf[0], &buf[0] + nResult);
-	}
-
-	return nResult;
-}
-
 void EClient::reqPositions()
 {
 	// not connected?
@@ -3207,72 +3194,8 @@ void EClient::cancelTickByTickData(int reqId) {
     closeAndSend(msg.str());    
 }
 
-int EClient::processMsgImpl(const char*& beginPtr, const char* endPtr)
-{
-	EDecoder decoder(serverVersion(), m_pEWrapper);
-
-	return decoder.parseAndProcessMsg(beginPtr, endPtr);
-}
-
-int EClient::processOnePrefixedMsg(const char*& beginPtr, const char* endPtr, messageHandler handler)
-{
-	if( beginPtr + HEADER_LEN >= endPtr)
-		return 0;
-
-	assert( sizeof(unsigned) == HEADER_LEN);
-
-	unsigned netLen = 0;
-	memcpy( &netLen, beginPtr, HEADER_LEN);
-
-	const unsigned msgLen = ntohl(netLen);
-
-	// shold never happen, but still....
-	if( !msgLen) {
-		beginPtr += HEADER_LEN;
-		return HEADER_LEN;
-	}
-
-	// enforce max msg len limit
-	if( msgLen > MAX_MSG_LEN) {
-		m_pEWrapper->error( NO_VALID_ID, BAD_LENGTH.code(), BAD_LENGTH.msg());
-		eDisconnect();
-		m_pEWrapper->connectionClosed();
-		return 0;
-	}
-
-	const char* msgStart = beginPtr + HEADER_LEN;
-	const char* msgEnd = msgStart + msgLen;
-
-	// handle incomplete messages
-	if( msgEnd > endPtr) {
-		return 0;
-	}
-
-	int decoded = (this->*handler)( msgStart, msgEnd);
-	if( decoded <= 0) {
-		// this would mean something went real wrong
-		// and message was incomplete from decoder POV
-		m_pEWrapper->error( NO_VALID_ID, BAD_MESSAGE.code(), BAD_MESSAGE.msg());
-		eDisconnect();
-		m_pEWrapper->connectionClosed();
-		return 0;
-	}
-
-	int consumed = msgEnd - beginPtr;
-	beginPtr = msgEnd;
-    return consumed;
-}
-
 bool EClient::extraAuth() {
 	return m_extraAuth;
-}
-
-int EClient::processMsg(const char*& beginPtr, const char* endPtr)
-{
-	if( !m_useV100Plus) {
-		return processMsgImpl( beginPtr, endPtr);
-	}
-	return processOnePrefixedMsg( beginPtr, endPtr, &EClient::processMsgImpl);
 }
 
 EWrapper * EClient::getWrapper() const
@@ -3335,10 +3258,5 @@ int EClient::sendConnectRequest()
 	m_connState = rval > 0 ? CS_CONNECTED : CS_DISCONNECTED;
 
 	return rval;
-}
-
-bool EClient::isInBufferEmpty() const
-{
-	return m_inBuffer.empty();
 }
 
