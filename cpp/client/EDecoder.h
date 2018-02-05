@@ -209,7 +209,6 @@ struct ScanData {
 } // end of anonymous namespace
 
 class EWrapper;
-class EClient;
 struct EClientMsgSink;
 
 class TWSAPIDLLEXP EDecoder
