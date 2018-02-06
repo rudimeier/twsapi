@@ -133,5 +133,8 @@ cat <<EOF
 /* IB's CLIENT_VERSION (protocol version) */
 #define TWSAPI_IB_CLIENT_VERSION ${TWSAPI_IB_CLIENT_VERSION}
 
+/* twsapi does not use namespace IB anymore */
+#define TWSAPI_NO_NAMESPACE
+
 #endif
 EOF
