@@ -6,8 +6,6 @@
 
 #include "Order.h"
 
-namespace IB {
-
 struct OrderState {
 
 	explicit OrderState()
@@ -31,5 +29,4 @@ struct OrderState {
 	IBString warningText;
 };
 
-} // namespace IB
 #endif

@@ -6,8 +6,6 @@
 
 #include "EClientSocketBase.h"
 
-namespace IB {
-
 class EWrapper;
 
 class EPosixClientSocket : public EClientSocketBase
@@ -49,5 +47,4 @@ private:
 	int m_fd;
 };
 
-} // namespace IB
 #endif

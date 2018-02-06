@@ -9,8 +9,6 @@
 
 #include <string.h>
 
-namespace IB {
-
 ///////////////////////////////////////////////////////////
 // member funcs
 EPosixClientSocket::EPosixClientSocket( EWrapper *ptr) : EClientSocketBase( ptr)
@@ -223,5 +221,3 @@ bool EPosixClientSocket::handleSocketError()
 	eDisconnect();
 	return false;
 }
-
-} // namespace IB

@@ -15,7 +15,6 @@
 	#define EWOULDBLOCK WSAEWOULDBLOCK
 	#define ECONNREFUSED WSAECONNREFUSED
 
-	namespace IB {
 	// helpers
 	inline bool SocketsInit( void) {
 		WSADATA data;
@@ -28,7 +27,6 @@
 		unsigned long mode = 1;
 		return ( ioctlsocket( sockfd, FIONBIO, &mode) == 0);
 	};
-	}
 
 #else
 	// LINUX
@@ -39,7 +37,6 @@
 	#include <sys/fcntl.h>
 	#include <unistd.h>
 
-	namespace IB {
 	// helpers
 	inline bool SocketsInit() { return true; };
 	inline bool SocketsDestroy() { return true; };
@@ -54,7 +51,6 @@
 		// set non-blocking mode
 		return ( fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) == 0);
 	};
-	}
 
 #endif
 

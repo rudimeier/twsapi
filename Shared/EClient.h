@@ -8,8 +8,6 @@
 #include "IBString.h"
 #include "TagValue.h"
 
-namespace IB {
-
 struct Contract;
 struct Order;
 struct ExecutionFilter;
@@ -79,5 +77,4 @@ public:
 private:
 };
 
-} // namespace IB
 #endif

@@ -6,8 +6,6 @@
 
 #include "TagValue.h"
 
-namespace IB {
-
 /*
 	SAME_POS    = open/close leg value is same as combo
 	OPEN_POS    = open
@@ -185,5 +183,4 @@ Contract::CloneComboLegs(ComboLegListSPtr& dst, const ComboLegListSPtr& src)
 }
 
 
-} // namespace IB
 #endif

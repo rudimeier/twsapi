@@ -4,8 +4,6 @@
 #ifndef common_defs_h_INCLUDED
 #define common_defs_h_INCLUDED
 
-namespace IB {
-
 typedef long TickerId;
 typedef long OrderId;
 
@@ -32,5 +30,4 @@ enum MarketDataType {
 	FROZEN = 2
 };
 
-} // namespace IB
 #endif /* common_defs_h_INCLUDED */

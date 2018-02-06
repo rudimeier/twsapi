@@ -6,19 +6,13 @@
 
 #ifdef IB_USE_STD_STRING
 #include <string>
-namespace IB {
 typedef std::string IBString;
-}
 #else
 #include <afxstr.h>
-namespace IB {
 typedef CString IBString;
-}
 #endif
 
 #include <stdlib.h>
-
-namespace IB {
 
 inline bool IsEmpty(const IBString& str)
 {
@@ -74,7 +68,6 @@ inline int Atoi(IBString str)
 #endif
 };
 
-} // namespace IB
 #endif
 
 
