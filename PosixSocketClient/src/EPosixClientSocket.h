@@ -6,8 +6,6 @@
 
 #include "EClientSocketBase.h"
 
-namespace IB {
-
 class EWrapper;
 
 class EPosixClientSocket : public EClientSocketBase
@@ -54,5 +52,4 @@ private:
 	} hnd_shk_state;
 };
 
-} // namespace IB
 #endif

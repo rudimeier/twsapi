@@ -4,8 +4,6 @@
 #ifndef tswsocketclienterrors_def
 #define tswsocketclienterrors_def
 
-namespace IB {
-
 static const int NO_VALID_ID = -1;
 static const int NO_VALID_ERROR_CODE = 0;
 static const int SYSTEM_ERROR = 600;
@@ -44,5 +42,4 @@ static const CodeMsgPair FAIL_SEND_REQRTBARS(529, "Request Real-time Bar Data Se
 static const CodeMsgPair FAIL_SEND_CANRTBARS(530, "Cancel Real-time Bar Data Sending Error - ");
 static const CodeMsgPair FAIL_SEND_REQCURRTIME(531, "Request Current Time Sending Error - ");
 
-} // namespace IB
 #endif

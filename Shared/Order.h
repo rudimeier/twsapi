@@ -12,8 +12,6 @@
 #define UNSET_DOUBLE DBL_MAX
 #define UNSET_INTEGER INT_MAX
 
-namespace IB {
-
 enum Origin { CUSTOMER,
               FIRM,
               UNKNOWN };
@@ -293,5 +291,4 @@ Order::CloneOrderComboLegs(OrderComboLegListSPtr& dst, const OrderComboLegListSP
 	}
 }
 
-} // namespace IB
 #endif

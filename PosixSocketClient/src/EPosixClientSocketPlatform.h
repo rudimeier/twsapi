@@ -30,7 +30,6 @@
 	#define ETIMEDOUT WSAETIMEDOUT
 	#define ENODATA WSANO_DATA
 
-	namespace IB {
 	// helpers
 	inline bool SocketsInit( void) {
 		WSADATA data;
@@ -38,7 +37,6 @@
 	};
 	inline bool SocketsDestroy() { return ( !WSACleanup()); };
 	inline int SocketClose(int sockfd) { return closesocket( sockfd); };
-	}
 
 #else
 	// LINUX
@@ -60,18 +58,12 @@
 		#define ENODATA ETIMEDOUT
 	#endif
 
-	namespace IB {
 	// helpers
 	inline bool SocketsInit() { return true; };
 	inline bool SocketsDestroy() { return true; };
 	inline int SocketClose(int sockfd) { return close( sockfd); };
-	}
 
 #endif
-
-
-namespace IB {
-
 
 static inline int
 set_socket_nonblock(int sockfd)
@@ -109,9 +101,5 @@ socket_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 #endif
 	return rval;
 }
-
-
-} // namespace IB
-
 
 #endif

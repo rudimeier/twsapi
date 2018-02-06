@@ -22,8 +22,6 @@
 # pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif  /* __INTEL_COMPILER */
 
-namespace IB {
-
 const int PING_DEADLINE = 2; // seconds
 const int SLEEP_BETWEEN_PINGS = 30; // seconds
 
@@ -295,5 +293,3 @@ void PosixTestClient::verifyMessageAPI( const IBString& apiData) {}
 void PosixTestClient::verifyCompleted( bool isSuccessful, const IBString& errorText) {}
 void PosixTestClient::displayGroupList( int reqId, const IBString& groups) {}
 void PosixTestClient::displayGroupUpdated( int reqId, const IBString& contractInfo) {}
-
-}

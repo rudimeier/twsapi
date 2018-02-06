@@ -10,8 +10,6 @@
 #include <string>
 #include <vector>
 
-namespace IB {
-
 class EWrapper;
 
 class EClientSocketBase : public EClient
@@ -187,5 +185,4 @@ private:
 template<> void EClientSocketBase::EncodeField<bool>(std::ostream& os, bool);
 template<> void EClientSocketBase::EncodeField<double>(std::ostream& os, double);
 
-} // namespace IB
 #endif

@@ -12,8 +12,6 @@
 #include <assert.h>
 #include <stdio.h>
 
-namespace IB {
-
 /**
  * Resolve host names.
  * Return 0 on success or EAI_* errcode to be used with gai_strerror().
@@ -419,4 +417,3 @@ void EPosixClientSocket::onSend()
 }
 
 
-} // namespace IB
