@@ -4,9 +4,19 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 
 
+0.7.0 - not yet released -------------------------------------------------------
+
+Update to IB API 9.71
+
+  - update to IB API 9.71, see ChangeLog-IB for more details
+  - remove namespace IB and define TWSAPI_NO_NAMESPACE
+
+
+
 0.6.0 - 2014-12-14  ------------------------------------------------------------
 
 Update to IB API 9.69
+
   - update to IB API 9.69, see ChangeLog-IB for more details
   - this release breaks source compatibility to any earlier version
   - most notable API changes:
