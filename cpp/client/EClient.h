@@ -296,7 +296,7 @@ public:
 	void cancelRealTimeBars(TickerId tickerId );
 	void cancelScannerSubscription(int tickerId);
 	void reqScannerParameters();
-	void reqScannerSubscription(int tickerId, const ScannerSubscription& subscription, const TagValueListSPtr& scannerSubscriptionOptions);
+	void reqScannerSubscription(int tickerId, const ScannerSubscription& subscription, const TagValueListSPtr& scannerSubscriptionOptions, const TagValueListSPtr& scannerSubscriptionFilterOptions);
 	void reqCurrentTime();
 	void reqFundamentalData(TickerId reqId, const Contract&, const std::string& reportType,
                                  //reserved for future use, must be blank

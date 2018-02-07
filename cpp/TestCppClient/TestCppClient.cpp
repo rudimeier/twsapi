@@ -612,7 +612,7 @@ void TestCppClient::marketScanners()
 
 	/*** Triggering a scanner subscription ***/
 	//! [reqscannersubscription]
-	m_pClient->reqScannerSubscription(7001, ScannerSubscriptionSamples::HotUSStkByVolume(), TagValueListSPtr());
+	m_pClient->reqScannerSubscription(7001, ScannerSubscriptionSamples::HotUSStkByVolume(), TagValueListSPtr(), TagValueListSPtr());
 	//! [reqscannersubscription]
 
 	std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -1340,7 +1340,7 @@ void TestCppClient::nextValidId( OrderId orderId)
 	//m_state = ST_REUTERSFUNDAMENTALS;
 	//m_state = ST_BULLETINS;
 	//m_state = ST_ACCOUNTOPERATIONS;
-	//m_state = ST_ORDEROPERATIONS;
+	m_state = ST_ORDEROPERATIONS;
 	//m_state = ST_OCASAMPLES;
 	//m_state = ST_CONDITIONSAMPLES;
 	//m_state = ST_BRACKETSAMPLES;
@@ -1363,7 +1363,7 @@ void TestCppClient::nextValidId( OrderId orderId)
 	//m_state = ST_REROUTECFD;
 	//m_state = ST_MARKETRULE;
 	//m_state = ST_PING;
-	m_state = ST_WHATIFSAMPLES;
+	//m_state = ST_WHATIFSAMPLES;
 }
 
 
@@ -2028,3 +2028,9 @@ void TestCppClient::tickByTickMidPoint(int reqId, time_t time, double midPoint) 
     printf("Tick-By-Tick. ReqId: %d, TickType: MidPoint, Time: %s, MidPoint: %g\n", reqId, ctime(&time), midPoint);
 }
 //! [tickbytickmidpoint]
+
+//! [orderbound]
+void TestCppClient::orderBound(long long orderId, int apiClientId, int apiOrderId) {
+    printf("Order bound. OrderId: %lld, ApiClientId: %d, ApiOrderId: %d\n", orderId, apiClientId, apiOrderId);
+}
+//! [orderbound]

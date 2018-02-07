@@ -101,5 +101,6 @@ virtual void historicalTicksLast(int reqId, const std::vector<HistoricalTickLast
 virtual void tickByTickAllLast(int reqId, int tickType, time_t time, double price, int size, const TickAttrib& attribs, const std::string& exchange, const std::string& specialConditions) EWRAPPER_VIRTUAL_IMPL;
 virtual void tickByTickBidAsk(int reqId, time_t time, double bidPrice, double askPrice, int bidSize, int askSize, const TickAttrib& attribs) EWRAPPER_VIRTUAL_IMPL;
 virtual void tickByTickMidPoint(int reqId, time_t time, double midPoint) EWRAPPER_VIRTUAL_IMPL;
+virtual void orderBound(long long orderId, int apiClientId, int apiOrderId) EWRAPPER_VIRTUAL_IMPL;
 
 #undef EWRAPPER_VIRTUAL_IMPL

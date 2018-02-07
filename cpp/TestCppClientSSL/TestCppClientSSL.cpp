@@ -302,3 +302,4 @@ void TestCppClient::historicalTicksLast(int reqId, const std::vector<HistoricalT
 void TestCppClient::tickByTickAllLast(int reqId, int tickType, time_t time, double price, int size, const TickAttrib& attribs, const std::string& exchange, const std::string& specialConditions) {}
 void TestCppClient::tickByTickBidAsk(int reqId, time_t time, double bidPrice, double askPrice, int bidSize, int askSize, const TickAttrib& attribs) {}
 void TestCppClient::tickByTickMidPoint(int reqId, time_t time, double midPoint) {}
+void TestCppClient::orderBound(long long orderId, int apiClientId, int apiOrderId) {}
