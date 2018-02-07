@@ -19,7 +19,6 @@ AC_PROG_CXX_C_O
 AC_LANG([C++])
 AX_COMPILER_VENDOR
 
-CPPFLAGS="${CPPFLAGS} -DIB_USE_STD_STRING"
 # enable some warnings
 AX_CHECK_COMPILE_FLAG([-Wall],[warnflags="-Wall"])
 # intel's -Wextra is too verbose
