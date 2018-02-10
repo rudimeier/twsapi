@@ -10,7 +10,7 @@
 #include "TwsSocketClientErrors.h"
 #include "EWrapper.h"
 #include "EDecoder.h"
-#include "EReader.h"
+#include "RudiReader.h"
 #include "EMessage.h"
 
 #include <string.h>
@@ -25,7 +25,7 @@ RudiClient::RudiClient(EWrapper *ptr) : EClient( ptr, new ESocket())
 {
 	m_fd = SocketsInit() ? -1 : -2;
     m_allowRedirect = false;
-    m_asyncEConnect = true;
+    m_asyncEConnect = false;
 }
 
 RudiClient::~RudiClient()
@@ -146,20 +146,13 @@ bool RudiClient::eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutP
 	if( stateOutPt) {
 		*stateOutPt = connState();
 	}
-	assert(m_asyncEConnect);
-#if 0
+
     if (!m_asyncEConnect) {
-        EReader reader(this, m_pSignal);
-
-		reader.putMessageToQueue();
-
-        while (m_pSignal && !m_serverVersion && isSocketOK()) {
-            reader.checkClient();
-            m_pSignal->waitForSignal();
-            reader.processMsgs();
-        }
+		RudiReader reader(this);
+		 /* TODO should be a while loop, like
+		  * (m_pSignal && !m_serverVersion && isSocketOK()) */
+		reader.select_timeout(5000);
     }
-#endif
 
 	// successfully connected
 	return isSocketOK();
@@ -261,7 +254,6 @@ void RudiClient::serverVersion(int version, const char *time) {
         eDisconnect();
     }
 
-	assert(m_asyncEConnect);
 	if (!m_asyncEConnect)
 		startApi();
 }
