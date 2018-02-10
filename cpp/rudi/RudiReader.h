@@ -11,7 +11,7 @@ public:
 	~RudiReader(void);
 
 	bool processNonBlockingSelect();
-	void onSend();
+	void select_timeout( int msec );
 	void onReceive();
 
 private:
@@ -20,5 +20,4 @@ private:
 	RudiClient *m_pClientSocket;
 	EDecoder *decoder;
 	struct read_buf *m_buf;
-	bool m_needsWriteSelect;
 };

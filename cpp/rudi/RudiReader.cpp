@@ -7,6 +7,13 @@
 #include <assert.h>
 #include <string.h>
 
+// debug verbosity 0...n
+#define tws_debug_level 1
+#define TWS_DEBUG( _level, _fmt, _msg... )        \
+	if( tws_debug_level >= _level ) {    \
+		fprintf (stderr, _fmt "\n" , ## _msg); \
+	}
+
 #define IN_BLOCK_SIZE 4096
 /* TODO there should be a hard MAX_BUF_SIZE to protect against bad servers*/
 
@@ -42,7 +49,6 @@ static int resize_read_buf(struct read_buf *p, size_t s)
 RudiReader::RudiReader(RudiClient *clientSocket)
 {
 	m_pClientSocket = clientSocket;
-	m_needsWriteSelect = false;
 	decoder = new EDecoder(clientSocket->EClient::serverVersion(),
 		clientSocket->getWrapper(), clientSocket);
 	m_buf = new read_buf();
@@ -57,7 +63,62 @@ RudiReader::~RudiReader(void)
 	delete decoder;
 }
 
-bool RudiReader::processNonBlockingSelect() {
+
+void RudiReader::select_timeout( int msec )
+{
+	assert( msec >= 0 );
+
+	struct timeval tval;
+	tval.tv_sec = msec / 1000 ;
+	tval.tv_usec = (msec % 1000) * 1000;
+
+	fd_set readSet, writeSet;
+
+	FD_ZERO( &readSet);
+	FD_ZERO( &writeSet);
+
+	int fd = -1;
+	if( m_pClientSocket->isConnected() ) {
+		// if not connected then all sets are zero and select will just timeout
+		fd = m_pClientSocket->fd();
+		assert( fd >= 0 );
+
+		FD_SET( fd, &readSet);
+		if( !m_pClientSocket->getTransport()->isOutBufferEmpty()) {
+			FD_SET( fd, &writeSet);
+		}
+	}
+	int ret = select( fd + 1,
+		&readSet, &writeSet, NULL, &tval );
+	/////  blocking  ///////////////////////////////////////
+
+	if( ret == 0) {
+		TWS_DEBUG( 5 , "Select timeouted." );
+		return;
+	} else if( ret < 0) {
+		TWS_DEBUG( 1 , "Select failed: %s, fd: %d, timval: (%lds, %ldus).",
+			strerror(errno), fd, tval.tv_sec, tval.tv_usec );
+		m_pClientSocket->eDisconnect();
+		return;
+	}
+
+	if( FD_ISSET( fd, &writeSet)) {
+		TWS_DEBUG( 1 ,"Socket is ready for writing." );
+		m_pClientSocket->onSend(); // might disconnect us on socket errors
+		if( m_pClientSocket->isConnected() ) {
+			return;
+		}
+	}
+
+	if( FD_ISSET( fd, &readSet)) {
+		TWS_DEBUG( 6 ,"Socket is ready for reading." );
+		onReceive(); // might disconnect us on socket errors
+	}
+}
+
+
+bool RudiReader::processNonBlockingSelect()
+{
 	fd_set readSet, writeSet, errorSet;
 	struct timeval tval;
 
@@ -71,7 +132,7 @@ bool RudiReader::processNonBlockingSelect() {
 
 		FD_SET( m_pClientSocket->fd(), &readSet);
 
-		if (m_needsWriteSelect)
+		if (!m_pClientSocket->getTransport()->isOutBufferEmpty())
 			FD_SET( m_pClientSocket->fd(), &writeSet);
 
 		FD_SET( m_pClientSocket->fd(), &errorSet);
@@ -100,7 +161,7 @@ bool RudiReader::processNonBlockingSelect() {
 
 		if( FD_ISSET( m_pClientSocket->fd(), &writeSet)) {
 			// socket is ready for writing
-			onSend();
+			m_pClientSocket->onSend();
 		}
 
 		if( m_pClientSocket->fd() < 0)
@@ -115,9 +176,6 @@ bool RudiReader::processNonBlockingSelect() {
 	}
 
 	return false;
-}
-
-void RudiReader::onSend() {
 }
 
 void RudiReader::onReceive()
