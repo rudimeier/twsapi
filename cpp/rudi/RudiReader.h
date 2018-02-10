@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-class EClientSocket;
+class RudiClient;
 class EDecoder;
 struct read_buf;
 
 class TWSAPIDLLEXP RudiReader
 {
 public:
-	RudiReader(EClientSocket *clientSocket);
+	RudiReader(RudiClient *clientSocket);
 	~RudiReader(void);
 
 	bool processNonBlockingSelect();
@@ -17,7 +17,7 @@ public:
 private:
 	void readV100Plus();
 
-	EClientSocket *m_pClientSocket;
+	RudiClient *m_pClientSocket;
 	EDecoder *decoder;
 	struct read_buf *m_buf;
 	bool m_needsWriteSelect;

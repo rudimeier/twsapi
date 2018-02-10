@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "EDecoder.h"
 #include "RudiReader.h"
-#include "EClientSocket.h"
+#include "RudiClient.h"
 #include "EPosixClientSocketPlatform.h"
 
 #include <assert.h>
@@ -39,7 +39,7 @@ static int resize_read_buf(struct read_buf *p, size_t s)
 	return -1;
 }
 
-RudiReader::RudiReader(EClientSocket *clientSocket)
+RudiReader::RudiReader(RudiClient *clientSocket)
 {
 	m_pClientSocket = clientSocket;
 	m_needsWriteSelect = false;
