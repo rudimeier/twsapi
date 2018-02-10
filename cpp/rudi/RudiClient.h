@@ -10,7 +10,6 @@
 #include "ESocket.h"
 
 class EWrapper;
-struct EReaderSignal;
 
 class TWSAPIDLLEXP RudiClient : public EClient, public EClientMsgSink
 {
@@ -21,7 +20,7 @@ protected:
 
 public:
 
-	explicit RudiClient(EWrapper *ptr, EReaderSignal *pSignal = 0);
+	explicit RudiClient(EWrapper *ptr);
 	virtual ~RudiClient();
 
 	bool eConnect( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
@@ -59,7 +58,6 @@ private:
     bool m_allowRedirect;
     const char* m_hostNorm;
     bool m_asyncEConnect;
-    EReaderSignal *m_pSignal;
 
 //EClientMsgSink implementation
 public:

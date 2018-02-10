@@ -10,7 +10,6 @@
 #include "TwsSocketClientErrors.h"
 #include "EWrapper.h"
 #include "EDecoder.h"
-#include "EReaderSignal.h"
 #include "EReader.h"
 #include "EMessage.h"
 
@@ -22,12 +21,11 @@ const int MIN_SERVER_VER_SUPPORTED    = 38; //all supported server versions are 
 
 ///////////////////////////////////////////////////////////
 // member funcs
-RudiClient::RudiClient(EWrapper *ptr, EReaderSignal *pSignal) : EClient( ptr, new ESocket())
+RudiClient::RudiClient(EWrapper *ptr) : EClient( ptr, new ESocket())
 {
 	m_fd = SocketsInit() ? -1 : -2;
     m_allowRedirect = false;
-    m_asyncEConnect = false;
-    m_pSignal = pSignal;
+    m_asyncEConnect = true;
 }
 
 RudiClient::~RudiClient()
@@ -148,7 +146,8 @@ bool RudiClient::eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutP
 	if( stateOutPt) {
 		*stateOutPt = connState();
 	}
-            
+	assert(m_asyncEConnect);
+#if 0
     if (!m_asyncEConnect) {
         EReader reader(this, m_pSignal);
 
@@ -160,6 +159,7 @@ bool RudiClient::eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutP
             reader.processMsgs();
         }
     }
+#endif
 
 	// successfully connected
 	return isSocketOK();
@@ -261,6 +261,7 @@ void RudiClient::serverVersion(int version, const char *time) {
         eDisconnect();
     }
 
+	assert(m_asyncEConnect);
 	if (!m_asyncEConnect)
 		startApi();
 }
