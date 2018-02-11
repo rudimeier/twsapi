@@ -15,7 +15,6 @@
 	}
 
 #define IN_BLOCK_SIZE 4096
-/* TODO there should be a hard MAX_BUF_SIZE to protect against bad servers*/
 
 struct read_buf {
 	char *begin;
@@ -217,6 +216,10 @@ void RudiReader::readV100Plus()
 			goto reshape;
 		}
 		msgSize = read_uint32(p);
+		if (msgSize == 0 || msgSize > MAX_MSG_LEN) {
+			errno = EPROTO;
+			goto fail;
+		}
 
 		TWS_DEBUG(2, "got msgSize %zu", (size_t)msgSize);
 		if (end < p + sizeof(msgSize) + msgSize) {
@@ -236,9 +239,7 @@ void RudiReader::readV100Plus()
 	return;
 
 reshape:
-	size_t consumed = p - m_buf->begin;
-
-	if( consumed > 0) {
+	if( p - m_buf->begin > 0) {
 		size_t left = end - p;
 		TWS_DEBUG(1, "memmove %zu", left);
 		memmove(m_buf->begin, p, left);
@@ -247,13 +248,18 @@ reshape:
 
 	/* let the last incomplete message fit into the buffer */
 	if( msgSize > m_buf->size) {
-		int err;
 		size_t newsize = IN_BLOCK_SIZE * (1 + msgSize/IN_BLOCK_SIZE);
-		err = resize_read_buf(m_buf, newsize);
-		TWS_DEBUG(1, "resized: offset: %zu newsize: %zu, err: %d",
-			m_buf->offset, newsize, err );
-		assert(!err); /* TODO error handling ENOMEM */
+		TWS_DEBUG(1, "resize: offset:  %zu oldsize: %zu newsize: %zu",
+			m_buf->offset, m_buf->size, newsize);
+		if (resize_read_buf(m_buf, newsize) == -1) {
+			goto fail;
+		}
 	}
+	return;
+
+fail:
+	TWS_DEBUG(0, "error readV100Plus: %s" , strerror(errno));
+	assert(false); /* TODO error handling (ENOMEM, EPROTO) */
 }
 
 
