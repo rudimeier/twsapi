@@ -14,7 +14,7 @@
 		fprintf (stderr, "TWS_DEBUG: " _fmt "\n" , ## _msg); \
 	}
 
-#define IN_BLOCK_SIZE 4096
+#define IN_BLOCK_SIZE (8 * 1024)
 
 struct read_buf {
 	char *begin;
@@ -200,6 +200,40 @@ void RudiReader::onReceive()
 	readV100Plus();
 }
 
+
+/* decoder error handling */
+int RudiReader::decode_one_msg(const char* msgbegin, uint32_t msgsize)
+{
+	const char *p = msgbegin;
+	const char *msgend = msgbegin + msgsize;
+	int processed;
+
+	/* this increments p already! */
+	processed = decoder->parseAndProcessMsg( p, msgend);
+
+	assert( processed >= 0 );
+	assert( processed == p - msgbegin );
+
+	/* processed == 0 may happen for 3 reasons:
+	 * 1. could not parse a whole message. That's always a protocol error
+	 *    since we are using V100Plus.
+	 * 2. caught exception while parsing. That's also a protocol error.
+	 * 3. caught exception from the users's callback ... The decoder should not
+	 *    do that. For now we handle that also as EPROTO but should be fixed.
+	 */
+	if (processed == 0) {
+		errno = EPROTO;
+		return -1;
+	}
+
+	/* protocol error, violationg V100Plus */
+	if ((uint32_t)processed != msgsize) {
+		errno = EPROTO;
+		return -1;
+	}
+	return processed;
+}
+
 void RudiReader::readV100Plus()
 {
 	const char *end = m_buf->begin + m_buf->offset;
@@ -207,7 +241,7 @@ void RudiReader::readV100Plus()
 	uint32_t msgSize;
 
 	while (p < end) {
-		uint32_t processed;
+		int processed;
 
 		if (end < p + sizeof(msgSize)) {
 			TWS_DEBUG(1, "incomplete message size: %zu < %zu",
@@ -229,10 +263,12 @@ void RudiReader::readV100Plus()
 		}
 		p += sizeof(msgSize);
 
-		/* this increments p already! */
-		processed = decoder->parseAndProcessMsg( p, p + msgSize);
-		TWS_DEBUG(1, "processed %u", processed);
-		assert( processed == msgSize );
+		processed = decode_one_msg( p, msgSize);
+		TWS_DEBUG(1, "processed %d", processed);
+		if( processed == -1 ) {
+			goto fail;
+		}
+		p += processed;
 	}
 	assert(p == end);
 	m_buf->offset = 0;
