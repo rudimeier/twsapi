@@ -11,7 +11,7 @@
 #define tws_debug_level 1
 #define TWS_DEBUG( _level, _fmt, _msg... )        \
 	if( tws_debug_level >= _level ) {    \
-		fprintf (stderr, _fmt "\n" , ## _msg); \
+		fprintf (stderr, "TWS_DEBUG: " _fmt "\n" , ## _msg); \
 	}
 
 #define IN_BLOCK_SIZE 4096
@@ -46,6 +46,13 @@ static int resize_read_buf(struct read_buf *p, size_t s)
 	return -1;
 }
 
+static uint32_t read_uint32(const char *p)
+{
+	uint32_t val;
+	memcpy(&val, p, sizeof(val));
+	return ntohl(val);
+}
+
 RudiReader::RudiReader(RudiClient *clientSocket)
 {
 	m_pClientSocket = clientSocket;
@@ -53,7 +60,8 @@ RudiReader::RudiReader(RudiClient *clientSocket)
 		clientSocket->getWrapper(), clientSocket);
 	m_buf = new read_buf();
 	init_read_buf(m_buf);
-	resize_read_buf(m_buf, IN_BLOCK_SIZE);
+	int err = resize_read_buf(m_buf, IN_BLOCK_SIZE);
+	assert(!err); /* TODO error handling ENOMEM */
 }
 
 RudiReader::~RudiReader(void)
@@ -180,10 +188,9 @@ bool RudiReader::processNonBlockingSelect()
 
 void RudiReader::onReceive()
 {
-	assert(m_buf->size - m_buf->offset >= IN_BLOCK_SIZE);
-
-	int nRes = m_pClientSocket->receive(m_buf->begin + m_buf->offset, IN_BLOCK_SIZE);
-	fprintf(stderr, "receive %s %d\n", thread_str(), nRes);
+	int nRes = m_pClientSocket->receive(m_buf->begin + m_buf->offset,
+		m_buf->size - m_buf->offset);
+	TWS_DEBUG(2, "received %d", nRes);
 	if (nRes <= 0) {
 		assert( nRes > 0 );
 		return; // TODO error handling
@@ -198,49 +205,54 @@ void RudiReader::readV100Plus()
 {
 	const char *end = m_buf->begin + m_buf->offset;
 	const char *p = m_buf->begin;
-	size_t consumed;
 	uint32_t msgSize;
 
 	while (p < end) {
 		uint32_t processed;
 
-		if (p + sizeof(msgSize) > end) {
-			fprintf(stderr, "not even message size: %lu < %lu\n",
-				m_buf->offset, sizeof(msgSize));
-			break;
+		if (end < p + sizeof(msgSize)) {
+			TWS_DEBUG(1, "incomplete message size: %zu < %zu",
+				end - p, sizeof(msgSize));
+			msgSize = sizeof(msgSize);
+			goto reshape;
 		}
+		msgSize = read_uint32(p);
 
-		msgSize = ntohl( *(uint32_t*)p);
-		fprintf(stderr, "got msgSize %u\n", msgSize);
-		if (p + sizeof(msgSize) + msgSize > end) {
-			fprintf(stderr, "message still incomplete %zu < %u\n",
-				m_buf->offset, msgSize);
-			break;
+		TWS_DEBUG(2, "got msgSize %zu", (size_t)msgSize);
+		if (end < p + sizeof(msgSize) + msgSize) {
+			TWS_DEBUG(1, "incomplete message %zu < %zu",
+				end - p - sizeof(msgSize), (size_t)msgSize);
+			goto reshape;
 		}
 		p += sizeof(msgSize);
 
 		/* this increments p already! */
 		processed = decoder->parseAndProcessMsg( p, p + msgSize);
-		fprintf(stderr, "processed %u %p\n", processed, p);
+		TWS_DEBUG(1, "processed %u", processed);
 		assert( processed == msgSize );
 	}
-	consumed = p - m_buf->begin;
-	fprintf(stderr, "buf consumed: %zu, size: %zu / %zu %s\n",
-		consumed, m_buf->offset, m_buf->size,
-		consumed != m_buf->offset ? "-> memmove" : "");
-	assert( consumed <= m_buf->offset );
-	if( consumed != m_buf->offset ) {
-		memmove(m_buf->begin, p, consumed);
+	assert(p == end);
+	m_buf->offset = 0;
+	return;
+
+reshape:
+	size_t consumed = p - m_buf->begin;
+
+	if( consumed > 0) {
+		size_t left = end - p;
+		TWS_DEBUG(1, "memmove %zu", left);
+		memmove(m_buf->begin, p, left);
+		m_buf->offset = left;
 	}
-	m_buf->offset -= consumed;
 
 	/* let the last incomplete message fit into the buffer */
-	if(msgSize > m_buf->size) {
+	if( msgSize > m_buf->size) {
 		int err;
-		size_t newsize = (msgSize+1) * (msgSize/IN_BLOCK_SIZE);
+		size_t newsize = IN_BLOCK_SIZE * (1 + msgSize/IN_BLOCK_SIZE);
 		err = resize_read_buf(m_buf, newsize);
-		fprintf(stderr, "resize %zu  %zu %d\n", newsize,m_buf->size, err );
-		assert(!err); // TODO error handling
+		TWS_DEBUG(1, "resized: offset: %zu newsize: %zu, err: %d",
+			m_buf->offset, newsize, err );
+		assert(!err); /* TODO error handling ENOMEM */
 	}
 }
 
