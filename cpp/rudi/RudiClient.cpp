@@ -198,6 +198,7 @@ bool RudiClient::eConnect( const char *host, unsigned int port, int clientId, bo
 bool RudiClient::eConnect2( const char *host, unsigned int port,
 	int clientId, int family, bool extraAuth )
 {
+// 	return eConnect_orig( host, port, clientId, extraAuth);
 	// already connected?
 	if( m_fd >= 0) {
 		assert(false); // for now we don't allow that
@@ -316,8 +317,8 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 }
 
 
-#if 0
-bool RudiClient::eConnect( const char *host, unsigned int port, int clientId, bool extraAuth)
+#if 1
+bool RudiClient::eConnect_orig( const char *host, unsigned int port, int clientId, bool extraAuth)
 {
 	if( m_fd == -2) {
 		getWrapper()->error( NO_VALID_ID, FAIL_CREATE_SOCK.code(), FAIL_CREATE_SOCK.msg());
