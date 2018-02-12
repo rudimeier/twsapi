@@ -286,32 +286,24 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
-	if( wait_socket( m_fd, WAIT_READ ) <= 0 ) {
-		const char *err = (errno != 0) ? strerror(errno) : strerror(ENODATA);
-		eDisconnect();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		return false;
-	}
 
-#if 0
-	while( !isConnected() ) {
-		assert( isSocketOK() ); // need to be handled if send() would destroy it
-		if ( !checkMessagesConnect()) {
-			const char *err = (errno != 0) ? strerror(errno)
-				: "The remote host closed the connection.";
+	if (!m_asyncEConnect) {
+		if( wait_socket( m_fd, WAIT_READ ) <= 0 ) {
+			const char *err = (errno != 0) ? strerror(errno) : strerror(ENODATA);
 			eDisconnect();
 			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 			return false;
 		}
-	}
-#endif
-	if (!m_asyncEConnect) {
+
 		RudiReader reader(this);
 		/* TODO should be a while loop, like
-		 * (m_pSignal && !m_serverVersion && isSocketOK()) */
-		reader.select_timeout(5000);
+		 * (m_pSignal && !m_serverVersion && isSocketOK())
+		 * moreover we need an onReceive() which processes only one message! */
+		reader.onReceive();
+		assert(m_serverVersion && isSocketOK());
 	}
 
+	fprintf(stderr, "CONNECT FINISHED %d\n", m_asyncEConnect);
 	// successfully connected
 	return true;
 }
