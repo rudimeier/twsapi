@@ -513,7 +513,7 @@ int RudiClient::receive(char* buf, size_t sz)
 void RudiClient::serverVersion(int version, const char *time) {
     m_serverVersion = version;
     m_TwsTime = time;
-	printf("xserverVersion %d\n", version);
+	fprintf(stderr, "xserverVersion %d\n", version);
     if( usingV100Plus() ? (m_serverVersion < MIN_CLIENT_VER || m_serverVersion > MAX_CLIENT_VER) : m_serverVersion < MIN_SERVER_VER_SUPPORTED ) {
         getWrapper()->error( NO_VALID_ID, UNSUPPORTED_VERSION.code(), UNSUPPORTED_VERSION.msg());
         eDisconnect();
