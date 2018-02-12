@@ -204,11 +204,8 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 		return true;
 	}
 
-	// initialize Winsock DLL (only for Windows)
-	if ( !SocketsInit())	{
-		// Does this set errno?
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
-			"Initializing Winsock DLL failed.");
+	if( m_fd == -2) {
+		getWrapper()->error( NO_VALID_ID, FAIL_CREATE_SOCK.code(), FAIL_CREATE_SOCK.msg());
 		return false;
 	}
 
@@ -222,7 +219,6 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 
 	int s = resolveHost( host, port, family, &aitop );
 	if( s != 0 ) {
-		SocketsDestroy();
 		const char *err;
 #ifdef HAVE_GETADDRINFO
 		err = gai_strerror(s);
@@ -264,7 +260,6 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	/* connection failed, tell the error which happened in our last try  */
 	if( m_fd < 0 ) {
 		const char *err = strerror(con_errno);
-		SocketsDestroy();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
