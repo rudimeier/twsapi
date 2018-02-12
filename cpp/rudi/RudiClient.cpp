@@ -209,10 +209,12 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 		return false;
 	}
 
-	// use local machine if no host passed in
-	if ( !( host && *host)) {
-		host = "127.0.0.1";
-	}
+	// normalize host
+	m_hostNorm = (host && *host) ? host : "127.0.0.1";
+
+	// initialize host and port
+	setHost( m_hostNorm);
+	setPort( port);
 
 	// starting to connect to server
 	struct addrinfo *aitop;
