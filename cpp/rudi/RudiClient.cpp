@@ -227,21 +227,10 @@ int RudiClient::fd() const
 
 int RudiClient::receive(char* buf, size_t sz)
 {
-	if( sz <= 0)
-		return 0;
+	assert( sz > 0 );
 
 	int nResult = ::recv( m_fd, buf, sz, 0);
-	fprintf(stderr, "tried recv %zu, got %d\n", sz, nResult);
 
-	if( nResult == -1 && !handleSocketError()) {
-		return -1;
-	}
-	if( nResult == 0) {
-		onClose();
-	}
-	if( nResult <= 0) {
-		return 0;
-	}
 	return nResult;
 }
 

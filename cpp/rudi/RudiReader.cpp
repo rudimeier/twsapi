@@ -108,6 +108,7 @@ void RudiReader::select_timeout( int msec )
 		TWS_DEBUG( 1 , "Select failed: %s, fd: %d, timval: (%lds, %ldus).",
 			strerror(errno), fd, tval.tv_sec, tval.tv_usec );
 		m_pClientSocket->eDisconnect();
+		m_pClientSocket->getWrapper()->connectionClosed();
 		return;
 	}
 
@@ -189,23 +190,31 @@ bool RudiReader::processNonBlockingSelect()
 
 void RudiReader::onReceive()
 {
-	int nRes = m_pClientSocket->receive(m_buf->begin + m_buf->offset,
-		m_buf->size - m_buf->offset);
-	TWS_DEBUG(2, "received %d", nRes);
+	const char * errmsg;
+	size_t sz = m_buf->size - m_buf->offset;
+	int nRes = m_pClientSocket->receive(m_buf->begin + m_buf->offset, sz );
+	TWS_DEBUG(1, "received: %d (tried %zu)", nRes, sz);
 	if (nRes <= 0) {
-		assert( nRes > 0 );
-		return; // TODO error handling
+		errmsg = nRes < 0 ? strerror(errno)
+			: "The remote host closed the connection.";
+		goto fail;
 	}
+
 	m_buf->offset += nRes;
 
 	assert(m_pClientSocket->usingV100Plus());
 	if (readV100Plus() == -1) {
-		const char * err = strerror(errno);
-		m_pClientSocket->getWrapper()->error(
-			NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
-		m_pClientSocket->eDisconnect();
-		m_pClientSocket->getWrapper()->connectionClosed();
+		errmsg = strerror(errno);
+		goto fail;
 	}
+	return;
+
+fail:
+	m_pClientSocket->getWrapper()->error(
+		NO_VALID_ID, SOCKET_EXCEPTION.code(), errmsg );
+	m_pClientSocket->eDisconnect();
+	m_pClientSocket->getWrapper()->connectionClosed();
+	return;
 }
 
 
