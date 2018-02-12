@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "EDecoder.h"
+#include "EWrapper.h"
+#include "TwsSocketClientErrors.h"
 #include "RudiReader.h"
 #include "RudiClient.h"
 #include "EPosixClientSocketPlatform.h"
@@ -197,7 +199,13 @@ void RudiReader::onReceive()
 	m_buf->offset += nRes;
 
 	assert(m_pClientSocket->usingV100Plus());
-	readV100Plus();
+	if (readV100Plus() == -1) {
+		const char * err = strerror(errno);
+		m_pClientSocket->getWrapper()->error(
+			NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
+		m_pClientSocket->eDisconnect();
+		m_pClientSocket->getWrapper()->connectionClosed();
+	}
 }
 
 
@@ -234,7 +242,7 @@ int RudiReader::decode_one_msg(const char* msgbegin, uint32_t msgsize)
 	return processed;
 }
 
-void RudiReader::readV100Plus()
+int RudiReader::readV100Plus()
 {
 	const char *end = m_buf->begin + m_buf->offset;
 	const char *p = m_buf->begin;
@@ -272,7 +280,7 @@ void RudiReader::readV100Plus()
 	}
 	assert(p == end);
 	m_buf->offset = 0;
-	return;
+	return 0;
 
 reshape:
 	if( p - m_buf->begin > 0) {
@@ -291,11 +299,11 @@ reshape:
 			goto fail;
 		}
 	}
-	return;
+	return 0;
 
 fail:
 	TWS_DEBUG(0, "error readV100Plus: %s" , strerror(errno));
-	assert(false); /* TODO error handling (ENOMEM, EPROTO) */
+	return -1;
 }
 
 

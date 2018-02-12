@@ -15,7 +15,7 @@ public:
 	void onReceive();
 
 private:
-	void readV100Plus();
+	int readV100Plus();
 	int decode_one_msg(const char* begin, uint32_t size);
 
 	RudiClient *m_pClientSocket;
