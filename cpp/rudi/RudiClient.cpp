@@ -269,13 +269,15 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 		return false;
 	}
 
+	getTransport()->fd(m_fd);
+
 	// set client id
 	setClientId( clientId);
 	setExtraAuth( extraAuth);
 
 	errno = 0;
-	onConnectBase();
-	if( !isOutBufferEmpty() ) {
+	sendConnectRequest(); /* TODO return value check! */
+	if( !getTransport()->isOutBufferEmpty() ) {
 		/* For now we consider it as error if it's not possible to send an
 		   integer string within a single tcp packet. Here we don't know weather
 		   ::send() really failed or not. If so then we hopefully still have
@@ -286,7 +288,6 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
 		return false;
 	}
-
 	if( wait_socket( m_fd, WAIT_READ ) <= 0 ) {
 		const char *err = (errno != 0) ? strerror(errno) : strerror(ENODATA);
 		eDisconnect();
@@ -294,6 +295,7 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 		return false;
 	}
 
+#if 0
 	while( !isConnected() ) {
 		assert( isSocketOK() ); // need to be handled if send() would destroy it
 		if ( !checkMessagesConnect()) {
@@ -304,6 +306,14 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 			return false;
 		}
 	}
+#endif
+	if (!m_asyncEConnect) {
+		RudiReader reader(this);
+		/* TODO should be a while loop, like
+		 * (m_pSignal && !m_serverVersion && isSocketOK()) */
+		reader.select_timeout(5000);
+	}
+
 	// successfully connected
 	return true;
 }
