@@ -47,9 +47,6 @@ public:
 	// callback from socket
 	void onSend();
 	void onError();
-
-private:
-
 	void onClose();
 
 private:

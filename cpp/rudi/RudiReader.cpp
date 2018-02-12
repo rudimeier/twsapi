@@ -107,8 +107,7 @@ void RudiReader::select_timeout( int msec )
 	} else if( ret < 0) {
 		TWS_DEBUG( 1 , "Select failed: %s, fd: %d, timval: (%lds, %ldus).",
 			strerror(errno), fd, tval.tv_sec, tval.tv_usec );
-		m_pClientSocket->eDisconnect();
-		m_pClientSocket->getWrapper()->connectionClosed();
+		m_pClientSocket->onClose();
 		return;
 	}
 
@@ -212,8 +211,7 @@ void RudiReader::onReceive()
 fail:
 	m_pClientSocket->getWrapper()->error(
 		NO_VALID_ID, SOCKET_EXCEPTION.code(), errmsg );
-	m_pClientSocket->eDisconnect();
-	m_pClientSocket->getWrapper()->connectionClosed();
+	m_pClientSocket->onClose();
 	return;
 }
 

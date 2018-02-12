@@ -294,22 +294,16 @@ bool RudiClient::handleSocketError()
 
 void RudiClient::onSend()
 {
-	if( !handleSocketError())
-		return;
-
+	/* TODO error handling? send() errno ... */
 	getTransport()->sendBufferedData();
 }
 
 void RudiClient::onClose()
 {
-	if( !handleSocketError())
-		return;
-
 	eDisconnect();
 	getWrapper()->connectionClosed();
 }
 
 void RudiClient::onError()
 {
-	handleSocketError();
 }
