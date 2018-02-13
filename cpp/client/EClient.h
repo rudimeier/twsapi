@@ -214,7 +214,7 @@ public:
 	explicit EClient(EWrapper *ptr, ETransport *pTransport);
 	virtual ~EClient();
 
-	virtual void eDisconnect() = 0;
+	virtual void eDisconnect(bool resetState) = 0;
 
 	int clientId() const { return m_clientId; }
 

@@ -26,13 +26,16 @@ public:
 
 	bool eConnect( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
 	// override virtual funcs from EClient
-	void eDisconnect();
+	void eDisconnect(bool resetState = true);
 
 	bool isSocketOK() const;
 	int fd() const;
     bool asyncEConnect() const;
     void asyncEConnect(bool val);
     ESocket *getTransport();
+
+    void allowRedirect(bool v);
+    bool allowRedirect() const; 
 
 private:
 
@@ -56,15 +59,17 @@ private:
 private:
 
 	int m_fd;
-    bool m_allowRedirect;
-    const char* m_hostNorm;
+    bool m_allowRedirect;    
     bool m_asyncEConnect;
     EReaderSignal *m_pSignal;
+    int m_redirectCount;
+
+    static const int REDIRECT_COUNT_MAX = 2;
 
 //EClientMsgSink implementation
 public:
     void serverVersion(int version, const char *time);
-    void redirect(const char *host, unsigned int port);    
+    void redirect(const char *host, int port);    
 };
 
 #endif

@@ -28,12 +28,21 @@ EClientSocket::EClientSocket(EWrapper *ptr, EReaderSignal *pSignal) : EClient( p
     m_allowRedirect = false;
     m_asyncEConnect = false;
     m_pSignal = pSignal;
+    m_redirectCount = 0;
 }
 
 EClientSocket::~EClientSocket()
 {
 	if( m_fd != -2)
 		SocketsDestroy();
+}
+
+bool EClientSocket::allowRedirect() const {
+    return m_allowRedirect;
+}
+
+void EClientSocket::allowRedirect(bool v) {
+    m_allowRedirect = v;
 }
 
 bool EClientSocket::asyncEConnect() const {
@@ -62,10 +71,10 @@ bool EClientSocket::eConnect( const char *host, unsigned int port, int clientId,
 	}
 
 	// normalize host
-	m_hostNorm = (host && *host) ? host : "127.0.0.1";
+	const char* hostNorm = (host && *host) ? host : "127.0.0.1";
 
 	// initialize host and port
-	setHost( m_hostNorm);
+	setHost( hostNorm);
 	setPort( port);
 
 	// try to connect to specified host and port
@@ -212,14 +221,16 @@ void EClientSocket::prepareBuffer(std::ostream& buf) const
 	prepareBufferImpl( buf);
 }
 
-void EClientSocket::eDisconnect()
+void EClientSocket::eDisconnect(bool resetState)
 {
 	if ( m_fd >= 0 )
 		// close socket
 			SocketClose( m_fd);
 	m_fd = -1;
 
-	eDisconnectBase();
+    if (resetState) {
+	    eDisconnectBase();
+    }
 }
 
 bool EClientSocket::isSocketOK() const
@@ -254,6 +265,7 @@ int EClientSocket::receive(char* buf, size_t sz)
 void EClientSocket::serverVersion(int version, const char *time) {
     m_serverVersion = version;
     m_TwsTime = time;
+    m_redirectCount = 0;
 
     if( usingV100Plus() ? (m_serverVersion < MIN_CLIENT_VER || m_serverVersion > MAX_CLIENT_VER) : m_serverVersion < MIN_SERVER_VER_SUPPORTED ) {
         eDisconnect();
@@ -265,18 +277,33 @@ void EClientSocket::serverVersion(int version, const char *time) {
 		startApi();
 }
 
-void EClientSocket::redirect(const char *host, unsigned int port) {
-	// handle redirect
-	if( (m_hostNorm != this->host() || port != this->port())) {
+void EClientSocket::redirect(const char *host, int port) {
+	const char* hostNorm = (host && *host) ? host : "127.0.0.1";
+
+	if( (hostNorm != this->host() || (port > 0 && (unsigned int)port != this->port()))) {
         if (!m_allowRedirect) {
             getWrapper()->error(NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
 
             return;
         }
 
-        eDisconnect();
-		eConnectImpl( clientId(), extraAuth(), 0);
-	}
+        this->setHost(hostNorm);
+        
+        if (port > 0) {
+            this->setPort(port);
+        }
+
+        ++m_redirectCount;
+
+        if ( m_redirectCount > REDIRECT_COUNT_MAX ) {
+            eDisconnect();
+            getWrapper()->error(NO_VALID_ID, CONNECT_FAIL.code(), "Redirect count exceeded" );
+            return;
+        }
+
+        eDisconnect(false);
+        eConnectImpl( clientId(), extraAuth(), 0);
+    }
 }
 
 bool EClientSocket::handleSocketError()
