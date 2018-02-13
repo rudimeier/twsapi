@@ -205,7 +205,7 @@ EMessage * EReader::readSingleMsg() {
 		if (!bufferedRead((char *)&msgSize, sizeof(msgSize)))
 			return 0;
 
-		msgSize = htonl(msgSize);
+		msgSize = ntohl(msgSize);
 
 		if (msgSize <= 0 || msgSize > MAX_MSG_LEN)
 			return 0;
