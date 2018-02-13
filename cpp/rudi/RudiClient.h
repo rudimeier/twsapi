@@ -10,6 +10,7 @@
 #include "ESocket.h"
 
 class EWrapper;
+class RudiReader;
 
 class TWSAPIDLLEXP RudiClient : public EClient, public EClientMsgSink
 {
@@ -46,7 +47,9 @@ public:
 public:
 	// callback from socket
 	void onSend();
+	void onReceive();
 	void onClose();
+	void select_timeout(int msec);
 
 private:
 
@@ -57,6 +60,7 @@ private:
 	/* This stupid m_in_connect indicates that we are inside eConnect(). We'd
 	 * like to use m_connState instead but it's badly maintained by EClient. */
 	bool m_in_connect;
+	RudiReader *m_reader;
 
 //EClientMsgSink implementation
 public:

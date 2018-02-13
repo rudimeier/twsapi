@@ -168,12 +168,14 @@ RudiClient::RudiClient(EWrapper *ptr) : EClient( ptr, new ESocket())
     m_allowRedirect = false;
     m_asyncEConnect = false;
 	m_in_connect = false;
+	m_reader = new RudiReader(this);
 }
 
 RudiClient::~RudiClient()
 {
 	if( m_fd != -2)
 		SocketsDestroy();
+	delete m_reader;
 }
 
 bool RudiClient::asyncEConnect() const {
@@ -301,11 +303,9 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 			goto faildisconnect;
 		}
 
-		/* TODO, stupid that we have to create our own Reder here. Moreover
-		 * it's stupid in case !m_asyncEConnect to call user's connectAck()
+		/* TODO, stupid in case !m_asyncEConnect to call user's connectAck()
 		 * callback.*/
-		RudiReader reader(this);
-		reader.onReceive(); /* may disconnect us plus error callback */
+		m_reader->onReceive(); /* may disconnect us plus error callback */
 		if (!m_serverVersion) {
 			errmsg = "couldn't get ack message from server";
 			goto faildisconnect; /* although we may be already disconnected */
@@ -450,10 +450,20 @@ void RudiClient::onSend()
     }
 }
 
+void RudiClient::onReceive()
+{
+	m_reader->onReceive();
+}
+
 void RudiClient::onClose()
 {
 	eDisconnect();
 	getWrapper()->connectionClosed();
+}
+
+void RudiClient::select_timeout(int msec)
+{
+	m_reader->select_timeout(msec);
 }
 
 void RudiClient::on_send_errno(int xerrno)
