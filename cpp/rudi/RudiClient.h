@@ -55,7 +55,6 @@ private:
 	int m_fd;
     bool m_allowRedirect;
     const char* m_hostNorm;
-	int m_addr_family;
     bool m_asyncEConnect;
 
 //EClientMsgSink implementation
