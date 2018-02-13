@@ -3247,7 +3247,7 @@ int EClient::sendConnectRequest()
 			msg << ' ' << m_connectOptions;
 		}
 
-		rval = closeAndSend( msg.str(), sizeof(API_SIGN));
+		rval = closeAndSend( msg.str(), sizeof(API_SIGN)) ? 1 : -1;
 	}
 	else {
 		ENCODE_FIELD( CLIENT_VERSION);
