@@ -38,13 +38,14 @@ public:
 
 private:
 	void encodeMsgLen(std::string& msg, unsigned offset) const;
+	void on_send_errno(int xerrno);
+
 public:
 	int receive( char* buf, size_t sz);
 
 public:
 	// callback from socket
 	void onSend();
-	void onError();
 	void onClose();
 
 private:
@@ -53,6 +54,9 @@ private:
     bool m_allowRedirect;
     const char* m_hostNorm;
     bool m_asyncEConnect;
+	/* This stupid m_in_connect indicates that we are inside eConnect(). We'd
+	 * like to use m_connState instead but it's badly maintained by EClient. */
+	bool m_in_connect;
 
 //EClientMsgSink implementation
 public:

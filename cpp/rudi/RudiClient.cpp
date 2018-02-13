@@ -167,6 +167,7 @@ RudiClient::RudiClient(EWrapper *ptr) : EClient( ptr, new ESocket())
 	m_fd = SocketsInit() ? -1 : -2;
     m_allowRedirect = false;
     m_asyncEConnect = false;
+	m_in_connect = false;
 }
 
 RudiClient::~RudiClient()
@@ -201,6 +202,8 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	const char *errmsg;
 	int con_errno = 0;
 	int tmp;
+
+	m_in_connect = true;
 
 	// already connected?
 	if( m_fd >= 0) {
@@ -321,6 +324,7 @@ failsocket:
 end:
 	fprintf(stderr, "CONNECT FINISHED ret:%d, isCon %d, connState: %d, server: %d async:%d\n",
 			isSocketOK(), isConnected(), connState(), m_serverVersion, m_asyncEConnect);
+	m_in_connect = false;
 	return isSocketOK();
 }
 
@@ -361,14 +365,7 @@ int RudiClient::bufferedSend(const std::string& msg)
 {
 	int nResult = EClient::bufferedSend(msg);
 	if( nResult == -1 ) {
-		if (isConnected()) {
-			const char *err = strerror(errno);
-			getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
-			eDisconnect();
-			getWrapper()->connectionClosed();
-		} else {
-			/* will be handled within eConnect() ... */
-		}
+		on_send_errno(errno);
 	}
 	return nResult;
 }
@@ -449,14 +446,7 @@ void RudiClient::onSend()
 	int nResult;
 	nResult = getTransport()->sendBufferedData();
 	if( nResult == -1 ) {
-        if( isConnected() ) {
-            const char *err = strerror(errno);
-            getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
-            eDisconnect();
-            getWrapper()->connectionClosed();
-        } else {
-            /* will be handled within eConnect() ... */
-        }
+		on_send_errno(errno);
     }
 }
 
@@ -466,6 +456,24 @@ void RudiClient::onClose()
 	getWrapper()->connectionClosed();
 }
 
-void RudiClient::onError()
+void RudiClient::on_send_errno(int xerrno)
 {
+	const char *errmsg;
+	assert(xerrno);
+
+	if( xerrno == EAGAIN || xerrno == EWOULDBLOCK) {
+		return;
+	}
+
+	if( m_in_connect ) {
+		/* will be handled within eConnect() ... because in this case we want
+		 * to use code CONNECT_FAIL and custom messages, and no
+		 * connectionClosed() callback */
+		return;
+	}
+
+	errmsg = strerror(xerrno);
+	getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), errmsg );
+	eDisconnect();
+	getWrapper()->connectionClosed();
 }
