@@ -198,16 +198,18 @@ bool RudiClient::eConnect( const char *host, unsigned int port, int clientId, bo
 bool RudiClient::eConnect2( const char *host, unsigned int port,
 	int clientId, int family, bool extraAuth )
 {
-// 	return eConnect_orig( host, port, clientId, extraAuth);
+	int con_errno = 0;
+	int tmp;
+
 	// already connected?
 	if( m_fd >= 0) {
 		assert(false); // for now we don't allow that
-		return true;
+		goto end;
 	}
 
 	if( m_fd == -2) {
 		getWrapper()->error( NO_VALID_ID, FAIL_CREATE_SOCK.code(), FAIL_CREATE_SOCK.msg());
-		return false;
+		goto end;
 	}
 
 	// normalize host
@@ -220,19 +222,18 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	// starting to connect to server
 	struct addrinfo *aitop;
 
-	int s = resolveHost( host, port, family, &aitop );
-	if( s != 0 ) {
+	tmp = resolveHost( host, port, family, &aitop );
+	if( tmp != 0 ) {
 		const char *err;
 #ifdef HAVE_GETADDRINFO
-		err = gai_strerror(s);
+		err = gai_strerror(tmp);
 #else
 		err = "Invalid address, hostname resolving not supported.";
 #endif
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		return false;
+		goto end;
 	}
 
-	int con_errno = 0;
 	for( struct addrinfo *ai = aitop; ai != NULL; ai = ai->ai_next ) {
 
 		// create socket
@@ -264,7 +265,7 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	if( m_fd < 0 ) {
 		const char *err = strerror(con_errno);
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		return false;
+		goto end;
 	}
 
 	getTransport()->fd(m_fd);
@@ -284,7 +285,7 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 			: "Sending client id failed.";
 		eDisconnect();
 		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		return false;
+		goto end;
 	}
 
 	if (!m_asyncEConnect) {
@@ -295,22 +296,28 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 			const char *err = (errno != 0) ? strerror(errno) : strerror(ENODATA);
 			eDisconnect();
 			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-			return false;
+			goto end;
 		}
 
 		/* TODO, stipid that we have to create our own Reder here. Moreover
 		 * it's stupid in case !m_asyncEConnect to call user's connectAck()
 		 * callback.*/
 		RudiReader reader(this);
-		reader.onReceive();
-		if (!m_serverVersion) {
-			return false;
+		reader.onReceive(); /* may disconnect us plus error callback */
+		if (isConnected() && !m_serverVersion) {
+			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
+				"couldn't get ack message from server" );
+			eDisconnect(); /* although we may already disconnected */
+			goto end;
 		}
+		assert( (!isConnected() && !m_serverVersion)
+			|| (isConnected() && m_serverVersion) );
 	}
 
-	fprintf(stderr, "CONNECT FINISHED %d\n", m_asyncEConnect);
-	// successfully connected
-	return true;
+end:
+	fprintf(stderr, "CONNECT FINISHED ret:%d, isCon %d, connState: %d, async:%d\n",
+			isSocketOK(), isConnected(), connState(), m_asyncEConnect);
+	return isSocketOK();
 }
 
 ESocket *RudiClient::getTransport() {
@@ -400,8 +407,9 @@ void RudiClient::serverVersion(int version, const char *time) {
     m_TwsTime = time;
 	fprintf(stderr, "xserverVersion %d\n", version);
     if( usingV100Plus() ? (m_serverVersion < MIN_CLIENT_VER || m_serverVersion > MAX_CLIENT_VER) : m_serverVersion < MIN_SERVER_VER_SUPPORTED ) {
-        getWrapper()->error( NO_VALID_ID, UNSUPPORTED_VERSION.code(), UNSUPPORTED_VERSION.msg());
         eDisconnect();
+        getWrapper()->error( NO_VALID_ID, UNSUPPORTED_VERSION.code(), UNSUPPORTED_VERSION.msg());
+        return;
     }
 
 	if (!m_asyncEConnect)
