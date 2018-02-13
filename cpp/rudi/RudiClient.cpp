@@ -308,39 +308,6 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	return true;
 }
 
-
-#if 1
-bool RudiClient::eConnect_orig( const char *host, unsigned int port, int clientId, bool extraAuth)
-{
-	if( m_fd == -2) {
-		getWrapper()->error( NO_VALID_ID, FAIL_CREATE_SOCK.code(), FAIL_CREATE_SOCK.msg());
-		return false;
-	}
-
-	// reset errno
-	errno = 0;
-
-	// already connected?
-	if( m_fd >= 0) {
-		errno = EISCONN;
-		getWrapper()->error( NO_VALID_ID, ALREADY_CONNECTED.code(), ALREADY_CONNECTED.msg());
-		return false;
-	}
-
-	// normalize host
-	m_hostNorm = (host && *host) ? host : "127.0.0.1";
-
-	// initialize host and port
-	setHost( m_hostNorm);
-	setPort( port);
-
-	// try to connect to specified host and port
-	ConnState resState = CS_DISCONNECTED;
-	
-    return eConnectImpl( clientId, extraAuth, &resState);
-}
-#endif
-
 ESocket *RudiClient::getTransport() {
     assert(dynamic_cast<ESocket*>(m_transport.get()) != 0);
 
@@ -349,82 +316,6 @@ ESocket *RudiClient::getTransport() {
 
 bool RudiClient::eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutPt)
 {
-	// resolve host
-	struct hostent* hostEnt = gethostbyname( host().c_str());
-	if ( !hostEnt) {
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
-		return false;
-	}
-
-	// create socket
-	m_fd = socket(AF_INET, SOCK_STREAM, 0);
-
-	// cannot create socket
-	if( m_fd < 0) {
-		getWrapper()->error( NO_VALID_ID, FAIL_CREATE_SOCK.code(), FAIL_CREATE_SOCK.msg());
-		return false;
-	}
-
-	// starting to connect to server
-	struct sockaddr_in sa;
-	memset( &sa, 0, sizeof(sa));
-	sa.sin_family = AF_INET;
-	sa.sin_port = htons( port());
-	sa.sin_addr.s_addr = ((in_addr*)hostEnt->h_addr)->s_addr;
-
-	// try to connect
-	if( (connect( m_fd, (struct sockaddr *) &sa, sizeof( sa))) < 0) {
-		// error connecting
-		SocketClose( m_fd);
-		m_fd = -1;
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
-		return false;
-	}
-
-    getTransport()->fd(m_fd);
-
-	// set client id
-	setClientId( clientId);
-	setExtraAuth( extraAuth);
-
-    int res = sendConnectRequest();
-
-	if (res < 0 && !handleSocketError())
-		return false;
-
-	if( !isConnected()) {
-		if( connState() != CS_DISCONNECTED) {
-			assert( connState() == CS_REDIRECT);
-			if( stateOutPt) {
-				*stateOutPt = connState();
-			}
-			eDisconnect();
-		}
-		return false;
-	}
-
-	// set socket to non-blocking state
-	if ( !SetSocketNonBlocking(m_fd)) {
-	// error setting socket to non-blocking
-		eDisconnect();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
-		return false;
-	}
-
-	assert( connState() == CS_CONNECTED);
-	if( stateOutPt) {
-		*stateOutPt = connState();
-	}
-
-    if (!m_asyncEConnect) {
-		RudiReader reader(this);
-		 /* TODO should be a while loop, like
-		  * (m_pSignal && !m_serverVersion && isSocketOK()) */
-		reader.select_timeout(5000);
-    }
-
-	// successfully connected
-	return isSocketOK();
 }
 
 void RudiClient::encodeMsgLen(std::string& msg, unsigned offset) const

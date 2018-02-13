@@ -36,7 +36,6 @@ public:
     ESocket *getTransport();
 
 private:
-	bool eConnect_orig( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
 	bool eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutPt);
 
 private:
