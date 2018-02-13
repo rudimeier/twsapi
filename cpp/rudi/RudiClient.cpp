@@ -165,6 +165,7 @@ static int timeout_connect( int fd, const struct sockaddr *serv_addr,
 RudiClient::RudiClient(EWrapper *ptr) : EClient( ptr, new ESocket())
 {
 	m_fd = SocketsInit() ? -1 : -2;
+	m_addr_family = 0;
     m_allowRedirect = false;
     m_asyncEConnect = false;
 }
@@ -216,11 +217,26 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	// initialize host and port
 	setHost( m_hostNorm);
 	setPort( port);
+	m_addr_family = family;
 
+	// try to connect to specified host and port
+	ConnState resState = CS_DISCONNECTED;
+
+    return eConnectImpl( clientId, extraAuth, &resState);
+}
+
+ESocket *RudiClient::getTransport() {
+    assert(dynamic_cast<ESocket*>(m_transport.get()) != 0);
+
+    return static_cast<ESocket*>(m_transport.get());
+}
+
+bool RudiClient::eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutPt)
+{
 	// starting to connect to server
 	struct addrinfo *aitop;
 
-	int s = resolveHost( host, port, family, &aitop );
+	int s = resolveHost( host().c_str(), port(), m_addr_family, &aitop );
 	if( s != 0 ) {
 		const char *err;
 #ifdef HAVE_GETADDRINFO
@@ -306,16 +322,6 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	fprintf(stderr, "CONNECT FINISHED %d\n", m_asyncEConnect);
 	// successfully connected
 	return true;
-}
-
-ESocket *RudiClient::getTransport() {
-    assert(dynamic_cast<ESocket*>(m_transport.get()) != 0);
-
-    return static_cast<ESocket*>(m_transport.get());
-}
-
-bool RudiClient::eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutPt)
-{
 }
 
 void RudiClient::encodeMsgLen(std::string& msg, unsigned offset) const
