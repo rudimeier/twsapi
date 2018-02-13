@@ -198,6 +198,7 @@ bool RudiClient::eConnect( const char *host, unsigned int port, int clientId, bo
 bool RudiClient::eConnect2( const char *host, unsigned int port,
 	int clientId, int family, bool extraAuth )
 {
+	const char *errmsg;
 	int con_errno = 0;
 	int tmp;
 
@@ -224,14 +225,12 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 
 	tmp = resolveHost( host, port, family, &aitop );
 	if( tmp != 0 ) {
-		const char *err;
 #ifdef HAVE_GETADDRINFO
-		err = gai_strerror(tmp);
+		errmsg = gai_strerror(tmp);
 #else
-		err = "Invalid address, hostname resolving not supported.";
+		errmsg = "Invalid address, hostname resolving not supported.";
 #endif
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		goto end;
+		goto failsocket;
 	}
 
 	for( struct addrinfo *ai = aitop; ai != NULL; ai = ai->ai_next ) {
@@ -263,9 +262,8 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 
 	/* connection failed, tell the error which happened in our last try  */
 	if( m_fd < 0 ) {
-		const char *err = strerror(con_errno);
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		goto end;
+		errmsg = strerror(con_errno);
+		goto failsocket;
 	}
 
 	getTransport()->fd(m_fd);
@@ -276,47 +274,53 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 
 	errno = 0;
 	tmp = sendConnectRequest();
-	if (!tmp || !getTransport()->isOutBufferEmpty()) {
-		/* For now we consider it as error if it's not possible to send an
-		   integer string within a single tcp packet. Here we don't know weather
-		   ::send() really failed or not. If so then we hopefully still have
-		   it's errno set.*/
-		const char *err = (errno != 0) ? strerror(errno)
-			: "Sending client id failed.";
-		eDisconnect();
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-		goto end;
+	/* Actually EAGAIN would be an error too because even we were waiting for
+	 * write. But maybe in future we will skip waiting for real async connect */
+	if (tmp < 0 && errno != EAGAIN && errno != EWOULDBLOCK ) {
+		assert(errno);
+		errmsg = strerror(errno);
+		goto faildisconnect;
 	}
-
 	if (!m_asyncEConnect) {
-		/* TODO again we consider it as error if it's not possible to receive
+		/* For now we consider it as error if it's not possible to send an
+		 * integer string within a single tcp packet. If ::send() failed then
+		 * we hopefully still have it's errno set.*/
+		if (tmp < 0 || !getTransport()->isOutBufferEmpty()) {
+			errmsg = (errno) ? strerror(errno) : "Sending client id failed.";
+			goto faildisconnect;
+		}
+
+		/* Again we consider it as error if it's not possible to receive
 		 * the connection ACK within one tcp packet. We need an onReceive()
 		 * which processes exaclty only one message! */
 		if( wait_socket( m_fd, WAIT_READ ) <= 0 ) {
-			const char *err = (errno != 0) ? strerror(errno) : strerror(ENODATA);
-			eDisconnect();
-			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), err );
-			goto end;
+			errmsg = (errno != 0) ? strerror(errno) : strerror(ENODATA);
+			goto faildisconnect;
 		}
 
-		/* TODO, stipid that we have to create our own Reder here. Moreover
+		/* TODO, stupid that we have to create our own Reder here. Moreover
 		 * it's stupid in case !m_asyncEConnect to call user's connectAck()
 		 * callback.*/
 		RudiReader reader(this);
 		reader.onReceive(); /* may disconnect us plus error callback */
-		if (isConnected() && !m_serverVersion) {
-			getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(),
-				"couldn't get ack message from server" );
-			eDisconnect(); /* although we may already disconnected */
-			goto end;
+		if (!m_serverVersion) {
+			errmsg = "couldn't get ack message from server";
+			goto faildisconnect; /* although we may be already disconnected */
 		}
-		assert( (!isConnected() && !m_serverVersion)
-			|| (isConnected() && m_serverVersion) );
 	}
 
+	goto end; /* success */
+
+faildisconnect:
+	eDisconnect();
+
+failsocket:
+	assert( !isSocketOK() && !isConnected());
+	getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), errmsg );
+
 end:
-	fprintf(stderr, "CONNECT FINISHED ret:%d, isCon %d, connState: %d, async:%d\n",
-			isSocketOK(), isConnected(), connState(), m_asyncEConnect);
+	fprintf(stderr, "CONNECT FINISHED ret:%d, isCon %d, connState: %d, server: %d async:%d\n",
+			isSocketOK(), isConnected(), connState(), m_serverVersion, m_asyncEConnect);
 	return isSocketOK();
 }
 
