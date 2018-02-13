@@ -314,10 +314,6 @@ ESocket *RudiClient::getTransport() {
     return static_cast<ESocket*>(m_transport.get());
 }
 
-bool RudiClient::eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutPt)
-{
-}
-
 void RudiClient::encodeMsgLen(std::string& msg, unsigned offset) const
 {
 	assert( !msg.empty());
@@ -408,17 +404,9 @@ void RudiClient::serverVersion(int version, const char *time) {
 }
 
 void RudiClient::redirect(const char *host, unsigned int port) {
-	// handle redirect
-	if( (m_hostNorm != this->host() || port != this->port())) {
-        if (!m_allowRedirect) {
-            getWrapper()->error(NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
-
-            return;
-        }
-
-        eDisconnect();
-		eConnectImpl( clientId(), extraAuth(), 0);
-	}
+	/* Original implementation was broken. Let's see if this will ever happen */
+	getWrapper()->error( NO_VALID_ID, 9999,
+		"WTF, got redirect request ... ignore and see what happens.");
 }
 
 bool RudiClient::handleSocketError()

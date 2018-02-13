@@ -36,9 +36,6 @@ public:
     ESocket *getTransport();
 
 private:
-	bool eConnectImpl(int clientId, bool extraAuth, ConnState* stateOutPt);
-
-private:
 	void encodeMsgLen(std::string& msg, unsigned offset) const;
 public:
 	bool handleSocketError();
