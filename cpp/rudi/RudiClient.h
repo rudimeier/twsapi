@@ -17,6 +17,7 @@ protected:
     virtual void prepareBufferImpl(std::ostream&) const;
 	virtual void prepareBuffer(std::ostream&) const;
 	virtual bool closeAndSend(std::string msg, unsigned offset = 0);
+	virtual int bufferedSend(const std::string& msg);
 
 public:
 
@@ -38,7 +39,6 @@ public:
 private:
 	void encodeMsgLen(std::string& msg, unsigned offset) const;
 public:
-	bool handleSocketError();
 	int receive( char* buf, size_t sz);
 
 public:

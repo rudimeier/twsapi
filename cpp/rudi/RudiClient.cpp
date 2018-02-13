@@ -275,8 +275,8 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	setExtraAuth( extraAuth);
 
 	errno = 0;
-	sendConnectRequest(); /* TODO return value check! */
-	if( !getTransport()->isOutBufferEmpty() ) {
+	tmp = sendConnectRequest();
+	if (!tmp || !getTransport()->isOutBufferEmpty()) {
 		/* For now we consider it as error if it's not possible to send an
 		   integer string within a single tcp packet. Here we don't know weather
 		   ::send() really failed or not. If so then we hopefully still have
@@ -350,10 +350,23 @@ bool RudiClient::closeAndSend(std::string msg, unsigned offset)
 		encodeMsgLen( msg, offset);
 	}
 
-	if (bufferedSend(msg) == -1)
-        return handleSocketError();
+	return (bufferedSend(msg) != -1);
+}
 
-    return true;
+int RudiClient::bufferedSend(const std::string& msg)
+{
+	int nResult = EClient::bufferedSend(msg);
+	if( nResult == -1 ) {
+		if (isConnected()) {
+			const char *err = strerror(errno);
+			getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
+			eDisconnect();
+			getWrapper()->connectionClosed();
+		} else {
+			/* will be handled within eConnect() ... */
+		}
+	}
+	return nResult;
 }
 
 void RudiClient::prepareBufferImpl(std::ostream& buf) const
@@ -422,32 +435,6 @@ void RudiClient::redirect(const char *host, unsigned int port) {
 		"WTF, got redirect request ... ignore and see what happens.");
 }
 
-bool RudiClient::handleSocketError()
-{
-	// no error
-	if( errno == 0)
-		return true;
-
-	// Socket is already connected
-	if( errno == EISCONN) {
-		return true;
-	}
-
-	if( errno == EWOULDBLOCK)
-		return false;
-
-	if( errno == ECONNREFUSED) {
-		getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
-	}
-	else {
-		getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(),
-			SOCKET_EXCEPTION.msg() + strerror(errno));
-	}
-	// reset errno
-	errno = 0;
-	eDisconnect();
-	return false;
-}
 
 
 ///////////////////////////////////////////////////////////
@@ -455,8 +442,18 @@ bool RudiClient::handleSocketError()
 
 void RudiClient::onSend()
 {
-	/* TODO error handling? send() errno ... */
-	getTransport()->sendBufferedData();
+	int nResult;
+	nResult = getTransport()->sendBufferedData();
+	if( nResult == -1 ) {
+        if( isConnected() ) {
+            const char *err = strerror(errno);
+            getWrapper()->error( NO_VALID_ID, SOCKET_EXCEPTION.code(), err );
+            eDisconnect();
+            getWrapper()->connectionClosed();
+        } else {
+            /* will be handled within eConnect() ... */
+        }
+    }
 }
 
 void RudiClient::onClose()
