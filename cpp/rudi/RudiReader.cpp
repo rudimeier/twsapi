@@ -125,7 +125,7 @@ void RudiReader::select_timeout( int msec )
 	}
 }
 
-
+#if 0
 bool RudiReader::processNonBlockingSelect()
 {
 	fd_set readSet, writeSet, errorSet;
@@ -186,6 +186,7 @@ bool RudiReader::processNonBlockingSelect()
 
 	return false;
 }
+#endif
 
 void RudiReader::onReceive()
 {

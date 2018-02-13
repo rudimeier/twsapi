@@ -10,7 +10,9 @@ public:
 	RudiReader(RudiClient *clientSocket);
 	~RudiReader(void);
 
+#if 0
 	bool processNonBlockingSelect();
+#endif
 	void select_timeout( int msec );
 	void onReceive();
 
