@@ -288,6 +288,9 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 	}
 
 	if (!m_asyncEConnect) {
+		/* TODO again we consider it as error if it's not possible to receive
+		 * the connection ACK within one tcp packet. We need an onReceive()
+		 * which processes exaclty only one message! */
 		if( wait_socket( m_fd, WAIT_READ ) <= 0 ) {
 			const char *err = (errno != 0) ? strerror(errno) : strerror(ENODATA);
 			eDisconnect();
@@ -295,12 +298,14 @@ bool RudiClient::eConnect2( const char *host, unsigned int port,
 			return false;
 		}
 
+		/* TODO, stipid that we have to create our own Reder here. Moreover
+		 * it's stupid in case !m_asyncEConnect to call user's connectAck()
+		 * callback.*/
 		RudiReader reader(this);
-		/* TODO should be a while loop, like
-		 * (m_pSignal && !m_serverVersion && isSocketOK())
-		 * moreover we need an onReceive() which processes only one message! */
 		reader.onReceive();
-		assert(m_serverVersion && isSocketOK());
+		if (!m_serverVersion) {
+			return false;
+		}
 	}
 
 	fprintf(stderr, "CONNECT FINISHED %d\n", m_asyncEConnect);
