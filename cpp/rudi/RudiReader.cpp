@@ -9,13 +9,6 @@
 #include <assert.h>
 #include <string.h>
 
-// debug verbosity 0...n
-#define tws_debug_level 1
-#define TWS_DEBUG( _level, _fmt, _msg... )        \
-	if( tws_debug_level >= _level ) {    \
-		fprintf (stderr, "TWS_DEBUG: " _fmt "\n" , ## _msg); \
-	}
-
 #define IN_BLOCK_SIZE (8 * 1024)
 
 struct read_buf {

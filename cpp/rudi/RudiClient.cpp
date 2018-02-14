@@ -322,8 +322,8 @@ failsocket:
 	getWrapper()->error( NO_VALID_ID, CONNECT_FAIL.code(), errmsg );
 
 end:
-	fprintf(stderr, "CONNECT FINISHED ret:%d, isCon %d, connState: %d, server: %d async:%d\n",
-			isSocketOK(), isConnected(), connState(), m_serverVersion, m_asyncEConnect);
+	TWS_DEBUG(1, "CONNECT FINISHED ret:%d, isCon %d, connState: %d, server: %d async:%d",
+		isSocketOK(), isConnected(), connState(), m_serverVersion, m_asyncEConnect);
 	m_in_connect = false;
 	return isSocketOK();
 }
@@ -419,7 +419,7 @@ int RudiClient::receive(char* buf, size_t sz)
 void RudiClient::serverVersion(int version, const char *time) {
     m_serverVersion = version;
     m_TwsTime = time;
-	fprintf(stderr, "xserverVersion %d\n", version);
+	TWS_DEBUG(1, "xserverVersion %d", version);
     if( usingV100Plus() ? (m_serverVersion < MIN_CLIENT_VER || m_serverVersion > MAX_CLIENT_VER) : m_serverVersion < MIN_SERVER_VER_SUPPORTED ) {
         eDisconnect();
         getWrapper()->error( NO_VALID_ID, UNSUPPORTED_VERSION.code(), UNSUPPORTED_VERSION.msg());
