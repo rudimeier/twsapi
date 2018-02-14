@@ -12,12 +12,12 @@
 struct TagValue
 {
 	TagValue() {}
-	TagValue(const IBString& p_tag, const IBString& p_value)
+	TagValue(const std::string& p_tag, const std::string& p_value)
 		: tag(p_tag), value(p_value)
 	{}
 
-	IBString tag;
-	IBString value;
+	std::string tag;
+	std::string value;
 };
 
 typedef shared_ptr<TagValue> TagValueSPtr;

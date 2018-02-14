@@ -265,24 +265,24 @@ const int EXCHANGE_UNAVAIL_MSG  = 3;    // control message specifing that an exc
 namespace {
 
 struct BarData {
-	IBString date;
+	std::string date;
 	double open;
 	double high;
 	double low;
 	double close;
 	int volume;
 	double average;
-	IBString hasGaps;
+	std::string hasGaps;
 	int barCount;
 };
 
 struct ScanData {
 	ContractDetails contract;
 	int rank;
-	IBString distance;
-	IBString benchmark;
-	IBString projection;
-	IBString legsStr;
+	std::string distance;
+	std::string benchmark;
+	std::string projection;
+	std::string legsStr;
 };
 
 } // end of anonymous namespace
@@ -388,7 +388,7 @@ bool EClientSocketBase::DecodeField(double& doubleValue, const char*& ptr, const
 	return true;
 }
 
-bool EClientSocketBase::DecodeField(IBString& stringValue,
+bool EClientSocketBase::DecodeField(std::string& stringValue,
 								const char*& ptr, const char* endPtr)
 {
 	if( !CheckOffset(ptr, endPtr))
@@ -404,7 +404,7 @@ bool EClientSocketBase::DecodeField(IBString& stringValue,
 
 bool EClientSocketBase::DecodeFieldMax(int& intValue, const char*& ptr, const char* endPtr)
 {
-	IBString stringValue;
+	std::string stringValue;
 	if( !DecodeField(stringValue, ptr, endPtr))
 		return false;
 	intValue = (IsEmpty(stringValue) ? UNSET_INTEGER : Atoi(stringValue));
@@ -422,7 +422,7 @@ bool EClientSocketBase::DecodeFieldMax(long& longValue, const char*& ptr, const 
 
 bool EClientSocketBase::DecodeFieldMax(double& doubleValue, const char*& ptr, const char* endPtr)
 {
-	IBString stringValue;
+	std::string stringValue;
 	if( !DecodeField(stringValue, ptr, endPtr))
 		return false;
 	doubleValue = (IsEmpty(stringValue) ? UNSET_DOUBLE : Atof(stringValue));
@@ -509,13 +509,13 @@ int EClientSocketBase::serverVersion()
 	return m_serverVersion;
 }
 
-IBString EClientSocketBase::TwsConnectionTime()
+std::string EClientSocketBase::TwsConnectionTime()
 {
 	return m_TwsTime;
 }
 
 void EClientSocketBase::reqMktData(TickerId tickerId, const Contract& contract,
-							   const IBString& genericTicks, bool snapshot, const TagValueListSPtr& mktDataOptions)
+							   const std::string& genericTicks, bool snapshot, const TagValueListSPtr& mktDataOptions)
 {
 	// not connected?
 	if( !m_connected) {
@@ -620,7 +620,7 @@ void EClientSocketBase::reqMktData(TickerId tickerId, const Contract& contract,
 
 	// send mktDataOptions parameter
 	if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-		IBString mktDataOptionsStr("");
+		std::string mktDataOptionsStr("");
 		const int mktDataOptionsCount = mktDataOptions.get() ? mktDataOptions->size() : 0;
 		if( mktDataOptionsCount > 0) {
 			for( int i = 0; i < mktDataOptionsCount; ++i) {
@@ -710,7 +710,7 @@ void EClientSocketBase::reqMktDepth( TickerId tickerId, const Contract &contract
 
 	// send mktDepthOptions parameter
 	if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-		IBString mktDepthOptionsStr("");
+		std::string mktDepthOptionsStr("");
 		const int mktDepthOptionsCount = mktDepthOptions.get() ? mktDepthOptions->size() : 0;
 		if( mktDepthOptionsCount > 0) {
 			for( int i = 0; i < mktDepthOptionsCount; ++i) {
@@ -756,8 +756,8 @@ void EClientSocketBase::cancelMktDepth( TickerId tickerId)
 }
 
 void EClientSocketBase::reqHistoricalData( TickerId tickerId, const Contract &contract,
-									   const IBString &endDateTime, const IBString &durationStr,
-									   const IBString & barSizeSetting, const IBString &whatToShow,
+									   const std::string &endDateTime, const std::string &durationStr,
+									   const std::string & barSizeSetting, const std::string &whatToShow,
 									   int useRTH, int formatDate, const TagValueListSPtr& chartOptions)
 {
 	// not connected?
@@ -835,7 +835,7 @@ void EClientSocketBase::reqHistoricalData( TickerId tickerId, const Contract &co
 
 	// send chartOptions parameter
 	if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-		IBString chartOptionsStr("");
+		std::string chartOptionsStr("");
 		const int chartOptionsCount = chartOptions.get() ? chartOptions->size() : 0;
 		if( chartOptionsCount > 0) {
 			for( int i = 0; i < chartOptionsCount; ++i) {
@@ -879,7 +879,7 @@ void EClientSocketBase::cancelHistoricalData(TickerId tickerId)
 }
 
 void EClientSocketBase::reqRealTimeBars(TickerId tickerId, const Contract &contract,
-									int barSize, const IBString &whatToShow, bool useRTH,
+									int barSize, const std::string &whatToShow, bool useRTH,
 									const TagValueListSPtr& realTimeBarsOptions)
 {
 	// not connected?
@@ -934,7 +934,7 @@ void EClientSocketBase::reqRealTimeBars(TickerId tickerId, const Contract &contr
 
 	// send realTimeBarsOptions parameter
 	if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-		IBString realTimeBarsOptionsStr("");
+		std::string realTimeBarsOptionsStr("");
 		const int realTimeBarsOptionsCount = realTimeBarsOptions.get() ? realTimeBarsOptions->size() : 0;
 		if( realTimeBarsOptionsCount > 0) {
 			for( int i = 0; i < realTimeBarsOptionsCount; ++i) {
@@ -1052,7 +1052,7 @@ void EClientSocketBase::reqScannerSubscription(int tickerId,
 
 	// send scannerSubscriptionOptions parameter
 	if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-		IBString scannerSubscriptionOptionsStr("");
+		std::string scannerSubscriptionOptionsStr("");
 		const int scannerSubscriptionOptionsCount = scannerSubscriptionOptions.get() ? scannerSubscriptionOptions->size() : 0;
 		if( scannerSubscriptionOptionsCount > 0) {
 			for( int i = 0; i < scannerSubscriptionOptionsCount; ++i) {
@@ -1096,7 +1096,7 @@ void EClientSocketBase::cancelScannerSubscription(int tickerId)
 }
 
 void EClientSocketBase::reqFundamentalData(TickerId reqId, const Contract& contract, 
-										   const IBString& reportType)
+										   const std::string& reportType)
 {
 	// not connected?
 	if( !m_connected) {
@@ -1954,7 +1954,7 @@ void EClientSocketBase::placeOrder( OrderId id, const Contract &contract, const 
 
 	// send miscOptions parameter
 	if( m_serverVersion >= MIN_SERVER_VER_LINKING) {
-		IBString miscOptionsStr("");
+		std::string miscOptionsStr("");
 		const TagValueList* const orderMiscOptions = order.orderMiscOptions.get();
 		const int orderMiscOptionsCount = orderMiscOptions ? orderMiscOptions->size() : 0;
 		if( orderMiscOptionsCount > 0) {
@@ -1992,7 +1992,7 @@ void EClientSocketBase::cancelOrder( OrderId id)
 	bufferedSend( msg.str());
 }
 
-void EClientSocketBase::reqAccountUpdates(bool subscribe, const IBString& acctCode)
+void EClientSocketBase::reqAccountUpdates(bool subscribe, const std::string& acctCode)
 {
 	// not connected?
 	if( !m_connected) {
@@ -2231,7 +2231,7 @@ void EClientSocketBase::requestFA(faDataType pFaDataType)
 	bufferedSend( msg.str());
 }
 
-void EClientSocketBase::replaceFA(faDataType pFaDataType, const IBString& cxml)
+void EClientSocketBase::replaceFA(faDataType pFaDataType, const std::string& cxml)
 {
 	// not connected?
 	if( !m_connected) {
@@ -2261,7 +2261,7 @@ void EClientSocketBase::replaceFA(faDataType pFaDataType, const IBString& cxml)
 
 void EClientSocketBase::exerciseOptions( TickerId tickerId, const Contract &contract,
                                      int exerciseAction, int exerciseQuantity,
-                                     const IBString& account, int override)
+                                     const std::string& account, int override)
 {
 	// not connected?
 	if( !m_connected) {
@@ -2463,7 +2463,7 @@ void EClientSocketBase::cancelPositions()
 	bufferedSend( msg.str());
 }
 
-void EClientSocketBase::reqAccountSummary( int reqId, const IBString& groupName, const IBString& tags)
+void EClientSocketBase::reqAccountSummary( int reqId, const std::string& groupName, const std::string& tags)
 {
 	// not connected?
 	if( !m_connected) {
@@ -2515,7 +2515,7 @@ void EClientSocketBase::cancelAccountSummary( int reqId)
 	bufferedSend( msg.str());
 }
 
-void EClientSocketBase::verifyRequest(const IBString& apiName, const IBString& apiVersion)
+void EClientSocketBase::verifyRequest(const std::string& apiName, const std::string& apiVersion)
 {
 	// not connected?
 	if( !m_connected) {
@@ -2547,7 +2547,7 @@ void EClientSocketBase::verifyRequest(const IBString& apiName, const IBString& a
 	bufferedSend( msg.str());
 }
 
-void EClientSocketBase::verifyMessage(const IBString& apiData)
+void EClientSocketBase::verifyMessage(const std::string& apiData)
 {
 	// not connected?
 	if( !m_connected) {
@@ -2623,7 +2623,7 @@ void EClientSocketBase::subscribeToGroupEvents( int reqId, int groupId)
 	bufferedSend( msg.str());
 }
 
-void EClientSocketBase::updateDisplayGroup( int reqId, const IBString& contractInfo)
+void EClientSocketBase::updateDisplayGroup( int reqId, const std::string& contractInfo)
 {
 	// not connected?
 	if( !m_connected) {
@@ -2941,7 +2941,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				int version;
 				int tickerId;
 				int tickTypeInt;
-				IBString value;
+				std::string value;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( tickerId);
@@ -2958,10 +2958,10 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				int tickerId;
 				int tickTypeInt;
 				double basisPoints;
-				IBString formattedBasisPoints;
+				std::string formattedBasisPoints;
 				double impliedFuturesPrice;
 				int holdDays;
-				IBString futureExpiry;
+				std::string futureExpiry;
 				double dividendImpact;
 				double dividendsToExpiry;
 
@@ -2985,7 +2985,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				int orderId;
-				IBString status;
+				std::string status;
 				int filled;
 				int remaining;
 				double avgFillPrice;
@@ -2993,7 +2993,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				int parentId;
 				double lastFillPrice;
 				int clientId;
-				IBString whyHeld;
+				std::string whyHeld;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( orderId);
@@ -3019,7 +3019,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				int version;
 				int id; // ver 2 field
 				int errorCode; // ver 2 field
-				IBString errorMsg;
+				std::string errorMsg;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( id);
@@ -3098,7 +3098,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( order.goodAfterTime); // ver 5 field
 
 				{
-					IBString sharesAllocation;
+					std::string sharesAllocation;
 					DECODE_FIELD( sharesAllocation); // deprecated ver 6 field
 				}
 
@@ -3332,10 +3332,10 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			case ACCT_VALUE:
 			{
 				int version;
-				IBString key;
-				IBString val;
-				IBString cur;
-				IBString accountName;
+				std::string key;
+				std::string val;
+				std::string cur;
+				std::string accountName;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( key);
@@ -3387,7 +3387,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				DECODE_FIELD( unrealizedPNL); // ver 3 field
 				DECODE_FIELD( realizedPNL); // ver 3 field
 
-				IBString accountName;
+				std::string accountName;
 				DECODE_FIELD( accountName); // ver 4 field
 
 				if( version == 6 && serverVersion() == 39) {
@@ -3404,7 +3404,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			case ACCT_UPDATE_TIME:
 			{
 				int version;
-				IBString accountTime;
+				std::string accountTime;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( accountTime);
@@ -3645,7 +3645,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				int version;
 				int id;
 				int position;
-				IBString marketMaker;
+				std::string marketMaker;
 				int operation;
 				int side;
 				double price;
@@ -3671,8 +3671,8 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				int version;
 				int msgId;
 				int msgType;
-				IBString newsMessage;
-				IBString originatingExch;
+				std::string newsMessage;
+				std::string originatingExch;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( msgId);
@@ -3687,7 +3687,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			case MANAGED_ACCTS:
 			{
 				int version;
-				IBString accountsList;
+				std::string accountsList;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( accountsList);
@@ -3700,7 +3700,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				int faDataTypeInt;
-				IBString cxml;
+				std::string cxml;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( faDataTypeInt);
@@ -3714,8 +3714,8 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				int reqId;
-				IBString startDateStr;
-				IBString endDateStr;
+				std::string startDateStr;
+				std::string endDateStr;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( reqId);
@@ -3757,7 +3757,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 				}
 
 				// send end of dataset marker
-				IBString finishedStr = IBString("finished-") + startDateStr + "-" + endDateStr;
+				std::string finishedStr = std::string("finished-") + startDateStr + "-" + endDateStr;
 				m_pEWrapper->historicalData( reqId, finishedStr, -1, -1, -1, -1, -1, -1, -1, 0);
 				break;
 			}
@@ -3818,7 +3818,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			case SCANNER_PARAMETERS:
 			{
 				int version;
-				IBString xml;
+				std::string xml;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( xml);
@@ -3873,7 +3873,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				int reqId;
-				IBString data;
+				std::string data;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( reqId);
@@ -3908,7 +3908,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			case ACCT_DOWNLOAD_END:
 			{
 				int version;
-				IBString account;
+				std::string account;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( account);
@@ -3993,7 +3993,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			case POSITION_DATA:
 			{
 				int version;
-				IBString account;
+				std::string account;
 				int position;
 				double avgCost = 0;
 
@@ -4039,10 +4039,10 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				int reqId;
-				IBString account;
-				IBString tag;
-				IBString value;
-				IBString curency;
+				std::string account;
+				std::string tag;
+				std::string value;
+				std::string curency;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( reqId);
@@ -4070,7 +4070,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			case VERIFY_MESSAGE_API:
 			{
 				int version;
-				IBString apiData;
+				std::string apiData;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( apiData);
@@ -4082,8 +4082,8 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			case VERIFY_COMPLETED:
 			{
 				int version;
-				IBString isSuccessful;
-				IBString errorText;
+				std::string isSuccessful;
+				std::string errorText;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( isSuccessful);
@@ -4103,7 +4103,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				int reqId;
-				IBString groups;
+				std::string groups;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( reqId);
@@ -4117,7 +4117,7 @@ int EClientSocketBase::processMsg(const char*& beginPtr, const char* endPtr)
 			{
 				int version;
 				int reqId;
-				IBString contractInfo;
+				std::string contractInfo;
 
 				DECODE_FIELD( version);
 				DECODE_FIELD( reqId);

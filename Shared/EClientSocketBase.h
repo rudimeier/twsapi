@@ -48,14 +48,14 @@ public:
 
 	// override virtual funcs from EClient
 	int serverVersion();
-	IBString TwsConnectionTime();
+	std::string TwsConnectionTime();
 	void reqMktData(TickerId id, const Contract &contract,
-		const IBString &genericTicks, bool snapshot, const TagValueListSPtr& mktDataOptions);
+		const std::string &genericTicks, bool snapshot, const TagValueListSPtr& mktDataOptions);
 	void cancelMktData(TickerId id);
 	void placeOrder(OrderId id, const Contract &contract, const Order &order);
 	void cancelOrder(OrderId id) ;
 	void reqOpenOrders();
-	void reqAccountUpdates(bool subscribe, const IBString& acctCode);
+	void reqAccountUpdates(bool subscribe, const std::string& acctCode);
 	void reqExecutions(int reqId, const ExecutionFilter& filter);
 	void reqIds(int numIds);
 	bool checkMessages();
@@ -69,23 +69,23 @@ public:
 	void reqAllOpenOrders();
 	void reqManagedAccts();
 	void requestFA(faDataType pFaDataType);
-	void replaceFA(faDataType pFaDataType, const IBString& cxml);
+	void replaceFA(faDataType pFaDataType, const std::string& cxml);
 	void reqHistoricalData( TickerId id, const Contract &contract,
-		const IBString &endDateTime, const IBString &durationStr,
-		const IBString & barSizeSetting, const IBString &whatToShow,
+		const std::string &endDateTime, const std::string &durationStr,
+		const std::string & barSizeSetting, const std::string &whatToShow,
 		int useRTH, int formatDate, const TagValueListSPtr& chartOptions);
 	void exerciseOptions(TickerId tickerId, const Contract &contract,
 		int exerciseAction, int exerciseQuantity,
-		const IBString &account, int override);
+		const std::string &account, int override);
 	void cancelHistoricalData(TickerId tickerId );
 	void reqRealTimeBars(TickerId id, const Contract &contract, int barSize,
-		const IBString &whatToShow, bool useRTH, const TagValueListSPtr& realTimeBarsOptions);
+		const std::string &whatToShow, bool useRTH, const TagValueListSPtr& realTimeBarsOptions);
 	void cancelRealTimeBars(TickerId tickerId );
 	void cancelScannerSubscription(int tickerId);
 	void reqScannerParameters();
 	void reqScannerSubscription(int tickerId, const ScannerSubscription &subscription, const TagValueListSPtr& scannerSubscriptionOptions);
 	void reqCurrentTime();
-	void reqFundamentalData(TickerId reqId, const Contract&, const IBString& reportType);
+	void reqFundamentalData(TickerId reqId, const Contract&, const std::string& reportType);
 	void cancelFundamentalData(TickerId reqId);
 	void calculateImpliedVolatility(TickerId reqId, const Contract &contract, double optionPrice, double underPrice);
 	void calculateOptionPrice(TickerId reqId, const Contract &contract, double volatility, double underPrice);
@@ -95,13 +95,13 @@ public:
 	void reqMarketDataType(int marketDataType);
 	void reqPositions();
 	void cancelPositions();
-	void reqAccountSummary( int reqId, const IBString& groupName, const IBString& tags);
+	void reqAccountSummary( int reqId, const std::string& groupName, const std::string& tags);
 	void cancelAccountSummary( int reqId);
-	void verifyRequest( const IBString& apiName, const IBString& apiVersion);
-	void verifyMessage( const IBString& apiData);
+	void verifyRequest( const std::string& apiName, const std::string& apiVersion);
+	void verifyMessage( const std::string& apiData);
 	void queryDisplayGroups( int reqId);
 	void subscribeToGroupEvents( int reqId, int groupId);
-	void updateDisplayGroup( int reqId, const IBString& contractInfo);
+	void updateDisplayGroup( int reqId, const std::string& contractInfo);
 	void unsubscribeFromGroupEvents( int reqId);
 
 private:
@@ -137,7 +137,7 @@ private:
 	static bool DecodeField(int&, const char*& ptr, const char* endPtr);
 	static bool DecodeField(long&, const char*& ptr, const char* endPtr);
 	static bool DecodeField(double&, const char*& ptr, const char* endPtr);
-	static bool DecodeField(IBString&, const char*& ptr, const char* endPtr);
+	static bool DecodeField(std::string&, const char*& ptr, const char* endPtr);
 
 	static bool DecodeFieldMax(int&, const char*& ptr, const char* endPtr);
 	static bool DecodeFieldMax(long&, const char*& ptr, const char* endPtr);
@@ -177,7 +177,7 @@ private:
 	bool m_connected;
 	bool m_extraAuth;
 	int m_serverVersion;
-	IBString m_TwsTime;
+	std::string m_TwsTime;
 
 };
 

@@ -27,14 +27,14 @@ struct ComboLeg
 
 	long		conId;
 	long		ratio;
-	IBString	action; //BUY/SELL/SSHORT
+	std::string	action; //BUY/SELL/SSHORT
 
-	IBString	exchange;
+	std::string	exchange;
 	long		openClose; // LegOpenClose enum values
 
 	// for stock legs when doing short sale
 	long		shortSaleSlot; // 1 = clearing broker, 2 = third party
-	IBString	designatedLocation;
+	std::string	designatedLocation;
 	int			exemptCode;
 
 	bool operator==( const ComboLeg &other) const
@@ -77,23 +77,23 @@ struct Contract
 	}
 
 	long		conId;
-	IBString	symbol;
-	IBString	secType;
-	IBString	expiry;
+	std::string	symbol;
+	std::string	secType;
+	std::string	expiry;
 	double		strike;
-	IBString	right;
-	IBString	multiplier;
-	IBString	exchange;
-	IBString	primaryExchange; // pick an actual (ie non-aggregate) exchange that the contract trades on.  DO NOT SET TO SMART.
-	IBString	currency;
-	IBString	localSymbol;
-	IBString	tradingClass;
+	std::string	right;
+	std::string	multiplier;
+	std::string	exchange;
+	std::string	primaryExchange; // pick an actual (ie non-aggregate) exchange that the contract trades on.  DO NOT SET TO SMART.
+	std::string	currency;
+	std::string	localSymbol;
+	std::string	tradingClass;
 	bool		includeExpired;
-	IBString	secIdType;		// CUSIP;SEDOL;ISIN;RIC
-	IBString	secId;
+	std::string	secIdType;		// CUSIP;SEDOL;ISIN;RIC
+	std::string	secId;
 
 	// COMBOS
-	IBString comboLegsDescrip; // received in open order 14 and up for all combos
+	std::string comboLegsDescrip; // received in open order 14 and up for all combos
 
 	// combo legs
 	typedef std::vector<ComboLegSPtr> ComboLegList;
@@ -126,41 +126,41 @@ struct ContractDetails
 	}
 
 	Contract	summary;
-	IBString	marketName;
+	std::string	marketName;
 	double		minTick;
-	IBString	orderTypes;
-	IBString	validExchanges;
+	std::string	orderTypes;
+	std::string	validExchanges;
 	long		priceMagnifier;
 	int			underConId;
-	IBString	longName;
-	IBString	contractMonth;
-	IBString	industry;
-	IBString	category;
-	IBString	subcategory;
-	IBString	timeZoneId;
-	IBString	tradingHours;
-	IBString	liquidHours;
-	IBString	evRule;
+	std::string	longName;
+	std::string	contractMonth;
+	std::string	industry;
+	std::string	category;
+	std::string	subcategory;
+	std::string	timeZoneId;
+	std::string	tradingHours;
+	std::string	liquidHours;
+	std::string	evRule;
 	double		evMultiplier;
 
 	TagValueListSPtr secIdList;
 
 	// BOND values
-	IBString	cusip;
-	IBString	ratings;
-	IBString	descAppend;
-	IBString	bondType;
-	IBString	couponType;
+	std::string	cusip;
+	std::string	ratings;
+	std::string	descAppend;
+	std::string	bondType;
+	std::string	couponType;
 	bool		callable;
 	bool		putable;
 	double		coupon;
 	bool		convertible;
-	IBString	maturity;
-	IBString	issueDate;
-	IBString	nextOptionDate;
-	IBString	nextOptionType;
+	std::string	maturity;
+	std::string	issueDate;
+	std::string	nextOptionDate;
+	std::string	nextOptionType;
 	bool		nextOptionPartial;
-	IBString	notes;
+	std::string	notes;
 };
 
 inline void

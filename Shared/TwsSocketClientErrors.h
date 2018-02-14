@@ -10,14 +10,14 @@ static const int SYSTEM_ERROR = 600;
 
 class CodeMsgPair {
 public:
-	CodeMsgPair(int code, IBString msg) : m_errorCode(code), m_errorMsg(msg) {
+	CodeMsgPair(int code, std::string msg) : m_errorCode(code), m_errorMsg(msg) {
 	}
 private:
 	int m_errorCode;
-	IBString m_errorMsg;
+	std::string m_errorMsg;
 public:
 	int	  code() const			        { return m_errorCode; }
-	const IBString& msg() const			{ return m_errorMsg;  }
+	const std::string& msg() const			{ return m_errorMsg;  }
 };
 
 static const CodeMsgPair ALREADY_CONNECTED(501,	"Already connected.");

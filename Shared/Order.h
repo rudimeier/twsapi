@@ -140,19 +140,19 @@ struct Order
 	long     permId;
 
 	// main order fields
-	IBString action;
+	std::string action;
 	long     totalQuantity;
-	IBString orderType;
+	std::string orderType;
 	double   lmtPrice;
 	double   auxPrice;
 
 	// extended order fields
-	IBString tif;           // "Time in Force" - DAY, GTC, etc.
-	IBString activeStartTime;	// for GTC orders
-	IBString activeStopTime;	// for GTC orders
-	IBString ocaGroup;      // one cancels all group name
+	std::string tif;           // "Time in Force" - DAY, GTC, etc.
+	std::string activeStartTime;	// for GTC orders
+	std::string activeStopTime;	// for GTC orders
+	std::string ocaGroup;      // one cancels all group name
 	int      ocaType;       // 1 = CANCEL_WITH_BLOCK, 2 = REDUCE_WITH_BLOCK, 3 = REDUCE_NON_BLOCK
-	IBString orderRef;      // order reference
+	std::string orderRef;      // order reference
 	bool     transmit;      // if false, order will be created but not transmited
 	long     parentId;      // Parent order Id, to associate Auto STP or TRAIL orders with the original order.
 	bool     blockOrder;
@@ -161,9 +161,9 @@ struct Order
 	int      triggerMethod; // 0=Default, 1=Double_Bid_Ask, 2=Last, 3=Double_Last, 4=Bid_Ask, 7=Last_or_Bid_Ask, 8=Mid-point
 	bool     outsideRth;
 	bool     hidden;
-	IBString goodAfterTime;    // Format: 20060505 08:00:00 {time zone}
-	IBString goodTillDate;     // Format: 20060505 08:00:00 {time zone}
-	IBString rule80A; // Individual = 'I', Agency = 'A', AgentOtherMember = 'W', IndividualPTIA = 'J', AgencyPTIA = 'U', AgentOtherMemberPTIA = 'M', IndividualPT = 'K', AgencyPT = 'Y', AgentOtherMemberPT = 'N'
+	std::string goodAfterTime;    // Format: 20060505 08:00:00 {time zone}
+	std::string goodTillDate;     // Format: 20060505 08:00:00 {time zone}
+	std::string rule80A; // Individual = 'I', Agency = 'A', AgentOtherMember = 'W', IndividualPTIA = 'J', AgencyPTIA = 'U', AgentOtherMemberPTIA = 'M', IndividualPT = 'K', AgencyPT = 'Y', AgentOtherMemberPT = 'N'
 	bool     allOrNone;
 	int      minQty;
 	double   percentOffset; // REL orders only
@@ -172,16 +172,16 @@ struct Order
 	double   trailingPercent;
 
 	// financial advisors only
-	IBString faGroup;
-	IBString faProfile;
-	IBString faMethod;
-	IBString faPercentage;
+	std::string faGroup;
+	std::string faProfile;
+	std::string faMethod;
+	std::string faPercentage;
 
 	// institutional (ie non-cleared) only
-	IBString openClose; // O=Open, C=Close
+	std::string openClose; // O=Open, C=Close
 	Origin   origin;    // 0=Customer, 1=Firm
 	int      shortSaleSlot; // 1 if you hold the shares, 2 if they will be delivered from elsewhere.  Only for Action="SSHORT
-	IBString designatedLocation; // set when slot=2 only.
+	std::string designatedLocation; // set when slot=2 only.
 	int      exemptCode;
 
 	// SMART routing only
@@ -204,16 +204,16 @@ struct Order
 	// VOLATILITY ORDERS ONLY
 	double   volatility;
 	int      volatilityType;     // 1=daily, 2=annual
-	IBString deltaNeutralOrderType;
+	std::string deltaNeutralOrderType;
 	double   deltaNeutralAuxPrice;
 	long     deltaNeutralConId;
-	IBString deltaNeutralSettlingFirm;
-	IBString deltaNeutralClearingAccount;
-	IBString deltaNeutralClearingIntent;
-	IBString deltaNeutralOpenClose;
+	std::string deltaNeutralSettlingFirm;
+	std::string deltaNeutralClearingAccount;
+	std::string deltaNeutralClearingIntent;
+	std::string deltaNeutralOpenClose;
 	bool     deltaNeutralShortSale;
 	int      deltaNeutralShortSaleSlot;
-	IBString deltaNeutralDesignatedLocation;
+	std::string deltaNeutralDesignatedLocation;
 	bool     continuousUpdate;
 	int      referencePriceType; // 1=Average, 2 = BidOrAsk
 
@@ -232,25 +232,25 @@ struct Order
 	int      scaleInitPosition;
 	int      scaleInitFillQty;
 	bool     scaleRandomPercent;
-	IBString scaleTable;
+	std::string scaleTable;
 
 	// HEDGE ORDERS
-	IBString hedgeType;  // 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
-	IBString hedgeParam; // 'beta=X' value for beta hedge, 'ratio=Y' for pair hedge
+	std::string hedgeType;  // 'D' - delta, 'B' - beta, 'F' - FX, 'P' - pair
+	std::string hedgeParam; // 'beta=X' value for beta hedge, 'ratio=Y' for pair hedge
 
 	// Clearing info
-	IBString account; // IB account
-	IBString settlingFirm;
-	IBString clearingAccount; // True beneficiary of the order
-	IBString clearingIntent; // "" (Default), "IB", "Away", "PTA" (PostTrade)
+	std::string account; // IB account
+	std::string settlingFirm;
+	std::string clearingAccount; // True beneficiary of the order
+	std::string clearingIntent; // "" (Default), "IB", "Away", "PTA" (PostTrade)
 
 	// ALGO ORDERS ONLY
-	IBString algoStrategy;
+	std::string algoStrategy;
 
 	TagValueListSPtr algoParams;
 	TagValueListSPtr smartComboRoutingParams;
 
-	IBString algoId;
+	std::string algoId;
 
 	// What-if
 	bool     whatIf;

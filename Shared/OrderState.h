@@ -15,18 +15,18 @@ struct OrderState {
 		maxCommission(UNSET_DOUBLE)
 	{}
 
-	IBString status;
+	std::string status;
 
-	IBString initMargin;
-	IBString maintMargin;
-	IBString equityWithLoan;
+	std::string initMargin;
+	std::string maintMargin;
+	std::string equityWithLoan;
 
 	double  commission;
 	double  minCommission;
 	double  maxCommission;
-	IBString commissionCurrency;
+	std::string commissionCurrency;
 
-	IBString warningText;
+	std::string warningText;
 };
 
 #endif

@@ -14,7 +14,7 @@ typedef CString IBString;
 
 #include <stdlib.h>
 
-inline bool IsEmpty(const IBString& str)
+inline bool IsEmpty(const std::string& str)
 {
 #ifdef IB_USE_STD_STRING
 	return str.empty();
@@ -23,7 +23,7 @@ inline bool IsEmpty(const IBString& str)
 #endif
 };
 
-inline void Empty(IBString& str)
+inline void Empty(std::string& str)
 {
 #ifdef IB_USE_STD_STRING
 	str.erase();
@@ -32,7 +32,7 @@ inline void Empty(IBString& str)
 #endif
 };
 
-inline bool Compare(IBString str, const char* strToCompare)
+inline bool Compare(std::string str, const char* strToCompare)
 {
 #ifdef IB_USE_STD_STRING
 	return str.compare(strToCompare);
@@ -41,7 +41,7 @@ inline bool Compare(IBString str, const char* strToCompare)
 #endif
 };
 
-inline bool Compare(IBString str, IBString strToCompare)
+inline bool Compare(std::string str, std::string strToCompare)
 {
 #ifdef IB_USE_STD_STRING
 	return str.compare(strToCompare);
@@ -50,7 +50,7 @@ inline bool Compare(IBString str, IBString strToCompare)
 #endif
 };
 
-inline double Atof(IBString str)
+inline double Atof(std::string str)
 {
 #ifdef IB_USE_STD_STRING
 	return atof(str.c_str());
@@ -59,7 +59,7 @@ inline double Atof(IBString str)
 #endif
 };
 
-inline int Atoi(IBString str)
+inline int Atoi(std::string str)
 {
 #ifdef IB_USE_STD_STRING
 	return atoi(str.c_str());
