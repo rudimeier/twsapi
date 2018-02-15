@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2017 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
@@ -12,6 +12,7 @@
 #include "Order.h"
 
 #include <stdio.h>
+#include <iostream>
 
 const int PING_DEADLINE = 2; // seconds
 const int SLEEP_BETWEEN_PINGS = 30; // seconds
@@ -73,9 +74,8 @@ void TestCppClient::setConnectOptions(const std::string& connectOptions)
 }
 
 void TestCppClient::processMessages() {
-	fd_set readSet, writeSet, errorSet;
 
-	struct timeval tval;
+    struct timeval tval;
 	tval.tv_usec = 0;
 	tval.tv_sec = 0;
 
@@ -172,9 +172,8 @@ void TestCppClient::cancelOrder()
 ///////////////////////////////////////////////////////////////////
 // events
 void TestCppClient::orderStatus( OrderId orderId, const std::string& status, double filled,
-	                            double remaining, double avgFillPrice, int permId, int parentId,
-	                            double lastFillPrice, int clientId, const std::string& whyHeld)
-
+        double remaining, double avgFillPrice, int permId, int parentId,
+        double lastFillPrice, int clientId, const std::string& whyHeld, double mktCapPrice)
 {
 	if( orderId == m_orderId) {
 		if( m_state == ST_PLACEORDER_ACK && (status == "PreSubmitted" || status == "Submitted"))
@@ -216,7 +215,7 @@ void TestCppClient::error(const int id, const int errorCode, const std::string e
 		disconnect();
 }
 
-void TestCppClient::tickPrice( TickerId tickerId, TickType field, double price, int canAutoExecute) {}
+void TestCppClient::tickPrice( TickerId tickerId, TickType field, double price, const TickAttrib& attrib) {};
 void TestCppClient::tickSize( TickerId tickerId, TickType field, int size) {}
 void TestCppClient::tickOptionComputation( TickerId tickerId, TickType tickType, double impliedVol, double delta,
                                           double optPrice, double pvDividend,
@@ -249,9 +248,11 @@ void TestCppClient::updateMktDepthL2(TickerId id, int position, std::string mark
 void TestCppClient::updateNewsBulletin(int msgId, int msgType, const std::string& newsMessage, const std::string& originExch) {}
 void TestCppClient::managedAccounts( const std::string& accountsList) {}
 void TestCppClient::receiveFA(faDataType pFaDataType, const std::string& cxml) {}
-void TestCppClient::historicalData(TickerId reqId, const std::string& date, double open, double high,
-                                   double low, double close, int volume, int barCount, double WAP, int hasGaps) {}
+void TestCppClient::historicalData(TickerId reqId, Bar bar) {}
 void TestCppClient::scannerParameters(const std::string& xml) {}
+void TestCppClient::historicalDataEnd(int reqId, std::string startDateStr, std::string endDateStr) { 
+	std::cout << "HistoricalDataEnd. ReqId: " << reqId << " - Start Date: " << startDateStr << ", End Date: " << endDateStr << std::endl;	
+}
 void TestCppClient::scannerData(int reqId, int rank, const ContractDetails& contractDetails,
                                 const std::string& distance, const std::string& benchmark, const std::string& projection,
                                 const std::string& legsStr) {}
@@ -282,5 +283,32 @@ void TestCppClient::positionMulti( int reqId, const std::string& account,const s
 void TestCppClient::positionMultiEnd( int reqId) {}
 void TestCppClient::accountUpdateMulti( int reqId, const std::string& account, const std::string& modelCode, const std::string& key, const std::string& value, const std::string& currency) {}
 void TestCppClient::accountUpdateMultiEnd( int reqId) {}
-void TestCppClient::securityDefinitionOptionalParameter(int reqId, int underlyingConId, const std::string& tradingClass, const std::string& multiplier, std::set<std::string> expirations, std::set<double> strikes) {}
+void TestCppClient::securityDefinitionOptionalParameter(int reqId, const std::string& exchange, int underlyingConId, const std::string& tradingClass, const std::string& multiplier, std::set<std::string> expirations, std::set<double> strikes) {}
 void TestCppClient::securityDefinitionOptionalParameterEnd(int reqId) {}
+void TestCppClient::softDollarTiers(int reqId, const std::vector<SoftDollarTier> &tiers) {}
+void TestCppClient::familyCodes(const std::vector<FamilyCode> &familyCodes) {}
+void TestCppClient::symbolSamples(int reqId, const std::vector<ContractDescription> &contractDescriptions) {}
+void TestCppClient::mktDepthExchanges(const std::vector<DepthMktDataDescription> &depthMktDataDescriptions) {}
+void TestCppClient::tickNews(int tickerId, time_t timeStamp, const std::string& providerCode, const std::string& articleId, const std::string& headline, const std::string& extraData) {}
+void TestCppClient::smartComponents(int reqId, SmartComponentsMap theMap) {}
+void TestCppClient::tickReqParams(int tickerId, double minTick, std::string bboExchange, int snapshotPermissions) {}
+void TestCppClient::newsProviders(const std::vector<NewsProvider> &newsProviders) {}
+void TestCppClient::newsArticle(int requestId, int articleType, const std::string& articleText) {}
+void TestCppClient::historicalNews(int requestId, const std::string& time, const std::string& providerCode, const std::string& articleId, const std::string& headline) {}
+void TestCppClient::historicalNewsEnd(int requestId, bool hasMore) {}
+void TestCppClient::headTimestamp(int reqId, const std::string& headTimestamp) {}
+void TestCppClient::histogramData(int reqId, HistogramDataVector data) {}
+void TestCppClient::historicalDataUpdate(TickerId reqId, Bar bar) {}
+void TestCppClient::rerouteMktDataReq(int reqId, int conid, const std::string& exchange) {}
+void TestCppClient::rerouteMktDepthReq(int reqId, int conid, const std::string& exchange) {}
+void TestCppClient::marketRule(int marketRuleId, const std::vector<PriceIncrement> &priceIncrements) {}
+void TestCppClient::dailyPnL(int reqId, double dailyPnL) {}
+void TestCppClient::dailyPnLSingle(int reqId, int pos, double dailyPnL, double value) {}
+void TestCppClient::pnl(int reqId, double dailyPnL, double unrealizedPnL, double realizedPnL) {}
+void TestCppClient::pnlSingle(int reqId, int pos, double dailyPnL, double unrealizedPnL, double realizedPnL, double value) {}
+void TestCppClient::historicalTicks(int reqId, const std::vector<HistoricalTick>& ticks, bool done) {}
+void TestCppClient::historicalTicksBidAsk(int reqId, const std::vector<HistoricalTickBidAsk>& ticks, bool done) {}
+void TestCppClient::historicalTicksLast(int reqId, const std::vector<HistoricalTickLast>& ticks, bool done) {}
+void TestCppClient::tickByTickAllLast(int reqId, int tickType, time_t time, double price, int size, const TickAttrib& attribs, const std::string& exchange, const std::string& specialConditions) {}
+void TestCppClient::tickByTickBidAsk(int reqId, time_t time, double bidPrice, double askPrice, int bidSize, int askSize, const TickAttrib& attribs) {}
+void TestCppClient::tickByTickMidPoint(int reqId, time_t time, double midPoint) {}

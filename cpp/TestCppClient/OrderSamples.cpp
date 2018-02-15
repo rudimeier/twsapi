@@ -345,6 +345,24 @@ Order OrderSamples::LimitOrder(std::string action, double quantity, double limit
 }
 
 	/// <summary>
+	/// Forex orders can be placed in denomination of second currency in pair using cashQty field
+	/// Requires TWS or IBG 963+
+	/// https://www.interactivebrokers.com/en/index.php?f=23876#963-02
+	/// </summary>
+
+Order OrderSamples::LimitOrderWithCashQty(std::string action, double quantity, double limitPrice, double cashQty){
+	// ! [limitorderwithcashqty]
+	Order order;
+	order.action = action;
+	order.orderType = "LMT";
+	order.totalQuantity = quantity;
+	order.lmtPrice = limitPrice;
+	order.cashQty = cashQty;
+	// ! [limitorderwithcashqty]
+	return order;
+}
+
+	/// <summary>
     /// A Limit if Touched is an order to buy (or sell) a contract at a specified price or better, below (or above) the market. This order is 
     /// held in the system until the trigger price is touched. An LIT order is similar to a stop limit order, except that an LIT sell order is 
     /// placed above the current market price, and a stop limit sell order is placed below.
@@ -425,13 +443,14 @@ Order OrderSamples::PassiveRelative(std::string action, double quantity, double 
     /// to be more aggressive. If the market moves in the opposite direction, the order will execute.
     /// Products: STK
     /// </summary>
-Order OrderSamples::PeggedToMidpoint(std::string action, double quantity, double offset){
+Order OrderSamples::PeggedToMidpoint(std::string action, double quantity, double offset, double limitPrice){
 	// ! [pegged_midpoint]
 	Order order;
 	order.action = action;
 	order.orderType = "PEG MID";
 	order.totalQuantity = quantity;
 	order.auxPrice = offset;
+	order.lmtPrice = limitPrice;
 	// ! [pegged_midpoint]
 	return order;
 }
@@ -593,14 +612,14 @@ Order OrderSamples::TrailingStop(std::string action, double quantity, double tra
     /// and is generally used in falling markets.
     /// Products: BOND, CFD, CASH, FUT, FOP, OPT, STK, WAR
     /// </summary>
-Order OrderSamples::TrailingStopLimit(std::string action, double quantity, double limitPrice, double trailingAmount, double trailStopPrice){
+Order OrderSamples::TrailingStopLimit(std::string action, double quantity, double lmtPriceOffset, double trailingAmount, double trailStopPrice){
 	// ! [trailingstoplimit]
 	Order order;
 	order.action = action;
 	order.orderType = "TRAIL LIMIT";
 	order.totalQuantity = quantity;
 	order.trailStopPrice = trailStopPrice;
-	order.lmtPrice = limitPrice;
+	order.lmtPriceOffset = lmtPriceOffset;
 	order.auxPrice = trailingAmount;
 	// ! [trailingstoplimit]
 	return order;
@@ -842,6 +861,29 @@ Order OrderSamples::AttachAdjustableToStopLimit(Order parent, double attachedOrd
 	//And the given limit price
 	order.adjustedStopLimitPrice = adjustedStopLimitPrice;
 	//! [adjustable_stop_limit]
+	return order;
+}
+
+Order OrderSamples::AttachAdjustableToTrail(Order parent, double attachedOrderStopPrice, double triggerPrice, double adjustStopPrice, double adjustedTrailAmount, int trailUnit){
+	//! [adjustable_trail]
+	//Attached order is a conventional STP order
+	Order order;
+	order.action = (parent.action == "BUY") ? "SELL": "BUY";
+	order.orderType = "STP";
+	order.totalQuantity = parent.totalQuantity;
+	order.auxPrice = attachedOrderStopPrice;
+	order.parentId = parent.orderId;
+	//When trigger price is penetrated
+	order.triggerPrice = triggerPrice;
+	//The parent order will be turned into a TRAIL order
+	order.adjustedOrderType = "TRAIL";
+	//With a stop price of...
+	order.adjustedStopPrice = adjustStopPrice;
+	//traling by and amount (0) or a percent (1)...
+	order.adjustableTrailingUnit = trailUnit;
+	//of...
+	order.adjustedTrailingAmount = adjustedTrailAmount;
+	//! [adjustable_trail]
 	return order;
 }
 

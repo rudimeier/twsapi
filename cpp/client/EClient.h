@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
@@ -12,6 +12,7 @@
 #include <iosfwd>
 #include "CommonDefs.h"
 #include "TagValue.h"
+#include "Contract.h"
 
 namespace ibapi {
 namespace client_constants {
@@ -161,8 +162,27 @@ const int REQ_POSITIONS_MULTI           = 74;
 const int CANCEL_POSITIONS_MULTI        = 75;
 const int REQ_ACCOUNT_UPDATES_MULTI     = 76;
 const int CANCEL_ACCOUNT_UPDATES_MULTI  = 77;
-const int REQ_SEC_DEF_OPT_PARAMS		= 78;
-const int REQ_SOFT_DOLLAR_TIERS			= 79;
+const int REQ_SEC_DEF_OPT_PARAMS        = 78;
+const int REQ_SOFT_DOLLAR_TIERS         = 79;
+const int REQ_FAMILY_CODES              = 80;
+const int REQ_MATCHING_SYMBOLS          = 81;
+const int REQ_MKT_DEPTH_EXCHANGES       = 82;
+const int REQ_SMART_COMPONENTS          = 83;
+const int REQ_NEWS_ARTICLE              = 84;
+const int REQ_NEWS_PROVIDERS            = 85;
+const int REQ_HISTORICAL_NEWS           = 86;
+const int REQ_HEAD_TIMESTAMP            = 87;
+const int REQ_HISTOGRAM_DATA            = 88;
+const int CANCEL_HISTOGRAM_DATA         = 89;
+const int CANCEL_HEAD_TIMESTAMP         = 90;
+const int REQ_MARKET_RULE               = 91;
+const int REQ_PNL                       = 92;
+const int CANCEL_PNL                    = 93;
+const int REQ_PNL_SINGLE                = 94;
+const int CANCEL_PNL_SINGLE             = 95;
+const int REQ_HISTORICAL_TICKS          = 96;
+const int REQ_TICK_BY_TICK_DATA         = 97;
+const int CANCEL_TICK_BY_TICK_DATA      = 98;
 
 // TWS New Bulletins constants
 const int NEWS_MSG              = 1;    // standard IB news bulleting message
@@ -187,7 +207,7 @@ class TWSAPIDLLEXP EClient
 public:
 
 	explicit EClient(EWrapper *ptr, ETransport *pTransport);
-	~EClient();
+	virtual ~EClient();
 
 	virtual void eDisconnect() = 0;
 
@@ -226,10 +246,10 @@ public:
 	// access to protected variables
 	EWrapper * getWrapper() const;
 protected:
-	void setClientId( int clientId);
-	void setExtraAuth( bool extraAuth);
-	void setHost( const std::string& host);
-	void setPort( unsigned port);
+	void setClientId(int clientId);
+	void setExtraAuth(bool extraAuth);
+	void setHost(const std::string& host);
+	void setPort(unsigned port);
 
 public:
 
@@ -239,7 +259,7 @@ public:
 	int serverVersion();
 	std::string TwsConnectionTime();
 	void reqMktData(TickerId id, const Contract& contract,
-		const std::string& genericTicks, bool snapshot, const TagValueListSPtr& mktDataOptions);
+		const std::string& genericTicks, bool snapshot, bool regulatorySnaphsot, const TagValueListSPtr& mktDataOptions);
 	void cancelMktData(TickerId id);
 	void placeOrder(OrderId id, const Contract& contract, const Order& order);
 	void cancelOrder(OrderId id) ;
@@ -258,10 +278,10 @@ public:
 	void reqManagedAccts();
 	void requestFA(faDataType pFaDataType);
 	void replaceFA(faDataType pFaDataType, const std::string& cxml);
-	void reqHistoricalData( TickerId id, const Contract& contract,
+	void reqHistoricalData(TickerId id, const Contract& contract,
 		const std::string& endDateTime, const std::string& durationStr,
 		const std::string&  barSizeSetting, const std::string& whatToShow,
-		int useRTH, int formatDate, const TagValueListSPtr& chartOptions);
+		int useRTH, int formatDate, bool keepUpToDate, const TagValueListSPtr& chartOptions);
 	void exerciseOptions(TickerId tickerId, const Contract& contract,
 		int exerciseAction, int exerciseQuantity,
 		const std::string& account, int override);
@@ -283,22 +303,44 @@ public:
 	void reqMarketDataType(int marketDataType);
 	void reqPositions();
 	void cancelPositions();
-	void reqAccountSummary( int reqId, const std::string& groupName, const std::string& tags);
-	void cancelAccountSummary( int reqId);
-	void verifyRequest( const std::string& apiName, const std::string& apiVersion);
-	void verifyMessage( const std::string& apiData);
-	void verifyAndAuthRequest( const std::string& apiName, const std::string& apiVersion, const std::string& opaqueIsvKey);
-	void verifyAndAuthMessage( const std::string& apiData, const std::string& xyzResponse);
-	void queryDisplayGroups( int reqId);
-	void subscribeToGroupEvents( int reqId, int groupId);
-	void updateDisplayGroup( int reqId, const std::string& contractInfo);
-	void unsubscribeFromGroupEvents( int reqId);
-	void reqPositionsMulti( int reqId, const std::string& account, const std::string& modelCode);
-	void cancelPositionsMulti( int reqId);
-	void reqAccountUpdatessMulti( int reqId, const std::string& account, const std::string& modelCode, bool ledgerAndNLV);
-	void cancelAccountUpdatesMulti( int reqId);
+	void reqAccountSummary(int reqId, const std::string& groupName, const std::string& tags);
+	void cancelAccountSummary(int reqId);
+	void verifyRequest(const std::string& apiName, const std::string& apiVersion);
+	void verifyMessage(const std::string& apiData);
+	void verifyAndAuthRequest(const std::string& apiName, const std::string& apiVersion, const std::string& opaqueIsvKey);
+	void verifyAndAuthMessage(const std::string& apiData, const std::string& xyzResponse);
+	void queryDisplayGroups(int reqId);
+	void subscribeToGroupEvents(int reqId, int groupId);
+	void updateDisplayGroup(int reqId, const std::string& contractInfo);
+	void unsubscribeFromGroupEvents(int reqId);
+	void reqPositionsMulti(int reqId, const std::string& account, const std::string& modelCode);
+	void cancelPositionsMulti(int reqId);
+	void reqAccountUpdatessMulti(int reqId, const std::string& account, const std::string& modelCode, bool ledgerAndNLV);
+	void cancelAccountUpdatesMulti(int reqId);
 	void reqSecDefOptParams(int reqId, const std::string& underlyingSymbol, const std::string& futFopExchange, const std::string& underlyingSecType, int underlyingConId);
 	void reqSoftDollarTiers(int reqId);
+	void reqFamilyCodes();
+	void reqMatchingSymbols(int reqId, const std::string& pattern);
+	void reqMktDepthExchanges();
+	void reqSmartComponents(int reqId, std::string bboExchange);
+	void reqNewsProviders();
+	void reqNewsArticle(int requestId, const std::string& providerCode, const std::string& articleId, const TagValueListSPtr& newsArticleOptions);
+	void reqHistoricalNews(int requestId, int conId, const std::string& providerCodes, const std::string& startDateTime, const std::string& endDateTime, int totalResults, 
+		const TagValueListSPtr& historicalNewsOptions);
+	void reqHeadTimestamp(int tickerId, const Contract &contract, const std::string& whatToShow, int useRTH, int formatDate);
+	void cancelHeadTimestamp(int tickerId);
+	void reqHistogramData(int reqId, const Contract &contract, bool useRTH, const std::string& timePeriod);
+	void cancelHistogramData(int reqId);
+	void reqMarketRule(int marketRuleId);
+
+	void reqPnL(int reqId, const std::string& account, const std::string& modelCode);
+	void cancelPnL(int reqId);
+	void reqPnLSingle(int reqId, const std::string& account, const std::string& modelCode, int conId);
+	void cancelPnLSingle(int reqId);
+    void reqHistoricalTicks(int reqId, const Contract &contract, const std::string& startDateTime,
+            const std::string& endDateTime, int numberOfTicks, const std::string& whatToShow, int useRth, bool ignoreSize, const TagValueListSPtr& miscOptions);
+    void reqTickByTickData(int reqId, const Contract &contract, const std::string& tickType);
+    void cancelTickByTickData(int reqId);
 
 private:
 
@@ -330,6 +372,9 @@ public:
 	// encoders
 	template<class T> static void EncodeField(std::ostream&, T);
 
+    void EncodeContract(std::ostream& os, const Contract &contract);
+    void EncodeTagValueList(std::ostream& os, const TagValueListSPtr &tagValueList);
+
 	// "max" encoders
 	static void EncodeFieldMax(std::ostream& os, int);
 	static void EncodeFieldMax(std::ostream& os, double);
@@ -347,7 +392,7 @@ protected:
 protected:
 
 	EWrapper *m_pEWrapper;
-    std::auto_ptr<ETransport> m_transport;
+	std::unique_ptr<ETransport> m_transport;
 
 private:
 	BytesVec m_inBuffer;
@@ -377,6 +422,8 @@ protected:
 template<> void EClient::EncodeField<bool>(std::ostream& os, bool);
 template<> void EClient::EncodeField<double>(std::ostream& os, double);
 
+#define ENCODE_CONTRACT(x) EClient::EncodeContract(msg, x);
+#define ENCODE_TAGVALUELIST(x) EClient::EncodeTagValueList(msg, x);
 #define ENCODE_FIELD(x) EClient::EncodeField(msg, x);
 #define ENCODE_FIELD_MAX(x) EClient::EncodeFieldMax(msg, x);
 

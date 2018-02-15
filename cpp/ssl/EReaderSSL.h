@@ -9,7 +9,7 @@
 #include "../client/EReaderOSSignal.h"
 
 class EClientSocketSSL;
-class EReaderSignal;
+struct EReaderSignal;
 class EMessage;
 
 class TWSAPISSLDLLEXP EReaderSSL

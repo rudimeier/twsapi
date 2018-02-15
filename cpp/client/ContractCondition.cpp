@@ -4,9 +4,9 @@
 #include "EClient.h"
 
 std::string ContractCondition::toString() {
-	std::string strContract = conId() + "";
+    std::string strContract = std::to_string(conId()) + "";
 
-	return type() + " of " + strContract + OperatorCondition::toString();
+    return std::to_string(type()) + " of " + strContract + OperatorCondition::toString();
 }
 
 const char* ContractCondition::readExternal(const char* ptr, const char* endPtr) {

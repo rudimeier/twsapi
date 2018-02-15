@@ -16,6 +16,7 @@ class TWSAPIDLLEXP EReaderOSSignal :
 #if defined(IB_POSIX)
     pthread_cond_t m_evMsgs;
     pthread_mutex_t m_mutex;
+    bool open;
 #elif defined(IB_WIN32)
 	HANDLE m_evMsgs;
 #else
@@ -25,7 +26,7 @@ class TWSAPIDLLEXP EReaderOSSignal :
 
 public:
 	EReaderOSSignal(unsigned long waitTimeout = INFINITE) throw (std::runtime_error);
-	~EReaderOSSignal(void);
+	virtual ~EReaderOSSignal(void);
 
 	virtual void issueSignal();
 	virtual void waitForSignal();

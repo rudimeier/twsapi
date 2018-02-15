@@ -18,6 +18,7 @@ struct Execution
 		cumQty = 0;
 		avgPrice = 0;
 		evMultiplier = 0;
+        lastLiquidity = 0;
 	}
 
 	std::string	execId;
@@ -31,12 +32,13 @@ struct Execution
 	long		clientId;
 	long		orderId;
 	int			liquidation;
-	int			cumQty;
+	double			cumQty;
 	double		avgPrice;
 	std::string	orderRef;
 	std::string	evRule;
 	double		evMultiplier;
 	std::string modelCode;
+    int         lastLiquidity;
 };
 
 struct ExecutionFilter

@@ -10,7 +10,7 @@
 #include "ESocket.h"
 
 class EWrapper;
-class EReaderSignal;
+struct EReaderSignal;
 
 class TWSAPIDLLEXP EClientSocket : public EClient, public EClientMsgSink
 {
@@ -22,7 +22,7 @@ protected:
 public:
 
 	explicit EClientSocket(EWrapper *ptr, EReaderSignal *pSignal = 0);
-	~EClientSocket();
+	virtual ~EClientSocket();
 
 	bool eConnect( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
 	// override virtual funcs from EClient
@@ -64,7 +64,7 @@ private:
 //EClientMsgSink implementation
 public:
     void serverVersion(int version, const char *time);
-    void redirect(const char *host, int port);    
+    void redirect(const char *host, unsigned int port);    
 };
 
 #endif

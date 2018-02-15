@@ -5,7 +5,7 @@
 #include <vector>
 #include "shared_ptr.h"
 
-class Order;
+struct Order;
 class OrderCondition;
 
 class OrderSamples {
@@ -27,11 +27,12 @@ public:
 	static Order Block(std::string action, double quantity, double price);
 	static Order BoxTop(std::string action, double quantity);
 	static Order LimitOrder(std::string action, double quantity, double limitPrice);
+	static Order LimitOrderWithCashQty(std::string action, double quantity, double limitPrice, double cashQty);
 	static Order LimitIfTouched(std::string action, double quantity, double limitPrice, double triggerPrice);
 	static Order LimitOnClose(std::string action, double quantity, double limitPrice);
 	static Order LimitOnOpen(std::string action, double quantity, double limitPrice);
 	static Order PassiveRelative(std::string action, double quantity, double offset);
-	static Order PeggedToMidpoint(std::string action, double quantity, double offset);
+	static Order PeggedToMidpoint(std::string action, double quantity, double offset, double limitPrice);
 	static void BracketOrder(int parentOrderId, Order& parent, Order& takeProfit, Order& stopLoss, std::string action, double quantity, double limitPrice, double takeProfitLimitPrice, double stopLossPrice);
 	static Order MarketToLimit(std::string action, double quantity);
 	static Order MarketWithProtection(std::string action, double quantity);
@@ -39,7 +40,7 @@ public:
 	static Order StopLimit(std::string action, double quantity, double limitPrice, double stopPrice);
 	static Order StopWithProtection(std::string action, double quantity, double stopPrice);
 	static Order TrailingStop(std::string action, double quantity, double trailingPercent, double trailStopPrice);
-	static Order TrailingStopLimit(std::string action, double quantity, double limitPrice, double trailingAmount, double trailStopPrice);
+	static Order TrailingStopLimit(std::string action, double quantity, double lmtPriceOffset, double trailingAmount, double trailStopPrice);
 	static Order ComboLimitOrder(std::string action, double quantity, double limitPrice, bool nonGuaranteed);
 	static Order ComboMarketOrder(std::string action, double quantity, bool nonGuaranteed);
 	static Order LimitOrderForComboWithLegPrices(std::string action, double quantity, std::vector<double> legprices, bool nonGuaranteed);
@@ -51,6 +52,7 @@ public:
 	static Order PeggedToBenchmark(std::string action, double quantity, double startingPrice, bool peggedChangeAmountDecrease, double peggedChangeAmount, double referenceChangeAmount, int referenceConId, std::string referenceExchange, double stockReferencePrice, double referenceContractLowerRange, double referenceContractUpperRange);
 	static Order AttachAdjustableToStop(Order parent, double attachedOrderStopPrice, double triggerPrice, double adjustStopPrice);
 	static Order AttachAdjustableToStopLimit(Order parent, double attachedOrderStopPrice, double triggerPrice, double adjustStopPrice, double adjustedStopLimitPrice);
+	static Order AttachAdjustableToTrail(Order parent, double attachedOrderStopPrice, double triggerPrice, double adjustStopPrice, double adjustedTrailAmount, int trailUnit);
 	static OrderCondition* Price_Condition(int conId, std::string exchange, double price, bool isMore, bool isConjunction);
 	static OrderCondition* Execution_Condition(std::string symbol, std::string secType, std::string exchange, bool isConjunction);
 	static OrderCondition* Margin_Condition(int percent, bool isMore, bool isConjunction);

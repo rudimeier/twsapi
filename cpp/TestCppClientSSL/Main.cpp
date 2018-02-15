@@ -3,15 +3,11 @@
 
 #include "StdAfx.h"
 
-#ifdef _WIN32
-# include <Windows.h>
-# define sleep( seconds) Sleep( seconds * 1000);
-#else
-# include <unistd.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <chrono>
+#include <thread>
 
 #include "TestCppClientSSL.h"
 
@@ -51,7 +47,7 @@ int main(int argc, char** argv)
 		}
 
 		printf( "Sleeping %u seconds before next attempt\n", SLEEP_TIME);
-		sleep( SLEEP_TIME);
+		std::this_thread::sleep_for(std::chrono::seconds(SLEEP_TIME));
 	}
 
 	printf ( "End of C++ Socket Client Test\n");

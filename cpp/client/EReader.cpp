@@ -69,7 +69,7 @@ DWORD WINAPI EReader::readToQueueThread(LPVOID lpParam)
 }
 
 void EReader::readToQueue() {
-	EMessage *msg = 0;
+	//EMessage *msg = 0;
 
 	while (m_isAlive) {
 		if (m_buf.size() == 0 && !processNonBlockingSelect() && m_pClientSocket->isSocketOK())
@@ -92,9 +92,11 @@ bool EReader::putMessageToQueue() {
 	if (msg == 0)
 		return false;
 
-	m_csMsgQueue.Enter();
-	m_msgQueue.push_back(ibapi::shared_ptr<EMessage>(msg));
-	m_csMsgQueue.Leave();
+	{
+		EMutexGuard lock(m_csMsgQueue);
+		m_msgQueue.push_back(ibapi::shared_ptr<EMessage>(msg));
+	}
+
 	m_pEReaderSignal->issueSignal();
 
 	return true;
@@ -177,13 +179,13 @@ void EReader::onReceive() {
  	m_buf.resize(nRes + nOffset);	
 }
 
-bool EReader::bufferedRead(char *buf, int size) {
+bool EReader::bufferedRead(char *buf, unsigned int size) {
 	while (size > 0) {
 		while (m_buf.size() < size && m_buf.size() < m_nMaxBufSize)
 			if (!processNonBlockingSelect() && !m_pClientSocket->isSocketOK())
 				return false;
 
-		int nBytes = std::min(m_nMaxBufSize, size);
+		int nBytes = (std::min<unsigned int>)(m_nMaxBufSize, size);
 
 		std::copy(m_buf.begin(), m_buf.begin() + nBytes, buf);
 		std::copy(m_buf.begin() + nBytes, m_buf.end(), m_buf.begin());
@@ -251,18 +253,14 @@ EMessage * EReader::readSingleMsg() {
 }
 
 ibapi::shared_ptr<EMessage> EReader::getMsg(void) {
-	m_csMsgQueue.Enter();
+	EMutexGuard lock(m_csMsgQueue);
 
 	if (m_msgQueue.size() == 0) {
-		m_csMsgQueue.Leave();
-
 		return ibapi::shared_ptr<EMessage>();
 	}
 
 	ibapi::shared_ptr<EMessage> msg = m_msgQueue.front();
-
 	m_msgQueue.pop_front();
-	m_csMsgQueue.Leave();
 
 	return msg;
 }

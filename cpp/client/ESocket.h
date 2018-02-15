@@ -13,7 +13,7 @@ class ESocket :
 
 public:
     ESocket();
-    ~ESocket(void);
+    virtual ~ESocket(void);
 
     int send(EMessage *pMsg);
     bool isOutBufferEmpty() const;

@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
 * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
@@ -11,7 +11,7 @@
 #include "../client/EMutex.h"
 
 class EWrapper;
-class EReaderSignal;
+struct EReaderSignal;
 
 class TWSAPISSLDLLEXP EClientSocketSSL : public EClient, public EClientMsgSink
 {
@@ -23,7 +23,7 @@ protected:
 public:
 
 	explicit EClientSocketSSL(EWrapper *ptr, EReaderSignal *pSignal = 0);
-	~EClientSocketSSL();
+	virtual ~EClientSocketSSL();
 
 	bool eConnect( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
 	// override virtual funcs from EClient
@@ -75,7 +75,7 @@ private:
 //EClientMsgSink implementation
 public:
     void serverVersion(int version, const char *time);
-    void redirect(const char *host, int port);    
+    void redirect(const char *host, unsigned int port);
 };
 
 #endif

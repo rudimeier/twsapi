@@ -147,12 +147,20 @@ struct Order
 		adjustedTrailingAmount = UNSET_DOUBLE;
 		lmtPriceOffset = UNSET_DOUBLE;
 		extOperator = "";
+
+		// native cash quantity
+		cashQty = UNSET_DOUBLE;
+
+        mifid2DecisionMaker = "";
+        mifid2DecisionAlgo = "";
+        mifid2ExecutionTrader = "";
+        mifid2ExecutionAlgo = "";
 	}
 
 	// order identifier
 	long     orderId;
 	long     clientId;
-	long     permId;
+	int      permId;
 
 	// main order fields
 	std::string action;
@@ -310,6 +318,14 @@ struct Order
 	std::string extOperator;
 
 	SoftDollarTier softDollarTier;
+
+	// native cash quantity
+	double cashQty;
+
+    std::string mifid2DecisionMaker;
+    std::string mifid2DecisionAlgo;
+    std::string mifid2ExecutionTrader;
+    std::string mifid2ExecutionAlgo;
 
 public:
 

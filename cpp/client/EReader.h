@@ -9,7 +9,7 @@
 #include "EReaderOSSignal.h"
 
 class EClientSocket;
-class EReaderSignal;
+struct EReaderSignal;
 class EMessage;
 
 class TWSAPIDLLEXP EReader
@@ -25,11 +25,11 @@ class TWSAPIDLLEXP EReader
 #if defined(IB_WIN32)
     HANDLE m_hReadThread;
 #endif
-	int m_nMaxBufSize;
+	unsigned int m_nMaxBufSize;
 
 	void onReceive();
 	void onSend();
-	bool bufferedRead(char *buf, int size);
+	bool bufferedRead(char *buf, unsigned int size);
 
 public:
     EReader(EClientSocket *clientSocket, EReaderSignal *signal);

@@ -3,15 +3,11 @@
 
 #include "StdAfx.h"
 
-#ifdef _WIN32
-# include <Windows.h>
-# define sleep( seconds) Sleep( seconds * 1000);
-#else
-# include <unistd.h>
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <chrono>
+#include <thread>
 
 #include "TestCppClient.h"
 
@@ -43,21 +39,18 @@ int main(int argc, char** argv)
 		if( connectOptions) {
 			client.setConnectOptions( connectOptions);
 		}
-		//! [connect]
+		
 		client.connect( host, port, clientId);
-		//! [connect]
-		//! [ereader]
-		//Unlike the C# and Java clients, there is no need to explicitely create an EReader object nor a thread
+		
 		while( client.isConnected()) {
 			client.processMessages();
 		}
-		//! [ereader]
 		if( attempt >= MAX_ATTEMPTS) {
 			break;
 		}
 
 		printf( "Sleeping %u seconds before next attempt\n", SLEEP_TIME);
-		sleep( SLEEP_TIME);
+		std::this_thread::sleep_for(std::chrono::seconds(SLEEP_TIME));
 	}
 
 	printf ( "End of C++ Socket Client Test\n");

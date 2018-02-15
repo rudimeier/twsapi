@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2017 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
@@ -143,6 +143,12 @@ struct ContractDetails
 	std::string	liquidHours;
 	std::string	evRule;
 	double		evMultiplier;
+	int			mdSizeMultiplier;
+	int			aggGroup;
+	std::string	underSymbol;
+	std::string	underSecType;
+	std::string marketRuleIds;
+	std::string realExpirationDate;
 
 	TagValueListSPtr secIdList;
 
@@ -162,6 +168,13 @@ struct ContractDetails
 	std::string	nextOptionType;
 	bool		nextOptionPartial;
 	std::string	notes;
+};
+
+struct ContractDescription
+{
+	Contract contract;
+	typedef std::vector<std::string> DerivativeSecTypesList;
+	DerivativeSecTypesList derivativeSecTypes;
 };
 
 inline void

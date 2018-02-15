@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
 * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
@@ -17,6 +17,9 @@
 #include <string.h>
 #include <assert.h>
 #include <ostream>
+#if defined(IB_POSIX)
+#include <pthread.h>
+#endif
 
 const int MIN_SERVER_VER_SUPPORTED    = 38; //all supported server versions are defined in EDecoder.h
 
@@ -31,7 +34,16 @@ void EClientSocketSSL::lockingFunc(int mode, int type, const char *file, int lin
 
 unsigned long EClientSocketSSL::thIdFunc() {
 #if defined(IB_POSIX)
-    return syscall(SYS_gettid);
+    pid_t tid = 0;
+#if defined(__APPLE__) // syscall is deprecated in macOS 10.12
+    uint64_t tid64;
+    pthread_threadid_np(NULL, &tid64);
+    tid = (pid_t)tid64;
+#else
+    tid = syscall(SYS_gettid);
+#endif
+    return tid;
+
 #elif defined(IB_WIN32)
     return GetCurrentThreadId();
 #else
@@ -194,10 +206,10 @@ bool EClientSocketSSL::eConnectImpl(int clientId, bool extraAuth, ConnState* sta
 	setClientId( clientId);
 	setExtraAuth( extraAuth);
 	
-    int res = sendConnectRequest();
+	int res = sendConnectRequest();
 
-    if (res == 0 || res < 0 && !handleSocketError(res))
-        return false;
+	if (res == 0 || ( res < 0 && !handleSocketError(res)) )
+		return false;
 
 	if( !isConnected()) {
 		if( connState() != CS_DISCONNECTED) {
@@ -288,11 +300,11 @@ void EClientSocketSSL::prepareBuffer(std::ostream& buf) const
 
 void EClientSocketSSL::eDisconnect()
 {
-    if (m_pSSL)
-        SSL_shutdown(m_pSSL);
+	if (m_pSSL)
+		SSL_shutdown(m_pSSL);
 
-    if (m_pCTX)
-        SSL_CTX_free(m_pCTX);
+	if (m_pCTX)
+		SSL_CTX_free(m_pCTX);
 
 	if ( m_fd >= 0 )
 		// close socket
@@ -344,7 +356,7 @@ void EClientSocketSSL::serverVersion(int version, const char *time) {
 		startApi();
 }
 
-void EClientSocketSSL::redirect(const char *host, int port) {
+void EClientSocketSSL::redirect(const char *host, unsigned int port) {
 	// handle redirect
 	if( (m_hostNorm != this->host() || port != this->port())) {
         if (!m_allowRedirect) {

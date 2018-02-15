@@ -7,6 +7,7 @@
 
 #include <float.h>
 #include <limits.h>
+#include <string>
 
 #define UNSET_DOUBLE DBL_MAX
 #define UNSET_INTEGER INT_MAX

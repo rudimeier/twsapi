@@ -122,8 +122,8 @@ bool EClientSocket::eConnectImpl(int clientId, bool extraAuth, ConnState* stateO
 
     int res = sendConnectRequest();
 
-    if (res < 0 && !handleSocketError())
-        return false;
+	if (res < 0 && !handleSocketError())
+		return false;
 
 	if( !isConnected()) {
 		if( connState() != CS_DISCONNECTED) {
@@ -264,7 +264,7 @@ void EClientSocket::serverVersion(int version, const char *time) {
 		startApi();
 }
 
-void EClientSocket::redirect(const char *host, int port) {
+void EClientSocket::redirect(const char *host, unsigned int port) {
 	// handle redirect
 	if( (m_hostNorm != this->host() || port != this->port())) {
         if (!m_allowRedirect) {
