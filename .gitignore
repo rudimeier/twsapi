@@ -10,9 +10,12 @@
 Makefile
 Doxyfile
 TestPosixSocketClient/TestPosixSocketClient
-
+twsapi_config.h
 
 ## autotools
+.deps/
+.dirstamp
+.libs/
 Makefile.in
 aclocal.m4
 autom4te.cache
@@ -28,10 +31,7 @@ config.status
 config.sub
 build*
 =build*
-.deps
 include
-lib
-.libs
 libtool
 ltmain.sh
 stamp-h1
