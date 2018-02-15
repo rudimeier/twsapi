@@ -22,9 +22,10 @@ AX_COMPILER_VENDOR
 
 # enable some warnings
 AX_CHECK_COMPILE_FLAG([-Wall],[warnflags="-Wall"])
-# intel's -Wextra is too verbose
-if test "$ax_cv_cxx_compiler_vendor" != "intel"; then
-	AX_CHECK_COMPILE_FLAG([-Wextra],[warnflags="$warnflags -Wextra"])
+AX_CHECK_COMPILE_FLAG([-Wextra],[warnflags="$warnflags -Wextra"])
+# intel's -Wextra is too verbose, disable some remarks
+if test "$ax_cv_cxx_compiler_vendor" = "intel"; then
+    AX_CHECK_COMPILE_FLAG([-diag-disable=11074],[warnflags="$warnflags -diag-disable=11074,11076"])
 fi
 DEFAULT_CXXFLAGS="$warnflags"
 AC_SUBST([DEFAULT_CXXFLAGS])
