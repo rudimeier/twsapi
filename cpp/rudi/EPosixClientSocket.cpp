@@ -5,7 +5,7 @@
 
 
 #include "EPosixClientSocketPlatform.h"
-#include "RudiClient.h"
+#include "EPosixClientSocket.h"
 
 #include "TwsSocketClientErrors.h"
 #include "EWrapper.h"
@@ -162,7 +162,7 @@ static int timeout_connect( int fd, const struct sockaddr *serv_addr,
 
 ///////////////////////////////////////////////////////////
 // member funcs
-RudiClient::RudiClient(EWrapper *ptr) : EClient( ptr, new ESocket())
+EPosixClientSocket::EPosixClientSocket(EWrapper *ptr) : EClient( ptr, new ESocket())
 {
 	m_fd = SocketsInit() ? -1 : -2;
     m_allowRedirect = false;
@@ -171,22 +171,22 @@ RudiClient::RudiClient(EWrapper *ptr) : EClient( ptr, new ESocket())
 	m_reader = new RudiReader(this);
 }
 
-RudiClient::~RudiClient()
+EPosixClientSocket::~EPosixClientSocket()
 {
 	if( m_fd != -2)
 		SocketsDestroy();
 	delete m_reader;
 }
 
-bool RudiClient::asyncEConnect() const {
+bool EPosixClientSocket::asyncEConnect() const {
     return m_asyncEConnect;
 }
 
-void RudiClient::asyncEConnect(bool val) {
+void EPosixClientSocket::asyncEConnect(bool val) {
     m_asyncEConnect = val;
 }
 
-bool RudiClient::eConnect( const char *host, unsigned int port, int clientId, bool extraAuth)
+bool EPosixClientSocket::eConnect( const char *host, unsigned int port, int clientId, bool extraAuth)
 {
 	/* after test period we'll change the default to AF_UNSPEC */
 	return eConnect2( host, port, clientId, AF_INET, extraAuth );
@@ -198,7 +198,7 @@ bool RudiClient::eConnect( const char *host, unsigned int port, int clientId, bo
  * We couldn't just add the new family arg to eConnect because the original one
  * is pure virtual declared in EClientSocketBase. Thanks C++ design crap ...
  */
-bool RudiClient::eConnect2( const char *host, unsigned int port,
+bool EPosixClientSocket::eConnect2( const char *host, unsigned int port,
 	int clientId, int family, bool extraAuth )
 {
 	const char *errmsg;
@@ -328,13 +328,13 @@ end:
 	return isSocketOK();
 }
 
-ESocket *RudiClient::getTransport() {
+ESocket *EPosixClientSocket::getTransport() {
     assert(dynamic_cast<ESocket*>(m_transport.get()) != 0);
 
     return static_cast<ESocket*>(m_transport.get());
 }
 
-void RudiClient::encodeMsgLen(std::string& msg, unsigned offset) const
+void EPosixClientSocket::encodeMsgLen(std::string& msg, unsigned offset) const
 {
 	assert( !msg.empty());
 	assert( m_useV100Plus);
@@ -351,7 +351,7 @@ void RudiClient::encodeMsgLen(std::string& msg, unsigned offset) const
 	memcpy( &msg[offset], &netlen, HEADER_LEN);
 }
 
-bool RudiClient::closeAndSend(std::string msg, unsigned offset)
+bool EPosixClientSocket::closeAndSend(std::string msg, unsigned offset)
 {
 	assert( !msg.empty());
 	if( m_useV100Plus) {
@@ -361,7 +361,7 @@ bool RudiClient::closeAndSend(std::string msg, unsigned offset)
 	return (bufferedSend(msg) != -1);
 }
 
-int RudiClient::bufferedSend(const std::string& msg)
+int EPosixClientSocket::bufferedSend(const std::string& msg)
 {
 	int nResult = EClient::bufferedSend(msg);
 	if( nResult == -1 ) {
@@ -370,7 +370,7 @@ int RudiClient::bufferedSend(const std::string& msg)
 	return nResult;
 }
 
-void RudiClient::prepareBufferImpl(std::ostream& buf) const
+void EPosixClientSocket::prepareBufferImpl(std::ostream& buf) const
 {
 	assert( m_useV100Plus);
 	assert( sizeof(unsigned) == HEADER_LEN);
@@ -379,7 +379,7 @@ void RudiClient::prepareBufferImpl(std::ostream& buf) const
 	buf.write( header, sizeof(header));
 }
 
-void RudiClient::prepareBuffer(std::ostream& buf) const
+void EPosixClientSocket::prepareBuffer(std::ostream& buf) const
 {
 	if( !m_useV100Plus)
 		return;
@@ -387,7 +387,7 @@ void RudiClient::prepareBuffer(std::ostream& buf) const
 	prepareBufferImpl( buf);
 }
 
-void RudiClient::eDisconnect()
+void EPosixClientSocket::eDisconnect()
 {
 	if ( m_fd >= 0 )
 		// close socket
@@ -397,17 +397,17 @@ void RudiClient::eDisconnect()
 	eDisconnectBase();
 }
 
-bool RudiClient::isSocketOK() const
+bool EPosixClientSocket::isSocketOK() const
 {
 	return ( m_fd >= 0);
 }
 
-int RudiClient::fd() const
+int EPosixClientSocket::fd() const
 {
 	return m_fd;
 }
 
-int RudiClient::receive(char* buf, size_t sz)
+int EPosixClientSocket::receive(char* buf, size_t sz)
 {
 	assert( sz > 0 );
 
@@ -416,7 +416,7 @@ int RudiClient::receive(char* buf, size_t sz)
 	return nResult;
 }
 
-void RudiClient::serverVersion(int version, const char *time) {
+void EPosixClientSocket::serverVersion(int version, const char *time) {
     m_serverVersion = version;
     m_TwsTime = time;
 	TWS_DEBUG(1, "xserverVersion %d", version);
@@ -430,7 +430,7 @@ void RudiClient::serverVersion(int version, const char *time) {
 		startApi();
 }
 
-void RudiClient::redirect(const char *host, unsigned int port) {
+void EPosixClientSocket::redirect(const char *host, unsigned int port) {
 	/* Original implementation was broken. Let's see if this will ever happen */
 	getWrapper()->error( NO_VALID_ID, 9999,
 		"WTF, got redirect request ... ignore and see what happens.");
@@ -441,7 +441,7 @@ void RudiClient::redirect(const char *host, unsigned int port) {
 ///////////////////////////////////////////////////////////
 // callbacks from socket
 
-void RudiClient::onSend()
+void EPosixClientSocket::onSend()
 {
 	int nResult;
 	nResult = getTransport()->sendBufferedData();
@@ -450,23 +450,23 @@ void RudiClient::onSend()
     }
 }
 
-void RudiClient::onReceive()
+void EPosixClientSocket::onReceive()
 {
 	m_reader->onReceive();
 }
 
-void RudiClient::onClose()
+void EPosixClientSocket::onClose()
 {
 	eDisconnect();
 	getWrapper()->connectionClosed();
 }
 
-void RudiClient::select_timeout(int msec)
+void EPosixClientSocket::select_timeout(int msec)
 {
 	m_reader->select_timeout(msec);
 }
 
-void RudiClient::on_send_errno(int xerrno)
+void EPosixClientSocket::on_send_errno(int xerrno)
 {
 	const char *errmsg;
 	assert(xerrno);

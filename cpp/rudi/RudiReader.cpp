@@ -3,7 +3,7 @@
 #include "EWrapper.h"
 #include "TwsSocketClientErrors.h"
 #include "RudiReader.h"
-#include "RudiClient.h"
+#include "EPosixClientSocket.h"
 #include "EPosixClientSocketPlatform.h"
 
 #include <assert.h>
@@ -47,7 +47,7 @@ static uint32_t read_uint32(const char *p)
 	return ntohl(val);
 }
 
-RudiReader::RudiReader(RudiClient *clientSocket)
+RudiReader::RudiReader(EPosixClientSocket *clientSocket)
 {
 	m_pClientSocket = clientSocket;
 	decoder = new EDecoder(clientSocket->EClient::serverVersion(),

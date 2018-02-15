@@ -1,13 +1,13 @@
 ﻿#pragma once
 
-class RudiClient;
+class EPosixClientSocket;
 class EDecoder;
 struct read_buf;
 
 class TWSAPIDLLEXP RudiReader
 {
 public:
-	RudiReader(RudiClient *clientSocket);
+	RudiReader(EPosixClientSocket *clientSocket);
 	~RudiReader(void);
 
 #if 0
@@ -20,7 +20,7 @@ private:
 	int readV100Plus();
 	int decode_one_msg(const char* begin, uint32_t size);
 
-	RudiClient *m_pClientSocket;
+	EPosixClientSocket *m_pClientSocket;
 	EDecoder *decoder;
 	struct read_buf *m_buf;
 };

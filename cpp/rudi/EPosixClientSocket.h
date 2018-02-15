@@ -12,7 +12,7 @@
 class EWrapper;
 class RudiReader;
 
-class TWSAPIDLLEXP RudiClient : public EClient, public EClientMsgSink
+class TWSAPIDLLEXP EPosixClientSocket : public EClient, public EClientMsgSink
 {
 protected:
     virtual void prepareBufferImpl(std::ostream&) const;
@@ -22,8 +22,8 @@ protected:
 
 public:
 
-	explicit RudiClient(EWrapper *ptr);
-	virtual ~RudiClient();
+	explicit EPosixClientSocket(EWrapper *ptr);
+	virtual ~EPosixClientSocket();
 
 	bool eConnect( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
 	// override virtual funcs from EClient
