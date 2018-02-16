@@ -23,10 +23,6 @@ matrix:
       compiler: gcc
       env: DISTCHECK="yes"
            CONFOPTS=""
-    # test old Ubuntu 12.04 and OSX for compatibility
-    - dist: precise
-      compiler: gcc
-      env: PRECISE="yes" CONFOPTS=""
 
 install:
   - env | grep -v "encrypted" | LC_ALL=C sort
