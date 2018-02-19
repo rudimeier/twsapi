@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <iosfwd>
+#include <ostream>
 #include "CommonDefs.h"
 #include "TagValue.h"
 #include "Contract.h"
@@ -203,6 +203,12 @@ class EWrapper;
 
 class TWSAPIDLLEXP EClient
 {
+    friend class ContractCondition;
+    friend class ExecutionCondition;
+    friend class OperatorCondition;
+    friend class OrderCondition;
+    friend class PriceCondition;
+
 public:
 
 	explicit EClient(EWrapper *ptr, ETransport *pTransport);
@@ -352,12 +358,14 @@ protected:
 	virtual bool closeAndSend(std::string msg, unsigned offset = 0) = 0;
 	virtual int bufferedSend(const std::string& msg);
 
+
+   	// encoders
+	template<class T> static void EncodeField(std::ostream&, T);
+
 public:
 	void startApi();
 
 
-	// encoders
-	template<class T> static void EncodeField(std::ostream&, T);
 
     void EncodeContract(std::ostream& os, const Contract &contract);
     void EncodeTagValueList(std::ostream& os, const TagValueListSPtr &tagValueList);
@@ -406,6 +414,12 @@ protected:
 
 template<> void EClient::EncodeField<bool>(std::ostream& os, bool);
 template<> void EClient::EncodeField<double>(std::ostream& os, double);
+
+template<class T>
+void EClient::EncodeField(std::ostream& os, T value)
+{
+	os << value << '\0';
+}
 
 #define ENCODE_CONTRACT(x) EClient::EncodeContract(msg, x);
 #define ENCODE_TAGVALUELIST(x) EClient::EncodeTagValueList(msg, x);

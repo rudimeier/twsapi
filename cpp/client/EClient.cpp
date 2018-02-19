@@ -32,12 +32,6 @@ using namespace ibapi::client_constants;
 
 ///////////////////////////////////////////////////////////
 // encoders
-template<class T>
-void EClient::EncodeField(std::ostream& os, T value)
-{
-	os << value << '\0';
-}
-
 template<>
 void EClient::EncodeField<bool>(std::ostream& os, bool boolValue)
 {
