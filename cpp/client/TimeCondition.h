@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef TIMECONDITION_H
+#define TIMECONDITION_H
+
 #include "OperatorCondition.h"
 
 class TWSAPIDLLEXP TimeCondition : public OperatorCondition {
@@ -23,3 +26,4 @@ public:
 	std::string time();
 	void time(const std::string &time);
 };
+#endif /* TIMECONDITION_H */

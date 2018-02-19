@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef eposixclientsocket_def
-#define eposixclientsocket_def
+#ifndef ECLIENTSOCKET_H
+#define ECLIENTSOCKET_H
 
 #include "EClient.h"
 #include "EClientMsgSink.h"
@@ -67,4 +67,4 @@ public:
     void redirect(const char *host, unsigned int port);    
 };
 
-#endif
+#endif /* ECLIENTSOCKET_H */

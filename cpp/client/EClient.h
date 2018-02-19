@@ -2,9 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef eclient_h__INCLUDED
-#define eclient_h__INCLUDED
-
+#ifndef ECLIENT_H
+#define ECLIENT_H
 
 #include <memory>
 #include <string>
@@ -426,5 +425,4 @@ void EClient::EncodeField(std::ostream& os, T value)
 #define ENCODE_FIELD(x) EClient::EncodeField(msg, x);
 #define ENCODE_FIELD_MAX(x) EClient::EncodeFieldMax(msg, x);
 
-
-#endif
+#endif /* ECLIENT_H */

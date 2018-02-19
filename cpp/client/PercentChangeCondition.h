@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef PERCENTCHANGECONDITION_H
+#define PERCENTCHANGECONDITION_H
+
 #include "ContractCondition.h"
 #include "Order.h"
 
@@ -24,3 +27,4 @@ public:
 	double changePercent();
 	void changePercent(double changePercent);
 };
+#endif /* PERCENTCHANGECONDITION_H */

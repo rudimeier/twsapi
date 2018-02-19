@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef MARGINCONDITION_H
+#define MARGINCONDITION_H
+
 #include "OperatorCondition.h"
 
 class TWSAPIDLLEXP MarginCondition : public OperatorCondition {
@@ -24,3 +27,4 @@ public:
 	int percent();
 	void percent(int percent);
 };
+#endif /* MARGINCONDITION_H */

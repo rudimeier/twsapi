@@ -2,6 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef EREADER_H
+#define EREADER_H
 
 #include "StdAfx.h"
 #include "EDecoder.h"
@@ -56,3 +58,4 @@ public:
 	void start();
 };
 
+#endif /* EREADER_H */

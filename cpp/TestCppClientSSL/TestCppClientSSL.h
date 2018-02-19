@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef testcppclient_h__INCLUDED
-#define testcppclient_h__INCLUDED
+#ifndef TESTCPPCLIENTSSL_H
+#define TESTCPPCLIENTSSL_H
 
 #include "EWrapper.h"
 #include "EReaderOSSignal.h"
@@ -157,5 +157,4 @@ private:
     bool m_extraAuth;
 };
 
-#endif
-
+#endif /* TESTCPPCLIENTSSL_H */

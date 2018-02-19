@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef historicaltickbidaskendtry_def
-#define historicaltickbidaskendtry_def
+#ifndef HISTORICALTICKBIDASK_H
+#define HISTORICALTICKBIDASK_H
 
 struct HistoricalTickBidAsk
 {
@@ -14,5 +14,5 @@ struct HistoricalTickBidAsk
     long long sizeBid;
     long long sizeAsk;
 };
-#endif
 
+#endif /* HISTORICALTICKBIDASK_H */

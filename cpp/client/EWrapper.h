@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef ewrapper_def
-#define ewrapper_def
+#ifndef EWRAPPER_H
+#define EWRAPPER_H
 
 #include <string>
 #include <set>
@@ -220,5 +220,4 @@ public:
    virtual void tickByTickMidPoint(int reqId, time_t time, double midPoint) = 0;
 };
 
-
-#endif
+#endif /* EWRAPPER_H */

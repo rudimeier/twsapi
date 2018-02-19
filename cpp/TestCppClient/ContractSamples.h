@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef CONTRACTSAMPLE
-#define CONTRACTSAMPLE
+#ifndef CONTRACTSAMPLES_H
+#define CONTRACTSAMPLES_H
 
 struct Contract;
 
@@ -58,4 +58,4 @@ public:
 	static Contract CSFBContract();
 };
 
-#endif
+#endif /* CONTRACTSAMPLES_H */

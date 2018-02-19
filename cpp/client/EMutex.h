@@ -2,6 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef EMUTEX_H
+#define EMUTEX_H
 
 #include "StdAfx.h"
 
@@ -45,3 +47,4 @@ private:
     EMutexGuard(const EMutex&);
 };
 
+#endif /* EMUTEX_H */

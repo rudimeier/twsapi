@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef tswsocketclienterrors_def
-#define tswsocketclienterrors_def
+#ifndef TWSSOCKETCLIENTERRORS_H
+#define TWSSOCKETCLIENTERRORS_H
 
 static const int NO_VALID_ID = -1;
 static const int NO_VALID_ERROR_CODE = 0;
@@ -37,4 +37,4 @@ static const CodeMsgPair SOCKET_EXCEPTION(509, "Exception caught while reading s
 static const CodeMsgPair FAIL_CREATE_SOCK(520, "Failed to create socket");
 static const CodeMsgPair SSL_FAIL(530, "SSL specific error: ");
 
-#endif
+#endif /* TWSSOCKETCLIENTERRORS_H */

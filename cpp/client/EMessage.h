@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef EMESSAGE_H
+#define EMESSAGE_H
+
 class TWSAPIDLLEXP EMessage
 {
     std::vector<char> data;
@@ -11,3 +14,4 @@ public:
     const char* end(void) const;
 };
 
+#endif /* EMESSAGE_H */

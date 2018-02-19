@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef order_def
-#define order_def
+#ifndef ORDER_H
+#define ORDER_H
 
 #include "TagValue.h"
 #include "OrderCondition.h"
@@ -352,4 +352,4 @@ Order::CloneOrderComboLegs(OrderComboLegListSPtr& dst, const OrderComboLegListSP
 	}
 }
 
-#endif
+#endif /* ORDER_H */

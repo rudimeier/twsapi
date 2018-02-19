@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef ORDERCONDITION_H
+#define ORDERCONDITION_H
+
 #include "IExternalizable.h"
 #include "shared_ptr.h"
 
@@ -37,3 +40,4 @@ public:
 	
 	static OrderCondition *create(OrderConditionType type);
 };
+#endif /* ORDERCONDITION_H */

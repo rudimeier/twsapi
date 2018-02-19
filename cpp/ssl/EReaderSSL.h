@@ -2,6 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef EREADERSSL_H
+#define EREADERSSL_H
 
 #include "StdAfx.h"
 #include "../client/EDecoder.h"
@@ -58,3 +60,4 @@ private:
 	void start();
 };
 
+#endif /* EREADERSSL_H */

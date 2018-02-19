@@ -2,15 +2,14 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef historicaltickendtry_def
-#define historicaltickendtry_def
+#ifndef HISTORICALTICK_H
+#define HISTORICALTICK_H
 
 struct HistoricalTick
 {
     long long time;
     double price;
     long long size;
-};  
-#endif // !historicaltickendtry_def
+};
 
-
+#endif /* HISTORICALTICK_H */

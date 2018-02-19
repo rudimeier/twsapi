@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef VOLUMECONDITION_H
+#define VOLUMECONDITION_H
+
 #include "ContractCondition.h"
 
 class TWSAPIDLLEXP VolumeCondition : public ContractCondition {
@@ -21,3 +24,4 @@ public:
 	int volume();
 	void volume(int volume);
 };
+#endif /* VOLUMECONDITION_H */

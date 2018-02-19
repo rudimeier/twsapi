@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef contract_def
-#define contract_def
+#ifndef CONTRACT_H
+#define CONTRACT_H
 
 #include "TagValue.h"
 
@@ -196,5 +196,4 @@ Contract::CloneComboLegs(ComboLegListSPtr& dst, const ComboLegListSPtr& src)
 	}
 }
 
-
-#endif
+#endif /* CONTRACT_H */

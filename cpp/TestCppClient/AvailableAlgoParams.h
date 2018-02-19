@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef AVAILABLEALGOPARAMS
-#define AVAILABLEALGOPARAMS
+#ifndef AVAILABLEALGOPARAMS_H
+#define AVAILABLEALGOPARAMS_H
 
 #include <string>
 
@@ -36,4 +36,4 @@ public:
 		int maxPercent, int displaySize, std::string auction, bool blockFinder, double blockPrice, int minBlockSize, int maxBlockSize, double iWouldPrice);
 };
 
-#endif
+#endif /* AVAILABLEALGOPARAMS_H */

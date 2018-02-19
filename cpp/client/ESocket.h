@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef ESOCKET_H
+#define ESOCKET_H
+
 #include "ETransport.h"
 
 class ESocket :
@@ -24,3 +27,4 @@ public:
     void fd(int fd);
 };
 
+#endif /* ESOCKET_H */

@@ -2,6 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef STDAFX_H
+#define STDAFX_H
 
 #include "client/StdAfx.h"
 
@@ -10,3 +12,4 @@
 #define TWSAPIDLLEXP __declspec(dllimport)
 #endif
 #endif
+#endif /* STDAFX_H */

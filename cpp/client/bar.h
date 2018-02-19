@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef bar_def
-#define bar_def
+#ifndef BAR_H
+#define BAR_H
 
 struct Bar
 {
@@ -17,4 +17,4 @@ struct Bar
 	int count;
 };
 
-#endif
+#endif /* BAR_H */

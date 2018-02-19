@@ -2,9 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef execution_def
-#define execution_def
-
+#ifndef EXECUTION_H
+#define EXECUTION_H
 
 struct Execution
 {
@@ -58,4 +57,4 @@ struct ExecutionFilter
 	std::string	m_side;
 };
 
-#endif // execution_def
+#endif /* EXECUTION_H */

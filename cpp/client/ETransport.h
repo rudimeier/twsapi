@@ -2,6 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef ETRANSPORT_H
+#define ETRANSPORT_H
 
 class EMessage;
 
@@ -13,3 +15,4 @@ struct ETransport
     virtual ~ETransport() {}
 };
 
+#endif /* ETRANSPORT_H */

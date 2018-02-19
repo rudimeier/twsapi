@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef ORDERSAMPLES
-#define ORDERSAMPLES
+#ifndef ORDERSAMPLES_H
+#define ORDERSAMPLES_H
 
 #include <vector>
 #include "shared_ptr.h"
@@ -64,4 +64,4 @@ public:
 	static OrderCondition* Volume_Condition(int conId, std::string exchange, bool isMore, int volume, bool isConjunction);
 };
 
-#endif
+#endif /* ORDERSAMPLES_H */

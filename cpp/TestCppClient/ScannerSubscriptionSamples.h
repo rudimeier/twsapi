@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef SCANNERSUBSCRIPTIONSAMPLES
-#define SCANNERSUBSCRIPTIONSAMPLES
+#ifndef SCANNERSUBSCRIPTIONSAMPLES_H
+#define SCANNERSUBSCRIPTIONSAMPLES_H
 
 #include <string>
 
@@ -17,4 +17,4 @@ public:
 	static ScannerSubscription HighOptVolumePCRatioUSIndexes();
 };
 
-#endif
+#endif /* SCANNERSUBSCRIPTIONSAMPLES_H */

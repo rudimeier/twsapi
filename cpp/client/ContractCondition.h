@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef CONTRACTCONDITION_H
+#define CONTRACTCONDITION_H
+
 #include "OperatorCondition.h"
 
 class TWSAPIDLLEXP ContractCondition : public OperatorCondition {
@@ -18,3 +21,4 @@ public:
 	std::string exchange();
 	void exchange(const std::string &exchange);
 };
+#endif /* CONTRACTCONDITION_H */

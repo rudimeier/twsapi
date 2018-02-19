@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef ORDER_STATE_H__INCLUDED
-#define ORDER_STATE_H__INCLUDED
+#ifndef ORDERSTATE_H
+#define ORDERSTATE_H
 
 #include "Order.h"
 
@@ -30,4 +30,4 @@ struct OrderState {
 	std::string warningText;
 };
 
-#endif
+#endif /* ORDERSTATE_H */

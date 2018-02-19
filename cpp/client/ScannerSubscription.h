@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef scanner_def
-#define scanner_def
+#ifndef SCANNERSUBSCRIPTION_H
+#define SCANNERSUBSCRIPTION_H
 
 #include <float.h>
 #include <limits.h>
@@ -49,4 +49,4 @@ struct ScannerSubscription {
 	std::string stockTypeFilter;
 };
 
-#endif
+#endif /* SCANNERSUBSCRIPTION_H */

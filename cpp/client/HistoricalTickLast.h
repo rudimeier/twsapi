@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef historicalticklastendtry_def
-#define historicalticklastendtry_def
+#ifndef HISTORICALTICKLAST_H
+#define HISTORICALTICKLAST_H
 
 struct HistoricalTickLast
 {
@@ -14,5 +14,5 @@ struct HistoricalTickLast
     std::string exchange;
     std::string specialConditions;
 };
-#endif
 
+#endif /* HISTORICALTICKLAST_H */

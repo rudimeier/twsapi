@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef tickattrib_h__INCLUDED
-#define tickattrib_h__INCLUDED
+#ifndef TICKATTRIB_H
+#define TICKATTRIB_H
 
 struct TickAttrib
 {
@@ -15,4 +15,4 @@ struct TickAttrib
 	bool askPastHigh;
 };
 
-#endif
+#endif /* TICKATTRIB_H */

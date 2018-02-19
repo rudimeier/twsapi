@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef common_defs_h_INCLUDED
-#define common_defs_h_INCLUDED
+#ifndef COMMONDEFS_H
+#define COMMONDEFS_H
 
 typedef long TickerId;
 typedef long OrderId;
@@ -30,4 +30,4 @@ enum MarketDataType {
 	DELAYED_FROZEN = 4
 };
 
-#endif /* common_defs_h_INCLUDED */
+#endif /* COMMONDEFS_H */

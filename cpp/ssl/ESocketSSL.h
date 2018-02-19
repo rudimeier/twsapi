@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef ESOCKETSSL_H
+#define ESOCKETSSL_H
+
 #include "../client/ETransport.h"
 
 class ESocketSSL :
@@ -24,3 +27,4 @@ public:
     void fd(SSL *fd);
 };
 
+#endif /* ESOCKETSSL_H */

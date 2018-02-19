@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef FAMETHODSAMPLE
-#define FAMETHODSAMPLE
+#ifndef FAMETHODSAMPLES_H
+#define FAMETHODSAMPLES_H
 
 #include <string>
 
@@ -117,4 +117,4 @@ public:
 
 };
 
-#endif
+#endif /* FAMETHODSAMPLES_H */

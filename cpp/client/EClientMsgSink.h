@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef ECLIENTMSGSINK_H
+#define ECLIENTMSGSINK_H
+
 struct EClientMsgSink
 {
     virtual void serverVersion(int version, const char *time) = 0;
@@ -9,3 +12,4 @@ struct EClientMsgSink
     virtual ~EClientMsgSink() {}
 };
 
+#endif /* ECLIENTMSGSINK_H */

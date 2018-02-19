@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef commissionreport_def
-#define commissionreport_def
+#ifndef COMMISSIONREPORT_H
+#define COMMISSIONREPORT_H
 
 struct CommissionReport
 {
@@ -24,4 +24,4 @@ struct CommissionReport
 	int			yieldRedemptionDate; // YYYYMMDD format
 };
 
-#endif // commissionreport_def
+#endif /* COMMISSIONREPORT_H */

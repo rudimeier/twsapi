@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef EREADERSIGNAL_H
+#define EREADERSIGNAL_H
+
 struct EReaderSignal
 {
     virtual void issueSignal() = 0;
@@ -9,3 +12,4 @@ struct EReaderSignal
     virtual ~EReaderSignal() {}
 };
 
+#endif /* EREADERSIGNAL_H */

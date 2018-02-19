@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef familycode_def
-#define familycode_def
+#ifndef FAMILYCODE_H
+#define FAMILYCODE_H
 
 struct FamilyCode
 {
@@ -11,4 +11,4 @@ struct FamilyCode
 	std::string familyCodeStr;
 };
 
-#endif // familycode_def
+#endif /* FAMILYCODE_H */

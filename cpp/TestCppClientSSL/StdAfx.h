@@ -2,5 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef STDAFX_H
+#define STDAFX_H
 
 #include "ssl/StdAfx.h"
+#endif /* STDAFX_H */

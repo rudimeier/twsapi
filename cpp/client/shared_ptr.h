@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef shared_ptr_h_INCLUDED
-#define shared_ptr_h_INCLUDED
+#ifndef SHARED_PTR_H
+#define SHARED_PTR_H
 
 //
 // Implements a subset of shared_prt found at www.boost.org.
@@ -99,8 +99,4 @@ private:
 
 } //end of namespace ibapi
 
-
-#else
-//#include <memory>
-//using std::shared_ptr;
-#endif /* shared_ptr_h_INCLUDED */
+#endif /* SHARED_PTR_H */

@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef ACCOUNTSUMMARYTAGS
-#define ACCOUNTSUMMARYTAGS
+#ifndef ACCOUNTSUMMARYTAGS_H
+#define ACCOUNTSUMMARYTAGS_H
 
 #include <string>
 
@@ -42,4 +42,4 @@ public:
 	static std::string getAllTags();
 };
 
-#endif
+#endif /* ACCOUNTSUMMARYTAGS_H */

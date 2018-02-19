@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef tagvalue_def
-#define tagvalue_def
+#ifndef TAGVALUE_H
+#define TAGVALUE_H
 
 #include "shared_ptr.h"
 
@@ -25,5 +25,4 @@ typedef ibapi::shared_ptr<TagValue> TagValueSPtr;
 typedef std::vector<TagValueSPtr> TagValueList;
 typedef ibapi::shared_ptr<TagValueList> TagValueListSPtr;
 
-#endif
-
+#endif /* TAGVALUE_H */

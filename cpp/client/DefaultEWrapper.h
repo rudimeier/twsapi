@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef DEFAULTEWRAPPER_H
+#define DEFAULTEWRAPPER_H
+
 #include "EWrapper.h"
 
 class TWSAPIDLLEXP DefaultEWrapper :
@@ -103,3 +106,4 @@ public:
    virtual void tickByTickMidPoint(int reqId, time_t time, double midPoint);
 };
 
+#endif /* DEFAULTEWRAPPER_H */

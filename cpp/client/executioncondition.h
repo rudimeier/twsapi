@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef EXECUTIONCONDITION_H
+#define EXECUTIONCONDITION_H
+
 #include <string>
 #include "OrderCondition.h"
 
@@ -30,3 +33,4 @@ public:
 	std::string symbol();
 	void symbol(const std::string &symbol);
 };
+#endif /* EXECUTIONCONDITION_H */

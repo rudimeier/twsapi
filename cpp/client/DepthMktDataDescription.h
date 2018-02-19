@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef depthmktdatadescription_def
-#define depthmktdatadescription_def
+#ifndef DEPTHMKTDATADESCRIPTION_H
+#define DEPTHMKTDATADESCRIPTION_H
 
 #include <limits.h>
 #define UNSET_INTEGER INT_MAX
@@ -26,4 +26,4 @@ struct DepthMktDataDescription
 	int aggGroup;
 };
 
-#endif // depthmktdatadescription_def
+#endif /* DEPTHMKTDATADESCRIPTION_H */

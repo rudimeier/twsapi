@@ -2,6 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef SOFTDOLLARTIER_H
+#define SOFTDOLLARTIER_H
 
 #ifndef _MSC_VER
 #include "StdAfx.h"
@@ -20,3 +22,4 @@ public:
 	std::string displayName() const;
 };
 
+#endif /* SOFTDOLLARTIER_H */

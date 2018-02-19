@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef priceincrement_def
-#define priceincrement_def
+#ifndef PRICEINCREMENT_H
+#define PRICEINCREMENT_H
 
 struct PriceIncrement
 {
@@ -11,4 +11,4 @@ struct PriceIncrement
 	double increment;
 };
 
-#endif // priceincrement_def
+#endif /* PRICEINCREMENT_H */

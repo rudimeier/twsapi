@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef IEXTERNALIZABLE_H
+#define IEXTERNALIZABLE_H
+
 #include <ios>
 
 struct IExternalizable
@@ -10,3 +13,4 @@ struct IExternalizable
 	virtual void writeExternal(std::ostream &out) const = 0;
 };
 
+#endif /* IEXTERNALIZABLE_H */

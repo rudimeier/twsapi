@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef newsprovider_def
-#define newsprovider_def
+#ifndef NEWSPROVIDER_H
+#define NEWSPROVIDER_H
 
 struct NewsProvider
 {
@@ -11,4 +11,4 @@ struct NewsProvider
 	std::string providerName;
 };
 
-#endif // newsprovider_def
+#endif /* NEWSPROVIDER_H */
