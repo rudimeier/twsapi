@@ -5,7 +5,6 @@
 #ifndef EREADERSSL_H
 #define EREADERSSL_H
 
-#include "StdAfx.h"
 #include "../client/EDecoder.h"
 #include "../client/EMutex.h"
 #include "../client/EReaderOSSignal.h"

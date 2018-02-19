@@ -38,9 +38,6 @@
 #include <deque>
 #include <vector>
 #include <algorithm>
-#include <openssl/bio.h>
-#include <openssl/ssl.h>
-#include <openssl/err.h>
 
 #ifndef TWSAPISSLDLLEXP
 #define TWSAPISSLDLLEXP

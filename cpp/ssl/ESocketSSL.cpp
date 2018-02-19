@@ -4,13 +4,14 @@
 #include "StdAfx.h"
 #include "../client/EMessage.h"
 #include "ESocketSSL.h"
+#include "ssl_private.h"
 
 #include <assert.h>
 
 ESocketSSL::ESocketSSL() {
 }
 
-void ESocketSSL::fd(SSL *fd) {
+void ESocketSSL::fd(SSL_P *fd) {
     m_fd = fd;
 }
 

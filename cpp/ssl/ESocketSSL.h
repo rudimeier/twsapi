@@ -7,10 +7,12 @@
 
 #include "../client/ETransport.h"
 
+struct SSL_P;
+
 class ESocketSSL :
     public ETransport
 {
-    SSL *m_fd;
+    SSL_P *m_fd;
 	std::vector<char> m_outBuffer;
 
     int bufferedSend(const char* buf, size_t sz);
@@ -24,7 +26,7 @@ public:
     int send(EMessage *pMsg);
     bool isOutBufferEmpty() const;
     int sendBufferedData();
-    void fd(SSL *fd);
+    void fd(SSL_P *fd);
 };
 
 #endif /* ESOCKETSSL_H */

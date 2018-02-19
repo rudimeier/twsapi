@@ -12,6 +12,8 @@
 
 class EWrapper;
 struct EReaderSignal;
+struct SSL_P;
+struct SSL_CTX_P;
 
 class TWSAPISSLDLLEXP EClientSocketSSL : public EClient, public EClientMsgSink
 {
@@ -64,8 +66,8 @@ private:
 
     static std::vector<EMutex> sslLocks;
 
-    SSL *m_pSSL;
-    SSL_CTX *m_pCTX;
+    SSL_P *m_pSSL;
+    SSL_CTX_P *m_pCTX;
 	int m_fd;
     bool m_allowRedirect;
     const char* m_hostNorm;

@@ -13,6 +13,7 @@
 #include "../client/EReaderSignal.h"
 #include "EReaderSSL.h"
 #include "../client/EMessage.h"
+#include "ssl_private.h"
 
 #include <string.h>
 #include <assert.h>
@@ -175,14 +176,14 @@ bool EClientSocketSSL::eConnectImpl(int clientId, bool extraAuth, ConnState* sta
 		return false;
 	}
 
-    m_pCTX = SSL_CTX_new(SSLv23_client_method());
+    m_pCTX = (SSL_CTX_P*)SSL_CTX_new(SSLv23_client_method());
 
     if (!m_pCTX && !handleSocketError())
         return false;
 
     ImportRootCertificatesFromWindowsCertStore();
 
-    m_pSSL = SSL_new(m_pCTX);
+    m_pSSL = (SSL_P*)SSL_new((SSL_CTX*)m_pCTX);
 
     if (!m_pSSL && !handleSocketError())
         return false;
