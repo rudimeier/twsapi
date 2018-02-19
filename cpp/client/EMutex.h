@@ -7,7 +7,7 @@
 
 #include "StdAfx.h"
 
-#if defined(IB_POSIX) && defined(IBAPI_STD_MUTEX)
+#if defined(IB_POSIX)
 # include  <mutex>
 #endif
 
@@ -15,11 +15,7 @@
 class TWSAPIDLLEXP EMutex
 {
 #if defined(IB_POSIX)
-# if !defined(IBAPI_STD_MUTEX)
-    pthread_mutex_t cs;
-# else
     std::mutex cs;
-# endif
 #elif defined(IB_WIN32)
     CRITICAL_SECTION cs;
 #else

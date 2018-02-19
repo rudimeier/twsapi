@@ -28,9 +28,6 @@
 #if defined(_POSIX_THREADS) && (_POSIX_THREADS > 0)
     #include <pthread.h>
     #define IB_POSIX
-    #if __cplusplus >= 201103L // strict C++11 standard std::mutex is available
-        #define IBAPI_STD_MUTEX
-    #endif 
 #else
     #error "Not supported on this platform"
 #endif
