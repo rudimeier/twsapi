@@ -28,7 +28,7 @@ AX_CHECK_COMPILE_FLAG([-Wextra],[warnflags="$warnflags -Wextra"])
 if test "$ax_cv_cxx_compiler_vendor" = "intel"; then
     AX_CHECK_COMPILE_FLAG([-diag-disable=11074],[warnflags="$warnflags -diag-disable=11074,11076"])
 fi
-DEFAULT_CXXFLAGS="-pthread $warnflags"
+DEFAULT_CXXFLAGS="$warnflags"
 AC_SUBST([DEFAULT_CXXFLAGS])
 
 
@@ -67,6 +67,28 @@ dnl ** test for AI_* flags that not all implementations have
 AC_CHECK_DECLS([AI_ADDRCONFIG, AI_ALL, AI_NUMERICSERV, AI_V4MAPPED])
 AC_CHECK_DECLS([ENODATA, ETIMEDOUT])
 
+AC_ARG_ENABLE([iborig],
+  AS_HELP_STRING([--enable-iborig], [build the original EClientSocket]),
+  [], [enable_iborig=check])
+have_pthreads=no
+AS_IF([test "x$enable_iborig" != xno], [
+  have_pthreads=yes
+  AS_CASE([$enable_iborig:$have_pthreads],
+    [yes:no], [AC_MSG_ERROR([iborig requested but no pthread support])],
+    [*:yes], AC_DEFINE([WITH_IBORIG], [1], [Define if we build with iborig enabled]))])
+AM_CONDITIONAL([WITH_IBORIG], [test "x$have_pthreads" = xyes])
+
+AC_ARG_ENABLE([ssl],
+  AS_HELP_STRING([--enable-ssl], [build with ssl support]),
+  [], [enable_ssl=check])
+have_ssl=no
+AS_IF([test "x$enable_ssl" != xno], [
+  PKG_CHECK_MODULES([openssl], [openssl], [have_ssl=yes], [have_ssl=no])
+  AS_CASE([$enable_ssl:$have_ssl],
+    [yes:no], [AC_MSG_ERROR([ssl requested but not found])],
+    [*:yes], AC_DEFINE([HAVE_SSL], [1], [Define if openssl is available]))])
+AM_CONDITIONAL([HAVE_SSL], [test "x$have_ssl" = xyes])
+
 ## offload some of the final targets here
 headerdir="${includedir}/${PACKAGE}"
 AC_SUBST([headerdir])
@@ -75,5 +97,6 @@ AC_SUBST([headerdir])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([cpp/Makefile])
 AC_CONFIG_FILES([twsapi.pc])
+AC_CONFIG_FILES([twsapi-iborig.pc])
 AC_CONFIG_FILES([twsapi.spec])
 AC_OUTPUT
