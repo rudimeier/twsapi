@@ -172,7 +172,7 @@ void EReaderSSL::onReceive() {
  	m_buf.resize(nRes + nOffset);	
 }
 
-bool EReaderSSL::bufferedRead(char *buf, int size) {
+bool EReaderSSL::bufferedRead(char *buf, unsigned int size) {
 	while (m_buf.size() < size)
 		if (!processNonBlockingSelect() && !m_pClientSocket->isSocketOK())
 			return false;
