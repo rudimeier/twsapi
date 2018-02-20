@@ -348,8 +348,9 @@ void EClientSocketSSL::serverVersion(int version, const char *time) {
     m_TwsTime = time;
 
     if( usingV100Plus() ? (m_serverVersion < MIN_CLIENT_VER || m_serverVersion > MAX_CLIENT_VER) : m_serverVersion < MIN_SERVER_VER_SUPPORTED ) {
-        getWrapper()->error( NO_VALID_ID, UNSUPPORTED_VERSION.code(), UNSUPPORTED_VERSION.msg());
         eDisconnect();
+        getWrapper()->error( NO_VALID_ID, UNSUPPORTED_VERSION.code(), UNSUPPORTED_VERSION.msg());
+        return;
     }
 
 	if (!m_asyncEConnect)

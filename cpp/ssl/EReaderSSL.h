@@ -26,11 +26,11 @@ class TWSAPISSLDLLEXP EReaderSSL
 #if defined(IB_WIN32)
     HANDLE m_hReadThread;
 #endif
-	int m_nMaxBufSize;
+	unsigned int m_nMaxBufSize;
 
 	void onReceive();
 	void onSend();
-	bool bufferedRead(char *buf, int size);
+	bool bufferedRead(char *buf, unsigned int size);
 
 public:
     EReaderSSL(EClientSocketSSL *clientSocket, EReaderSignal *signal);

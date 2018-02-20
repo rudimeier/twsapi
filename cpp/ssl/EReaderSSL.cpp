@@ -172,7 +172,7 @@ void EReaderSSL::onReceive() {
  	m_buf.resize(nRes + nOffset);	
 }
 
-bool EReaderSSL::bufferedRead(char *buf, int size) {
+bool EReaderSSL::bufferedRead(char *buf, unsigned int size) {
 	while (m_buf.size() < size)
 		if (!processNonBlockingSelect() && !m_pClientSocket->isSocketOK())
 			return false;
@@ -191,7 +191,7 @@ EMessage * EReaderSSL::readSingleMsg() {
 		if (!bufferedRead((char *)&msgSize, sizeof(msgSize)))
 			return 0;
 
-		msgSize = htonl(msgSize);
+		msgSize = ntohl(msgSize);
 
 		if (msgSize <= 0 || msgSize > MAX_MSG_LEN)
 			return 0;

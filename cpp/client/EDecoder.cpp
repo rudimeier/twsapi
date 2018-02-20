@@ -2731,10 +2731,14 @@ bool EDecoder::DecodeField(long long& longLongValue, const char*& ptr, const cha
 
 bool EDecoder::DecodeField(long& longValue, const char*& ptr, const char* endPtr)
 {
-	int intValue;
-	if( !DecodeField(intValue, ptr, endPtr))
+	if( !CheckOffset(ptr, endPtr))
 		return false;
-	longValue = intValue;
+	const char* fieldBeg = ptr;
+	const char* fieldEnd = FindFieldEnd(fieldBeg, endPtr);
+	if( !fieldEnd)
+		return false;
+	longValue = atol(fieldBeg);
+	ptr = ++fieldEnd;
 	return true;
 }
 

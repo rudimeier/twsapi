@@ -8,10 +8,11 @@
 struct HistoricalTickBidAsk
 {
     long long time;
-    int mask; double priceBid;
+    int mask;
+    double priceBid;
     double priceAsk;
     long long sizeBid;
-    long sizeAsk;
+    long long sizeAsk;
 };
 #endif
 
