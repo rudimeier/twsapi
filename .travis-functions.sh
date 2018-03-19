@@ -23,6 +23,12 @@ test "$TRAVIS_OS_NAME" = "osx" && shell_session_update() { :; }
 function xconfigure
 {
 	local ret
+
+	if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+		PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig:$PKG_CONFIG_PATH"
+		export PKG_CONFIG_PATH
+	fi
+
 	./configure "$@"
 	ret=$?
 	if [ "$DUMP_CONFIG_LOG" = "short" ]; then
