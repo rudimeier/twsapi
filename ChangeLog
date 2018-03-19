@@ -4,6 +4,16 @@ ChangeLog, twsapi for Interactive Brokers TWS
 
 
 
+1.973.0 - not yet released -------------------------------------------------------
+
+Update to IB API 9.73
+
+  - update to IB API 9.73.06, see ChangeLog-IB for more details
+  - new project layout (move code to cpp/)
+  - build separate lib twsapi-iborig (configure --enable-iborig)
+
+
+
 0.7.0 - not yet released -------------------------------------------------------
 
 Update to IB API 9.71

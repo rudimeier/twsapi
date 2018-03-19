@@ -8,4 +8,4 @@ Name: @PACKAGE@
 Description:  API Library for Interactive Brokers TWS
 Version: @VERSION@
 Libs: -L${libdir} -l@PACKAGE@ @LIBS@
-Cflags: -I${includedir}
+Cflags: -DIBString=std::string -I${includedir}
