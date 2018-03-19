@@ -130,10 +130,10 @@ const char* EDecoder::processTickOptionComputationMsg(const char* ptr, const cha
 	DECODE_FIELD( impliedVol);
 	DECODE_FIELD( delta);
 
-	if( impliedVol < 0) { // -1 is the "not computed" indicator
+	if( impliedVol == -1) { // -1 is the "not computed" indicator
 		impliedVol = DBL_MAX;
 	}
-	if( delta > 1 || delta < -1) { // -2 is the "not computed" indicator
+	if( delta == -2) { // -2 is the "not computed" indicator
 		delta = DBL_MAX;
 	}
 
@@ -142,10 +142,10 @@ const char* EDecoder::processTickOptionComputationMsg(const char* ptr, const cha
 		DECODE_FIELD( optPrice);
 		DECODE_FIELD( pvDividend);
 
-		if( optPrice < 0) { // -1 is the "not computed" indicator
+		if( optPrice == -1) { // -1 is the "not computed" indicator
 			optPrice = DBL_MAX;
 		}
-		if( pvDividend < 0) { // -1 is the "not computed" indicator
+		if( pvDividend == -1) { // -1 is the "not computed" indicator
 			pvDividend = DBL_MAX;
 		}
 	}
@@ -156,16 +156,16 @@ const char* EDecoder::processTickOptionComputationMsg(const char* ptr, const cha
 		DECODE_FIELD( theta);
 		DECODE_FIELD( undPrice);
 
-		if( gamma > 1 || gamma < -1) { // -2 is the "not yet computed" indicator
+		if( gamma == -2) { // -2 is the "not yet computed" indicator
 			gamma = DBL_MAX;
 		}
-		if( vega > 1 || vega < -1) { // -2 is the "not yet computed" indicator
+		if( vega == -2) { // -2 is the "not yet computed" indicator
 			vega = DBL_MAX;
 		}
-		if( theta > 1 || theta < -1) { // -2 is the "not yet computed" indicator
+		if( theta == -2) { // -2 is the "not yet computed" indicator
 			theta = DBL_MAX;
 		}
-		if( undPrice < 0) { // -1 is the "not computed" indicator
+		if( undPrice == -1) { // -1 is the "not computed" indicator
 			undPrice = DBL_MAX;
 		}
 	}

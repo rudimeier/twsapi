@@ -18,7 +18,11 @@
 static DefaultEWrapper defaultWrapper;
 
 EReader::EReader(EClientSocket *clientSocket, EReaderSignal *signal)
-	: processMsgsDecoder_(clientSocket->EClient::serverVersion(), clientSocket->getWrapper(), clientSocket) {
+	: processMsgsDecoder_(clientSocket->EClient::serverVersion(), clientSocket->getWrapper(), clientSocket)
+#if defined(IB_WIN32)
+    , m_hReadThread(0)
+#endif
+{
 		m_isAlive = true;
         m_pClientSocket = clientSocket;       
 		m_pEReaderSignal = signal;
@@ -31,7 +35,9 @@ EReader::~EReader(void) {
     m_isAlive = false;
 
 #if defined(IB_WIN32)
-    WaitForSingleObject(m_hReadThread, INFINITE);
+    if (m_hReadThread) {
+        WaitForSingleObject(m_hReadThread, INFINITE);
+    }
 #endif
 }
 

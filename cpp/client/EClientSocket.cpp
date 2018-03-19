@@ -312,17 +312,12 @@ bool EClientSocket::handleSocketError()
 
 void EClientSocket::onSend()
 {
-	if( !handleSocketError())
-		return;
-
-	getTransport()->sendBufferedData();
+	if (getTransport()->sendBufferedData() < 0)
+		handleSocketError();
 }
 
 void EClientSocket::onClose()
 {
-	if( !handleSocketError())
-		return;
-
 	eDisconnect();
 	getWrapper()->connectionClosed();
 }

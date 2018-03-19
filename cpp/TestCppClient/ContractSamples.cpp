@@ -123,10 +123,11 @@ Contract ContractSamples::CashCFD(){
 
 Contract ContractSamples::EuropeanStock(){
 	Contract contract;
-    contract.symbol = "SMTPC";
+    contract.symbol = "NOKIA";
     contract.secType = "STK";
     contract.currency = "EUR";
-    contract.exchange = "BATEEN";
+    contract.exchange = "SMART";
+	contract.primaryExchange = "HEX";
     return contract;
 }
 
@@ -157,7 +158,7 @@ Contract ContractSamples::USStock(){
 
 Contract ContractSamples::USStockAtSmart(){
 	Contract contract;
-	contract.symbol = "IBKR";
+	contract.symbol = "IBM";
 	contract.secType = "STK";
 	contract.currency = "USD";
 	contract.exchange = "SMART";
@@ -202,7 +203,7 @@ Contract ContractSamples::BondWithCusip() {
 Contract ContractSamples::Bond() {
 	//! [bond]
 	Contract contract;
-	contract.conId = 267433416;
+	contract.conId = 285191782;
 	contract.exchange = "SMART";
 	//! [bond]
 	return contract;
@@ -333,11 +334,11 @@ Contract ContractSamples::DutchWarrant(){
 Contract ContractSamples::SimpleFuture(){
 	//! [futcontract]
 	Contract contract;
-	contract.symbol = "ZC";
+	contract.symbol = "ES";
 	contract.secType = "FUT";
-	contract.exchange = "ECBOT";
+	contract.exchange = "GLOBEX";
 	contract.currency = "USD";
-	contract.lastTradeDateOrContractMonth = "20170914";
+	contract.lastTradeDateOrContractMonth = "201803";
 	//! [futcontract]
 	return contract;
 }
@@ -386,14 +387,14 @@ Contract ContractSamples::WrongContract(){
 Contract ContractSamples::FuturesOnOptions(){
 	//! [fopcontract]
 	Contract contract;
-	contract.symbol = "SPX";
+	contract.symbol = "ES";
 	contract.secType = "FOP";
 	contract.exchange = "GLOBEX";
 	contract.currency = "USD";
-	contract.lastTradeDateOrContractMonth = "20180315";
-	contract.strike = 1025;
+	contract.lastTradeDateOrContractMonth = "20180316";
+	contract.strike = 2800;
 	contract.right = "C";
-	contract.multiplier = "250";
+	contract.multiplier = "50";
 	//! [fopcontract]
 	return contract;
 }
