@@ -116,6 +116,7 @@ header_HEADERS += ssl/EClientSocketSSL.h
 header_HEADERS += ssl/EReaderSSL.h
 header_HEADERS += ssl/ESocketSSL.h
 header_HEADERS += ssl/StdAfx.h
+libtwsapi_iborig_la_CPPFLAGS += $(openssl_CFLAGS)
 endif
 endif
 
@@ -159,6 +160,7 @@ testclientssl_LDADD += $(openssl_LIBS)
 testclientssl_CPPFLAGS =
 testclientssl_CPPFLAGS += $(AM_CPPFLAGS)
 testclientssl_CPPFLAGS += -I$(srcdir)/client
+testclientssl_CPPFLAGS += $(openssl_CFLAGS)
 testclientssl_LDFLAGS = $(AM_LDFLAGS)
 endif
 endif
