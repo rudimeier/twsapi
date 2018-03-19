@@ -31,6 +31,9 @@ distclean-local:
 
 pkgconfigdir = @libdir@/pkgconfig
 pkgconfig_DATA = @PACKAGE@.pc
+if WITH_IBORIG
+pkgconfig_DATA += @PACKAGE@-iborig.pc
+endif
 
 ## Rule to build RPM distribution package
 rpm: dist-gzip
