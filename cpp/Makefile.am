@@ -116,6 +116,7 @@ header_HEADERS += ssl/EClientSocketSSL.h
 header_HEADERS += ssl/EReaderSSL.h
 header_HEADERS += ssl/ESocketSSL.h
 header_HEADERS += ssl/StdAfx.h
+noinst_HEADERS += ssl/ssl_private.h
 libtwsapi_iborig_la_CPPFLAGS += $(openssl_CFLAGS)
 endif
 endif
