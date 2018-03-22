@@ -1,3 +1,7 @@
+/* Copyright (C) 2018 Ruediger Meier
+ * Author:  Ruediger Meier <sweet_f_a@gmx.de>
+ * License: BSD 3-Clause */
+
 #include "StdAfx.h"
 #include "EDecoder.h"
 #include "EWrapper.h"

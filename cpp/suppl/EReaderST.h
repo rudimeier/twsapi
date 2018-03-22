@@ -1,4 +1,8 @@
-﻿#pragma once
+/* Copyright (C) 2018 Ruediger Meier
+ * Author:  Ruediger Meier <sweet_f_a@gmx.de>
+ * License: BSD 3-Clause */
+
+#pragma once
 
 class EPosixClientSocket;
 class EDecoder;
@@ -10,9 +14,6 @@ public:
 	EReaderST(EPosixClientSocket *clientSocket);
 	~EReaderST(void);
 
-#if 0
-	bool processNonBlockingSelect();
-#endif
 	void select_timeout( int msec );
 	void onReceive();
 
