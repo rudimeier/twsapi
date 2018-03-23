@@ -1317,7 +1317,7 @@ void TestCppClient::currentTime( long time)
 }
 
 //! [error]
-void TestCppClient::error(const int id, const int errorCode, const std::string errorString)
+void TestCppClient::error(int id, int errorCode, const std::string& errorString)
 {
 	printf( "Error. Id: %d, Code: %d, Msg: %s\n", id, errorCode, errorString.c_str());
 }
@@ -1544,7 +1544,7 @@ void TestCppClient::updateMktDepth(TickerId id, int position, int operation, int
 //! [updatemktdepth]
 
 //! [updatemktdepthl2]
-void TestCppClient::updateMktDepthL2(TickerId id, int position, std::string marketMaker, int operation,
+void TestCppClient::updateMktDepthL2(TickerId id, int position, const std::string& marketMaker, int operation,
                                      int side, double price, int size) {
 	printf( "UpdateMarketDepthL2. %ld - Position: %d, Operation: %d, Side: %d, Price: %g, Size: %d\n", id, position, operation, side, price, size);
 }
@@ -1569,14 +1569,14 @@ void TestCppClient::receiveFA(faDataType pFaDataType, const std::string& cxml) {
 //! [receivefa]
 
 //! [historicaldata]
-void TestCppClient::historicalData(TickerId reqId, Bar bar) {
+void TestCppClient::historicalData(TickerId reqId, const Bar& bar) {
 	printf("HistoricalData. ReqId: %ld - Date: %s, Open: %g, High: %g, Low: %g, Close: %g, Volume: %lld, Count: %d, WAP: %g\n",
 	       reqId, bar.time.c_str(), bar.open, bar.high, bar.low, bar.close, bar.volume, bar.count, bar.wap);
 }
 //! [historicaldata]
 
 //! [historicaldataend]
-void TestCppClient::historicalDataEnd(int reqId, std::string startDateStr, std::string endDateStr) { 
+void TestCppClient::historicalDataEnd(int reqId, const std::string& startDateStr, const std::string& endDateStr) {
 	std::cout << "HistoricalDataEnd. ReqId: " << reqId << " - Start Date: " << startDateStr << ", End Date: " << endDateStr << std::endl;	
 }
 //! [historicaldataend]
@@ -1715,7 +1715,8 @@ void TestCppClient::accountUpdateMultiEnd( int reqId) {
 //! [accountupdatemultiend]
 
 //! [securityDefinitionOptionParameter]
-void TestCppClient::securityDefinitionOptionalParameter(int reqId, const std::string& exchange, int underlyingConId, const std::string& tradingClass, const std::string& multiplier, std::set<std::string> expirations, std::set<double> strikes) {
+void TestCppClient::securityDefinitionOptionalParameter(int reqId, const std::string& exchange, int underlyingConId, const std::string& tradingClass,
+                                                        const std::string& multiplier, const std::set<std::string>& expirations, const std::set<double>& strikes) {
 	printf("Security Definition Optional Parameter. Request: %d, Trading Class: %s, Multiplier: %s\n", reqId, tradingClass.c_str(), multiplier.c_str());
 }
 //! [securityDefinitionOptionParameter]
@@ -1785,17 +1786,17 @@ void TestCppClient::tickNews(int tickerId, time_t timeStamp, const std::string& 
 //! [tickNews]
 
 //! [smartcomponents]]
-void TestCppClient::smartComponents(int reqId, SmartComponentsMap theMap) {
+void TestCppClient::smartComponents(int reqId, const SmartComponentsMap& theMap) {
 	printf("Smart components: (%lu):\n", theMap.size());
 
-	for (SmartComponentsMap::iterator i = theMap.begin(); i != theMap.end(); i++) {
+	for (SmartComponentsMap::const_iterator i = theMap.begin(); i != theMap.end(); i++) {
 		printf(" bit number: %d exchange: %s exchange letter: %c\n", i->first, std::get<0>(i->second).c_str(), std::get<1>(i->second));
 	}
 }
 //! [smartcomponents]
 
 //! [tickReqParams]
-void TestCppClient::tickReqParams(int tickerId, double minTick, std::string bboExchange, int snapshotPermissions) {
+void TestCppClient::tickReqParams(int tickerId, double minTick, const std::string& bboExchange, int snapshotPermissions) {
 	printf("tickerId: %d, minTick: %g, bboExchange: %s, snapshotPermissions: %u", tickerId, minTick, bboExchange.c_str(), snapshotPermissions);
 
 	m_bboExchange = bboExchange;
@@ -1843,7 +1844,7 @@ void TestCppClient::headTimestamp(int reqId, const std::string& headTimestamp) {
 //! [headTimestamp]
 
 //! [histogramData]
-void TestCppClient::histogramData(int reqId, HistogramDataVector data) {
+void TestCppClient::histogramData(int reqId, const HistogramDataVector& data) {
 	printf("Histogram. ReqId: %d, data length: %lu\n", reqId, data.size());
 
 	for (auto item : data) {
@@ -1853,7 +1854,7 @@ void TestCppClient::histogramData(int reqId, HistogramDataVector data) {
 //! [histogramData]
 
 //! [historicalDataUpdate]
-void TestCppClient::historicalDataUpdate(TickerId reqId, Bar bar) { 
+void TestCppClient::historicalDataUpdate(TickerId reqId, const Bar& bar) {
 	printf( "HistoricalDataUpdate. ReqId: %ld - Date: %s, Open: %g, High: %g, Low: %g, Close: %g, Volume: %lld, Count: %d, WAP: %g\n",
 	        reqId, bar.time.c_str(), bar.open, bar.high, bar.low, bar.close, bar.volume, bar.count, bar.wap);
 }

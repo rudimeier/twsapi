@@ -198,7 +198,7 @@ void TestCppClient::currentTime( long time)
 	}
 }
 
-void TestCppClient::error(const int id, const int errorCode, const std::string errorString)
+void TestCppClient::error(int id, int errorCode, const std::string& errorString)
 {
 	//  printf( "Error id=%d, errorCode=%d, msg=%s\n", id, errorCode, errorString.c_str());
 
@@ -234,14 +234,14 @@ void TestCppClient::execDetailsEnd( int reqId) {}
 
 void TestCppClient::updateMktDepth(TickerId id, int position, int operation, int side,
                                    double price, int size) {}
-void TestCppClient::updateMktDepthL2(TickerId id, int position, std::string marketMaker, int operation,
+void TestCppClient::updateMktDepthL2(TickerId id, int position, const std::string& marketMaker, int operation,
                                      int side, double price, int size) {}
 void TestCppClient::updateNewsBulletin(int msgId, int msgType, const std::string& newsMessage, const std::string& originExch) {}
 void TestCppClient::managedAccounts( const std::string& accountsList) {}
 void TestCppClient::receiveFA(faDataType pFaDataType, const std::string& cxml) {}
-void TestCppClient::historicalData(TickerId reqId, Bar bar) {}
+void TestCppClient::historicalData(TickerId reqId, const Bar& bar) {}
 void TestCppClient::scannerParameters(const std::string& xml) {}
-void TestCppClient::historicalDataEnd(int reqId, std::string startDateStr, std::string endDateStr) { 
+void TestCppClient::historicalDataEnd(int reqId, const std::string& startDateStr, const std::string& endDateStr) {
 	std::cout << "HistoricalDataEnd. ReqId: " << reqId << " - Start Date: " << startDateStr << ", End Date: " << endDateStr << std::endl;	
 }
 void TestCppClient::scannerData(int reqId, int rank, const ContractDetails& contractDetails,
@@ -274,27 +274,26 @@ void TestCppClient::positionMulti( int reqId, const std::string& account,const s
 void TestCppClient::positionMultiEnd( int reqId) {}
 void TestCppClient::accountUpdateMulti( int reqId, const std::string& account, const std::string& modelCode, const std::string& key, const std::string& value, const std::string& currency) {}
 void TestCppClient::accountUpdateMultiEnd( int reqId) {}
-void TestCppClient::securityDefinitionOptionalParameter(int reqId, const std::string& exchange, int underlyingConId, const std::string& tradingClass, const std::string& multiplier, std::set<std::string> expirations, std::set<double> strikes) {}
+void TestCppClient::securityDefinitionOptionalParameter(int reqId, const std::string& exchange, int underlyingConId, const std::string& tradingClass,
+                                                        const std::string& multiplier, const std::set<std::string>& expirations, const std::set<double>& strikes) {}
 void TestCppClient::securityDefinitionOptionalParameterEnd(int reqId) {}
 void TestCppClient::softDollarTiers(int reqId, const std::vector<SoftDollarTier> &tiers) {}
 void TestCppClient::familyCodes(const std::vector<FamilyCode> &familyCodes) {}
 void TestCppClient::symbolSamples(int reqId, const std::vector<ContractDescription> &contractDescriptions) {}
 void TestCppClient::mktDepthExchanges(const std::vector<DepthMktDataDescription> &depthMktDataDescriptions) {}
 void TestCppClient::tickNews(int tickerId, time_t timeStamp, const std::string& providerCode, const std::string& articleId, const std::string& headline, const std::string& extraData) {}
-void TestCppClient::smartComponents(int reqId, SmartComponentsMap theMap) {}
-void TestCppClient::tickReqParams(int tickerId, double minTick, std::string bboExchange, int snapshotPermissions) {}
+void TestCppClient::smartComponents(int reqId, const SmartComponentsMap& theMap) {}
+void TestCppClient::tickReqParams(int tickerId, double minTick, const std::string& bboExchange, int snapshotPermissions) {}
 void TestCppClient::newsProviders(const std::vector<NewsProvider> &newsProviders) {}
 void TestCppClient::newsArticle(int requestId, int articleType, const std::string& articleText) {}
 void TestCppClient::historicalNews(int requestId, const std::string& time, const std::string& providerCode, const std::string& articleId, const std::string& headline) {}
 void TestCppClient::historicalNewsEnd(int requestId, bool hasMore) {}
 void TestCppClient::headTimestamp(int reqId, const std::string& headTimestamp) {}
-void TestCppClient::histogramData(int reqId, HistogramDataVector data) {}
-void TestCppClient::historicalDataUpdate(TickerId reqId, Bar bar) {}
+void TestCppClient::histogramData(int reqId, const HistogramDataVector& data) {}
+void TestCppClient::historicalDataUpdate(TickerId reqId, const Bar& bar) {}
 void TestCppClient::rerouteMktDataReq(int reqId, int conid, const std::string& exchange) {}
 void TestCppClient::rerouteMktDepthReq(int reqId, int conid, const std::string& exchange) {}
 void TestCppClient::marketRule(int marketRuleId, const std::vector<PriceIncrement> &priceIncrements) {}
-void TestCppClient::dailyPnL(int reqId, double dailyPnL) {}
-void TestCppClient::dailyPnLSingle(int reqId, int pos, double dailyPnL, double value) {}
 void TestCppClient::pnl(int reqId, double dailyPnL, double unrealizedPnL, double realizedPnL) {}
 void TestCppClient::pnlSingle(int reqId, int pos, double dailyPnL, double unrealizedPnL, double realizedPnL, double value) {}
 void TestCppClient::historicalTicks(int reqId, const std::vector<HistoricalTick>& ticks, bool done) {}
