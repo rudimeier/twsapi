@@ -32,16 +32,16 @@ void DefaultEWrapper::bondContractDetails( int reqId, const ContractDetails& con
 void DefaultEWrapper::contractDetailsEnd( int reqId) { }
 void DefaultEWrapper::execDetails( int reqId, const Contract& contract, const Execution& execution) { }
 void DefaultEWrapper::execDetailsEnd( int reqId) { }
-void DefaultEWrapper::error(const int id, const int errorCode, const std::string errorString) { }
+void DefaultEWrapper::error(int id, int errorCode, const std::string& errorString) { }
 void DefaultEWrapper::updateMktDepth(TickerId id, int position, int operation, int side,
       double price, int size) { }
-void DefaultEWrapper::updateMktDepthL2(TickerId id, int position, std::string marketMaker, int operation,
+void DefaultEWrapper::updateMktDepthL2(TickerId id, int position, const std::string& marketMaker, int operation,
       int side, double price, int size) { }
 void DefaultEWrapper::updateNewsBulletin(int msgId, int msgType, const std::string& newsMessage, const std::string& originExch) { }
 void DefaultEWrapper::managedAccounts( const std::string& accountsList) { }
 void DefaultEWrapper::receiveFA(faDataType pFaDataType, const std::string& cxml) { }
-void DefaultEWrapper::historicalData(TickerId reqId, Bar bar) { }
-void DefaultEWrapper::historicalDataEnd(int reqId, std::string startDateStr, std::string endDateStr) { }
+void DefaultEWrapper::historicalData(TickerId reqId, const Bar& bar) { }
+void DefaultEWrapper::historicalDataEnd(int reqId, const std::string& startDateStr, const std::string& endDateStr) { }
 void DefaultEWrapper::scannerParameters(const std::string& xml) { }
 void DefaultEWrapper::scannerData(int reqId, int rank, const ContractDetails& contractDetails,
 	   const std::string& distance, const std::string& benchmark, const std::string& projection,
@@ -70,22 +70,23 @@ void DefaultEWrapper::positionMulti( int reqId, const std::string& account,const
 void DefaultEWrapper::positionMultiEnd( int reqId) { }
 void DefaultEWrapper::accountUpdateMulti( int reqId, const std::string& account, const std::string& modelCode, const std::string& key, const std::string& value, const std::string& currency) { }
 void DefaultEWrapper::accountUpdateMultiEnd( int reqId) { }
-void DefaultEWrapper::securityDefinitionOptionalParameter(int reqId, const std::string& exchange, int underlyingConId, const std::string& tradingClass, const std::string& multiplier, std::set<std::string> expirations, std::set<double> strikes) { }
+void DefaultEWrapper::securityDefinitionOptionalParameter(int reqId, const std::string& exchange, int underlyingConId, const std::string& tradingClass,
+	const std::string& multiplier, const std::set<std::string>& expirations, const std::set<double>& strikes) { }
 void DefaultEWrapper::securityDefinitionOptionalParameterEnd(int reqId) { }
 void DefaultEWrapper::softDollarTiers(int reqId, const std::vector<SoftDollarTier> &tiers) { }
 void DefaultEWrapper::familyCodes(const std::vector<FamilyCode> &familyCodes) { }
 void DefaultEWrapper::symbolSamples(int reqId, const std::vector<ContractDescription> &contractDescriptions) { }
 void DefaultEWrapper::mktDepthExchanges(const std::vector<DepthMktDataDescription> &depthMktDataDescriptions) { }
 void DefaultEWrapper::tickNews(int tickerId, time_t timeStamp, const std::string& providerCode, const std::string& articleId, const std::string& headline, const std::string& extraData) { }
-void DefaultEWrapper::smartComponents(int reqId, SmartComponentsMap theMap) { }
-void DefaultEWrapper::tickReqParams(int tickerId, double minTick, std::string bboExchange, int snapshotPermissions) { }
+void DefaultEWrapper::smartComponents(int reqId, const SmartComponentsMap& theMap) { }
+void DefaultEWrapper::tickReqParams(int tickerId, double minTick, const std::string& bboExchange, int snapshotPermissions) { }
 void DefaultEWrapper::newsProviders(const std::vector<NewsProvider> &newsProviders) { }
 void DefaultEWrapper::newsArticle(int requestId, int articleType, const std::string& articleText) { }
 void DefaultEWrapper::historicalNews(int requestId, const std::string& time, const std::string& providerCode, const std::string& articleId, const std::string& headline) { }
 void DefaultEWrapper::historicalNewsEnd(int requestId, bool hasMore) { }
 void DefaultEWrapper::headTimestamp(int reqId, const std::string& headTimestamp) { }
-void DefaultEWrapper::histogramData(int reqId, HistogramDataVector data) { }
-void DefaultEWrapper::historicalDataUpdate(TickerId reqId, Bar bar) { }
+void DefaultEWrapper::histogramData(int reqId, const HistogramDataVector& data) { }
+void DefaultEWrapper::historicalDataUpdate(TickerId reqId, const Bar& bar) { }
 void DefaultEWrapper::rerouteMktDataReq(int reqId, int conid, const std::string& exchange) { }
 void DefaultEWrapper::rerouteMktDepthReq(int reqId, int conid, const std::string& exchange) { }
 void DefaultEWrapper::marketRule(int marketRuleId, const std::vector<PriceIncrement> &priceIncrements) { }
