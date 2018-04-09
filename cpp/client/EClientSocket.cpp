@@ -164,7 +164,6 @@ bool EClientSocket::eConnectImpl(int clientId, bool extraAuth, ConnState* stateO
 		reader.putMessageToQueue();
 
         while (m_pSignal && !m_serverVersion && isSocketOK()) {
-            reader.checkClient();
             m_pSignal->waitForSignal();
             reader.processMsgs();
         }

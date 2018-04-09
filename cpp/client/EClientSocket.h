@@ -5,6 +5,7 @@
 #ifndef eposixclientsocket_def
 #define eposixclientsocket_def
 
+#include <atomic>
 #include "EClient.h"
 #include "EClientMsgSink.h"
 #include "ESocket.h"
@@ -58,7 +59,7 @@ private:
 
 private:
 
-	int m_fd;
+	std::atomic<int> m_fd;
     bool m_allowRedirect;    
     bool m_asyncEConnect;
     EReaderSignal *m_pSignal;

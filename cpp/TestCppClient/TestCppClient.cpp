@@ -316,7 +316,6 @@ void TestCppClient::processMessages()
 			break;
 	}
 
-	m_pReader->checkClient();
 	m_osSignal.waitForSignal();
 	errno = 0;
 	m_pReader->processMsgs();

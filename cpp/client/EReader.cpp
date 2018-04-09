@@ -19,40 +19,38 @@ static DefaultEWrapper defaultWrapper;
 
 EReader::EReader(EClientSocket *clientSocket, EReaderSignal *signal)
 	: processMsgsDecoder_(clientSocket->EClient::serverVersion(), clientSocket->getWrapper(), clientSocket)
-#if defined(IB_WIN32)
+#if defined(IB_POSIX)
+    , m_hReadThread(pthread_self())
+#elif defined(IB_WIN32)
     , m_hReadThread(0)
 #endif
 {
 		m_isAlive = true;
         m_pClientSocket = clientSocket;       
 		m_pEReaderSignal = signal;
-		m_needsWriteSelect = false;
 		m_nMaxBufSize = IN_BUF_SIZE_DEFAULT;
 		m_buf.reserve(IN_BUF_SIZE_DEFAULT);
 }
 
 EReader::~EReader(void) {
-    m_isAlive = false;
-
-#if defined(IB_WIN32)
+#if defined(IB_POSIX)
+    if (!pthread_equal(pthread_self(), m_hReadThread)) {
+        m_isAlive = false;
+        m_pClientSocket->eDisconnect();
+	pthread_join(m_hReadThread, NULL);
+    }
+#elif defined(IB_WIN32)
     if (m_hReadThread) {
+        m_isAlive = false;
+        m_pClientSocket->eDisconnect();
         WaitForSingleObject(m_hReadThread, INFINITE);
     }
 #endif
 }
 
-void EReader::checkClient() {
-	m_needsWriteSelect = !m_pClientSocket->getTransport()->isOutBufferEmpty();
-}
-
 void EReader::start() {
 #if defined(IB_POSIX)
-    pthread_t thread;
-    pthread_attr_t attr;
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-    pthread_create( &thread, &attr, readToQueueThread, this );
-    pthread_attr_destroy(&attr);
+    pthread_create( &m_hReadThread, NULL, readToQueueThread, this );
 #elif defined(IB_WIN32)
     m_hReadThread = CreateThread(0, 0, readToQueueThread, this, 0, 0);
 #else
@@ -118,13 +116,12 @@ bool EReader::processNonBlockingSelect() {
 	if( m_pClientSocket->fd() >= 0 ) {
 
 		FD_ZERO( &readSet);
-		errorSet = writeSet = readSet;
+		FD_ZERO( &writeSet);
+		FD_ZERO( &errorSet);
 
 		FD_SET( m_pClientSocket->fd(), &readSet);
-
-		if (m_needsWriteSelect)
+		if (!m_pClientSocket->getTransport()->isOutBufferEmpty())
 			FD_SET( m_pClientSocket->fd(), &writeSet);
-
 		FD_SET( m_pClientSocket->fd(), &errorSet);
 
 		int ret = select( m_pClientSocket->fd() + 1, &readSet, &writeSet, &errorSet, &tval);
@@ -187,9 +184,10 @@ void EReader::onReceive() {
 
 bool EReader::bufferedRead(char *buf, unsigned int size) {
 	while (size > 0) {
-		while (m_buf.size() < size && m_buf.size() < m_nMaxBufSize)
+		while (m_buf.size() < size && m_buf.size() < m_nMaxBufSize) {
 			if (!processNonBlockingSelect() && !m_pClientSocket->isSocketOK())
 				return false;
+		}
 
 		int nBytes = (std::min<unsigned int>)(m_nMaxBufSize, size);
 
@@ -274,7 +272,6 @@ ibapi::shared_ptr<EMessage> EReader::getMsg(void) {
 
 void EReader::processMsgs(void) {
 	m_pClientSocket->onSend();
-	checkClient();
 
 	ibapi::shared_ptr<EMessage> msg = getMsg();
 

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <atomic>
 #include "StdAfx.h"
 #include "EDecoder.h"
 #include "EMutex.h"
@@ -20,9 +21,10 @@ class TWSAPIDLLEXP EReader
     std::deque<ibapi::shared_ptr<EMessage>> m_msgQueue;
     EMutex m_csMsgQueue;
     std::vector<char> m_buf;
-    bool m_needsWriteSelect;
-    bool m_isAlive;
-#if defined(IB_WIN32)
+    std::atomic<bool> m_isAlive;
+#if defined(IB_POSIX)
+    pthread_t m_hReadThread;
+#elif defined(IB_WIN32)
     HANDLE m_hReadThread;
 #endif
 	unsigned int m_nMaxBufSize;
@@ -51,7 +53,6 @@ protected:
 
 public:
     void processMsgs(void);
-    void checkClient();
 	bool putMessageToQueue();
 	void start();
 };
