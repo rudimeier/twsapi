@@ -394,6 +394,7 @@ void EPosixClientSocket::eDisconnect()
 	m_fd = -1;
 
 	eDisconnectBase();
+	m_reader->reset();
 }
 
 bool EPosixClientSocket::isSocketOK() const

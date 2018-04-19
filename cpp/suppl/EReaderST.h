@@ -16,6 +16,7 @@ public:
 
 	void select_timeout( int msec );
 	void onReceive();
+	void reset();
 
 private:
 	int readV100Plus();

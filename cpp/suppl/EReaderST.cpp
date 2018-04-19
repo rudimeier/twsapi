@@ -69,6 +69,14 @@ EReaderST::~EReaderST(void)
 	delete decoder;
 }
 
+void EReaderST::reset()
+{
+	m_buf->offset = 0;
+	/* there is no public method to reset EDecoder's m_serverVersion ... */
+	delete decoder;
+	decoder = new EDecoder(m_pClientSocket->EClient::serverVersion(),
+		m_pClientSocket->getWrapper(), m_pClientSocket);
+}
 
 void EReaderST::select_timeout( int msec )
 {
