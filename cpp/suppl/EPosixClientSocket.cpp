@@ -386,7 +386,7 @@ void EPosixClientSocket::prepareBuffer(std::ostream& buf) const
 	prepareBufferImpl( buf);
 }
 
-void EPosixClientSocket::eDisconnect()
+void EPosixClientSocket::eDisconnect(bool resetState)
 {
 	if ( m_fd >= 0 )
 		// close socket
@@ -429,7 +429,7 @@ void EPosixClientSocket::serverVersion(int version, const char *time) {
 		startApi();
 }
 
-void EPosixClientSocket::redirect(const char *host, unsigned int port) {
+void EPosixClientSocket::redirect(const char *host, int port) {
 	/* Original implementation was broken. Let's see if this will ever happen */
 	getWrapper()->error( NO_VALID_ID, 9999,
 		"WTF, got redirect request ... ignore and see what happens.");

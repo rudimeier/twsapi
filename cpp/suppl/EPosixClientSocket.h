@@ -28,7 +28,7 @@ public:
 
 	bool eConnect( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
 	// override virtual funcs from EClient
-	void eDisconnect();
+	void eDisconnect(bool resetState = true);
 	bool eConnect2( const char *host, unsigned int port, int clientId=0,
 		int family=0, bool extraAuth = false );
 
@@ -66,7 +66,7 @@ private:
 //EClientMsgSink implementation
 public:
     void serverVersion(int version, const char *time);
-    void redirect(const char *host, unsigned int port);    
+    void redirect(const char *host, int port);    
 };
 
 #endif
