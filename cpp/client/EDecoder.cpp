@@ -18,6 +18,7 @@
 #include "PriceIncrement.h"
 #include <string.h>
 #include <cstdlib>
+#include <sstream>
 
 EDecoder::EDecoder(int serverVersion, EWrapper *callback, EClientMsgSink *clientMsgSink) {
 	m_pEWrapper = callback;
@@ -586,15 +587,15 @@ const char* EDecoder::processOpenOrderMsg(const char* ptr, const char* endPtr) {
 		DECODE_FIELD( order.notHeld);
 	}
 
-	UnderComp underComp;
+	DeltaNeutralContract deltaNeutralContract;
 	if( version >= 20) {
-		bool underCompPresent = false;
-		DECODE_FIELD(underCompPresent);
-		if( underCompPresent){
-			DECODE_FIELD(underComp.conId);
-			DECODE_FIELD(underComp.delta);
-			DECODE_FIELD(underComp.price);
-			contract.underComp = &underComp;
+		bool deltaNeutralContractPresent = false;
+		DECODE_FIELD(deltaNeutralContractPresent);
+		if( deltaNeutralContractPresent){
+			DECODE_FIELD(deltaNeutralContract.conId);
+			DECODE_FIELD(deltaNeutralContract.delta);
+			DECODE_FIELD(deltaNeutralContract.price);
+			contract.deltaNeutralContract = &deltaNeutralContract;
 		}
 	}
 
@@ -627,9 +628,17 @@ const char* EDecoder::processOpenOrderMsg(const char* ptr, const char* endPtr) {
 	DECODE_FIELD( order.whatIf); // ver 16 field
 
 	DECODE_FIELD( orderState.status); // ver 16 field
-	DECODE_FIELD( orderState.initMargin); // ver 16 field
-	DECODE_FIELD( orderState.maintMargin); // ver 16 field
-	DECODE_FIELD( orderState.equityWithLoan); // ver 16 field
+	if (m_serverVersion >= MIN_SERVER_VER_WHAT_IF_EXT_FIELDS) {
+		DECODE_FIELD( orderState.initMarginBefore);
+		DECODE_FIELD( orderState.maintMarginBefore);
+		DECODE_FIELD( orderState.equityWithLoanBefore);
+		DECODE_FIELD( orderState.initMarginChange);
+		DECODE_FIELD( orderState.maintMarginChange);
+		DECODE_FIELD( orderState.equityWithLoanChange);
+	}
+	DECODE_FIELD( orderState.initMarginAfter); // ver 16 field
+	DECODE_FIELD( orderState.maintMarginAfter); // ver 16 field
+	DECODE_FIELD( orderState.equityWithLoanAfter); // ver 16 field
 	DECODE_FIELD_MAX( orderState.commission); // ver 16 field
 	DECODE_FIELD_MAX( orderState.minCommission); // ver 16 field
 	DECODE_FIELD_MAX( orderState.maxCommission); // ver 16 field
@@ -694,6 +703,10 @@ const char* EDecoder::processOpenOrderMsg(const char* ptr, const char* endPtr) {
 
 	if (m_serverVersion >= MIN_SERVER_VER_CASH_QTY) {
 		DECODE_FIELD_MAX(order.cashQty);
+	}
+
+	if (m_serverVersion >= MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE) {
+		DECODE_FIELD(order.dontUseAutoPriceForHedge);
 	}
 
 	m_pEWrapper->openOrder( (OrderId)order.orderId, contract, order, orderState);
@@ -817,22 +830,22 @@ const char* EDecoder::processContractDataMsg(const char* ptr, const char* endPtr
 	}
 
 	ContractDetails contract;
-	DECODE_FIELD( contract.summary.symbol);
-	DECODE_FIELD( contract.summary.secType);
-	DECODE_FIELD( contract.summary.lastTradeDateOrContractMonth);
-	DECODE_FIELD( contract.summary.strike);
-	DECODE_FIELD( contract.summary.right);
-	DECODE_FIELD( contract.summary.exchange);
-	DECODE_FIELD( contract.summary.currency);
-	DECODE_FIELD( contract.summary.localSymbol);
+	DECODE_FIELD( contract.contract.symbol);
+	DECODE_FIELD( contract.contract.secType);
+	ptr = decodeLastTradeDate(ptr, endPtr, contract, false);
+	DECODE_FIELD( contract.contract.strike);
+	DECODE_FIELD( contract.contract.right);
+	DECODE_FIELD( contract.contract.exchange);
+	DECODE_FIELD( contract.contract.currency);
+	DECODE_FIELD( contract.contract.localSymbol);
 	DECODE_FIELD( contract.marketName);
-	DECODE_FIELD( contract.summary.tradingClass);
-	DECODE_FIELD( contract.summary.conId);
+	DECODE_FIELD( contract.contract.tradingClass);
+	DECODE_FIELD( contract.contract.conId);
 	DECODE_FIELD( contract.minTick);
 	if (m_serverVersion >= MIN_SERVER_VER_MD_SIZE_MULTIPLIER) {
 		DECODE_FIELD( contract.mdSizeMultiplier);
 	}
-	DECODE_FIELD( contract.summary.multiplier);
+	DECODE_FIELD( contract.contract.multiplier);
 	DECODE_FIELD( contract.orderTypes);
 	DECODE_FIELD( contract.validExchanges);
 	DECODE_FIELD( contract.priceMagnifier); // ver 2 field
@@ -841,7 +854,7 @@ const char* EDecoder::processContractDataMsg(const char* ptr, const char* endPtr
 	}
 	if( version >= 5) {
 		DECODE_FIELD( contract.longName);
-		DECODE_FIELD( contract.summary.primaryExchange);
+		DECODE_FIELD( contract.contract.primaryExchange);
 	}
 	if( version >= 6) {
 		DECODE_FIELD( contract.contractMonth);
@@ -900,11 +913,11 @@ const char* EDecoder::processBondContractDataMsg(const char* ptr, const char* en
 	}
 
 	ContractDetails contract;
-	DECODE_FIELD( contract.summary.symbol);
-	DECODE_FIELD( contract.summary.secType);
+	DECODE_FIELD( contract.contract.symbol);
+	DECODE_FIELD( contract.contract.secType);
 	DECODE_FIELD( contract.cusip);
 	DECODE_FIELD( contract.coupon);
-	DECODE_FIELD( contract.maturity);
+	ptr = decodeLastTradeDate(ptr, endPtr, contract, true);
 	DECODE_FIELD( contract.issueDate);
 	DECODE_FIELD( contract.ratings);
 	DECODE_FIELD( contract.bondType);
@@ -913,11 +926,11 @@ const char* EDecoder::processBondContractDataMsg(const char* ptr, const char* en
 	DECODE_FIELD( contract.callable);
 	DECODE_FIELD( contract.putable);
 	DECODE_FIELD( contract.descAppend);
-	DECODE_FIELD( contract.summary.exchange);
-	DECODE_FIELD( contract.summary.currency);
+	DECODE_FIELD( contract.contract.exchange);
+	DECODE_FIELD( contract.contract.currency);
 	DECODE_FIELD( contract.marketName);
-	DECODE_FIELD( contract.summary.tradingClass);
-	DECODE_FIELD( contract.summary.conId);
+	DECODE_FIELD( contract.contract.tradingClass);
+	DECODE_FIELD( contract.contract.conId);
 	DECODE_FIELD( contract.minTick);
 	if (m_serverVersion >= MIN_SERVER_VER_MD_SIZE_MULTIPLIER) {
 		DECODE_FIELD( contract.mdSizeMultiplier);
@@ -1249,17 +1262,17 @@ const char* EDecoder::processScannerDataMsg(const char* ptr, const char* endPtr)
 		ScanData data;
 
 		DECODE_FIELD( data.rank);
-		DECODE_FIELD( data.contract.summary.conId); // ver 3 field
-		DECODE_FIELD( data.contract.summary.symbol);
-		DECODE_FIELD( data.contract.summary.secType);
-		DECODE_FIELD( data.contract.summary.lastTradeDateOrContractMonth);
-		DECODE_FIELD( data.contract.summary.strike);
-		DECODE_FIELD( data.contract.summary.right);
-		DECODE_FIELD( data.contract.summary.exchange);
-		DECODE_FIELD( data.contract.summary.currency);
-		DECODE_FIELD( data.contract.summary.localSymbol);
+		DECODE_FIELD( data.contract.contract.conId); // ver 3 field
+		DECODE_FIELD( data.contract.contract.symbol);
+		DECODE_FIELD( data.contract.contract.secType);
+		DECODE_FIELD( data.contract.contract.lastTradeDateOrContractMonth);
+		DECODE_FIELD( data.contract.contract.strike);
+		DECODE_FIELD( data.contract.contract.right);
+		DECODE_FIELD( data.contract.contract.exchange);
+		DECODE_FIELD( data.contract.contract.currency);
+		DECODE_FIELD( data.contract.contract.localSymbol);
 		DECODE_FIELD( data.contract.marketName);
-		DECODE_FIELD( data.contract.summary.tradingClass);
+		DECODE_FIELD( data.contract.contract.tradingClass);
 		DECODE_FIELD( data.distance);
 		DECODE_FIELD( data.benchmark);
 		DECODE_FIELD( data.projection);
@@ -1402,13 +1415,13 @@ const char* EDecoder::processDeltaNeutralValidationMsg(const char* ptr, const ch
 	DECODE_FIELD( version);
 	DECODE_FIELD( reqId);
 
-	UnderComp underComp;
+	DeltaNeutralContract deltaNeutralContract;
 
-	DECODE_FIELD( underComp.conId);
-	DECODE_FIELD( underComp.delta);
-	DECODE_FIELD( underComp.price);
+	DECODE_FIELD( deltaNeutralContract.conId);
+	DECODE_FIELD( deltaNeutralContract.delta);
+	DECODE_FIELD( deltaNeutralContract.price);
 
-	m_pEWrapper->deltaNeutralValidation( reqId, underComp);
+	m_pEWrapper->deltaNeutralValidation( reqId, deltaNeutralContract);
 
 	return ptr;
 }
@@ -2808,4 +2821,30 @@ bool EDecoder::DecodeFieldMax(double& doubleValue, const char*& ptr, const char*
 		return false;
 	doubleValue = stringValue.empty() ? UNSET_DOUBLE : atof(stringValue.c_str());
 	return true;
+}
+
+const char* EDecoder::decodeLastTradeDate(const char* ptr, const char* endPtr, ContractDetails& contract, bool isBond) {
+	std::string lastTradeDateOrContractMonth;
+	DECODE_FIELD( lastTradeDateOrContractMonth);
+	if (!lastTradeDateOrContractMonth.empty()){
+		std::vector<std::string> splitted;
+		std::istringstream buf(lastTradeDateOrContractMonth);
+		for(std::string s; buf >> s; ) {
+			splitted.push_back(s);
+		}
+		if (splitted.size() > 0) {
+			if (isBond) {
+				contract.maturity = splitted[0];
+			} else {
+				contract.contract.lastTradeDateOrContractMonth = splitted[0];
+			}
+		}
+		if (splitted.size() > 1) {
+			contract.lastTradeTime = splitted[1];
+		}
+		if (isBond && splitted.size() > 2) {
+			contract.timeZoneId = splitted[2];
+		}
+	}
+	return ptr;
 }

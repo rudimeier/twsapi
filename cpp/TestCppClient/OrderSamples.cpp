@@ -887,6 +887,14 @@ Order OrderSamples::AttachAdjustableToTrail(Order parent, double attachedOrderSt
 	return order;
 }
 
+Order OrderSamples::WhatIfLimitOrder(std::string action, double quantity, double limitPrice){
+	// ! [whatiflimitorder]
+	Order order = LimitOrder(action, quantity, limitPrice);
+	order.whatIf = true;
+	// ! [whatiflimitorder]
+	return order;
+}
+
 OrderCondition* OrderSamples::Price_Condition(int conId, std::string exchange, double price, bool isMore, bool isConjunction){
 	//! [price_condition]
 	//Conditions have to be created via the OrderCondition.Create 
@@ -979,3 +987,4 @@ OrderCondition* OrderSamples::Volume_Condition(int conId, std::string exchange, 
 	//! [volume_condition]
 	return dynamic_cast<OrderCondition *>(volCondition);
 }
+

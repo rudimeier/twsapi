@@ -251,7 +251,7 @@ void TestCppClient::scannerDataEnd(int reqId) {}
 void TestCppClient::realtimeBar(TickerId reqId, long time, double open, double high, double low, double close,
                                 long volume, double wap, int count) {}
 void TestCppClient::fundamentalData(TickerId reqId, const std::string& data) {}
-void TestCppClient::deltaNeutralValidation(int reqId, const UnderComp& underComp) {}
+void TestCppClient::deltaNeutralValidation(int reqId, const DeltaNeutralContract& deltaNeutralContract) {}
 void TestCppClient::tickSnapshotEnd(int reqId) {}
 void TestCppClient::marketDataType(TickerId reqId, int marketDataType) {}
 void TestCppClient::commissionReport( const CommissionReport& commissionReport) {}

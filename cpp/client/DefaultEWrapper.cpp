@@ -51,7 +51,7 @@ void DefaultEWrapper::realtimeBar(TickerId reqId, long time, double open, double
 	   long volume, double wap, int count) { }
 void DefaultEWrapper::currentTime(long time) { }
 void DefaultEWrapper::fundamentalData(TickerId reqId, const std::string& data) { }
-void DefaultEWrapper::deltaNeutralValidation(int reqId, const UnderComp& underComp) { }
+void DefaultEWrapper::deltaNeutralValidation(int reqId, const DeltaNeutralContract& deltaNeutralContract) { }
 void DefaultEWrapper::tickSnapshotEnd( int reqId) { }
 void DefaultEWrapper::marketDataType( TickerId reqId, int marketDataType) { }
 void DefaultEWrapper::commissionReport( const CommissionReport& commissionReport) { }

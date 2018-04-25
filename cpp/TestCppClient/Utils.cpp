@@ -54,3 +54,10 @@ std::vector<std::uint8_t> Utils::base64_decode(std::string const& encoded_string
 
     return ret;
 }
+
+std::string Utils::formatDoubleString(std::string const& str) {
+    char buf[25];
+    snprintf(buf, sizeof(buf), "%.2f", strtod(str.c_str(), NULL));
+    return buf;
+}
+

@@ -51,9 +51,9 @@ struct ComboLeg
 	}
 };
 
-struct UnderComp
+struct DeltaNeutralContract
 {
-	UnderComp()
+	DeltaNeutralContract()
 		: conId(0)
 		, delta(0)
 		, price(0)
@@ -73,7 +73,7 @@ struct Contract
 		, strike(0)
 		, includeExpired(false)
 		, comboLegs(NULL)
-		, underComp(NULL)
+		, deltaNeutralContract(NULL)
 	{
 	}
 
@@ -102,8 +102,8 @@ struct Contract
 
 	ComboLegListSPtr comboLegs;
 
-	// delta neutral
-	UnderComp* underComp;
+	// delta neutral contract
+	DeltaNeutralContract* deltaNeutralContract;
 
 public:
 
@@ -126,7 +126,7 @@ struct ContractDetails
 	{
 	}
 
-	Contract	summary;
+	Contract	contract;
 	std::string	marketName;
 	double		minTick;
 	std::string	orderTypes;
@@ -149,6 +149,7 @@ struct ContractDetails
 	std::string	underSecType;
 	std::string marketRuleIds;
 	std::string realExpirationDate;
+	std::string lastTradeTime;
 
 	TagValueListSPtr secIdList;
 

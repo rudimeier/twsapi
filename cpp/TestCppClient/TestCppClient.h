@@ -100,6 +100,8 @@ enum State {
     ST_REQHISTORICALTICKS_ACK,
     ST_REQTICKBYTICKDATA,
     ST_REQTICKBYTICKDATA_ACK,
+	ST_WHATIFSAMPLES,
+	ST_WHATIFSAMPLES_ACK,
 	ST_IDLE
 };
 
@@ -162,6 +164,7 @@ private:
 	void continuousFuturesOperations();
     void reqHistoricalTicks();
     void reqTickByTickData();
+	void whatIfSamples();
 
 	void reqCurrentTime();
 

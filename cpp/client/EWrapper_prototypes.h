@@ -54,7 +54,7 @@ virtual void realtimeBar(TickerId reqId, long time, double open, double high, do
 	long volume, double wap, int count) EWRAPPER_VIRTUAL_IMPL;
 virtual void currentTime(long time) EWRAPPER_VIRTUAL_IMPL;
 virtual void fundamentalData(TickerId reqId, const std::string& data) EWRAPPER_VIRTUAL_IMPL;
-virtual void deltaNeutralValidation(int reqId, const UnderComp& underComp) EWRAPPER_VIRTUAL_IMPL;
+virtual void deltaNeutralValidation(int reqId, const DeltaNeutralContract& deltaNeutralContract) EWRAPPER_VIRTUAL_IMPL;
 virtual void tickSnapshotEnd( int reqId) EWRAPPER_VIRTUAL_IMPL;
 virtual void marketDataType( TickerId reqId, int marketDataType) EWRAPPER_VIRTUAL_IMPL;
 virtual void commissionReport( const CommissionReport& commissionReport) EWRAPPER_VIRTUAL_IMPL;

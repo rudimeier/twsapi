@@ -18,9 +18,15 @@ struct OrderState {
 
 	std::string status;
 
-	std::string initMargin;
-	std::string maintMargin;
-	std::string equityWithLoan;
+	std::string initMarginBefore;
+	std::string maintMarginBefore;
+	std::string equityWithLoanBefore;
+	std::string initMarginChange;
+	std::string maintMarginChange;
+	std::string equityWithLoanChange;
+	std::string initMarginAfter;
+	std::string maintMarginAfter;
+	std::string equityWithLoanAfter;
 
 	double  commission;
 	double  minCommission;
