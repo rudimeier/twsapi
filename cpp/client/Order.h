@@ -155,6 +155,9 @@ struct Order
         mifid2DecisionAlgo = "";
         mifid2ExecutionTrader = "";
         mifid2ExecutionAlgo = "";
+
+		// don't use auto price for hedge
+		dontUseAutoPriceForHedge = false;
 	}
 
 	// order identifier
@@ -326,6 +329,9 @@ struct Order
     std::string mifid2DecisionAlgo;
     std::string mifid2ExecutionTrader;
     std::string mifid2ExecutionAlgo;
+
+	// don't use auto price for hedge
+	bool dontUseAutoPriceForHedge;
 
 public:
 

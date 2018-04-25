@@ -18,7 +18,7 @@
 //const int MIN_SERVER_VER_CONTRACT_CONID       = 37;
 const int MIN_SERVER_VER_PTA_ORDERS                 = 39;
 const int MIN_SERVER_VER_FUNDAMENTAL_DATA           = 40;
-const int MIN_SERVER_VER_UNDER_COMP                 = 40;
+const int MIN_SERVER_VER_DELTA_NEUTRAL              = 40;
 const int MIN_SERVER_VER_CONTRACT_DATA_CHAIN        = 40;
 const int MIN_SERVER_VER_SCALE_ORDERS2              = 40;
 const int MIN_SERVER_VER_ALGO_ORDERS                = 41;
@@ -93,12 +93,15 @@ const int MIN_SERVER_VER_LAST_LIQUIDITY             = 136;
 const int MIN_SERVER_VER_TICK_BY_TICK               = 137;
 const int MIN_SERVER_VER_DECISION_MAKER             = 138;
 const int MIN_SERVER_VER_MIFID_EXECUTION            = 139;
+const int MIN_SERVER_VER_TICK_BY_TICK_IGNORE_SIZE   = 140;
+const int MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE       = 141;
+const int MIN_SERVER_VER_WHAT_IF_EXT_FIELDS         = 142;
 
 /* 100+ messaging */
 // 100 = enhanced handshake, msg length prefixes
 
 const int MIN_CLIENT_VER = 100;
-const int MAX_CLIENT_VER = MIN_SERVER_VER_MIFID_EXECUTION;
+const int MAX_CLIENT_VER = MIN_SERVER_VER_WHAT_IF_EXT_FIELDS;
 
 
 // incoming msg id's
@@ -302,6 +305,8 @@ class TWSAPIDLLEXP EDecoder
     void callEWrapperCallBack(int reqId, const std::vector<HistoricalTickBidAsk> &ticks, bool done);
     void callEWrapperCallBack(int reqId, const std::vector<HistoricalTickLast> &ticks, bool done);
     template<typename T> const char* processHistoricalTicks(const char* ptr, const char* endPtr);
+
+	const char* decodeLastTradeDate(const char* ptr, const char* endPtr, ContractDetails& contract, bool isBond);
 
 public:
     static bool CheckOffset(const char* ptr, const char* endPtr);

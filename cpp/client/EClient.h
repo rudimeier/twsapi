@@ -63,7 +63,7 @@ namespace client_constants {
 // 38 = can receive multipier and primaryExchange in portfolio updates
 //    ; can receive cumQty and avgPrice in execution
 //    ; can receive fundamental data
-//    ; can receive underComp for Contract objects
+//    ; can receive deltaNeutralContract for Contract objects
 //    ; can receive reqId and end marker in contractDetails/bondContractDetails
 //    ; can receive ScaleInitComponentSize and ScaleSubsComponentSize for Order objects
 // 39 = can receive underConId in contractDetails
@@ -298,10 +298,16 @@ public:
 	void reqScannerParameters();
 	void reqScannerSubscription(int tickerId, const ScannerSubscription& subscription, const TagValueListSPtr& scannerSubscriptionOptions);
 	void reqCurrentTime();
-	void reqFundamentalData(TickerId reqId, const Contract&, const std::string& reportType);
+	void reqFundamentalData(TickerId reqId, const Contract&, const std::string& reportType,
+                                 //reserved for future use, must be blank
+                                 const TagValueListSPtr& fundamentalDataOptions);
 	void cancelFundamentalData(TickerId reqId);
-	void calculateImpliedVolatility(TickerId reqId, const Contract& contract, double optionPrice, double underPrice);
-	void calculateOptionPrice(TickerId reqId, const Contract& contract, double volatility, double underPrice);
+	void calculateImpliedVolatility(TickerId reqId, const Contract& contract, double optionPrice, double underPrice, 
+        //reserved for future use, must be blank
+        const TagValueListSPtr& miscOptions);
+	void calculateOptionPrice(TickerId reqId, const Contract& contract, double volatility, double underPrice, 
+        //reserved for future use, must be blank
+        const TagValueListSPtr& miscOptions);
 	void cancelCalculateImpliedVolatility(TickerId reqId);
 	void cancelCalculateOptionPrice(TickerId reqId);
 	void reqGlobalCancel();
@@ -320,7 +326,7 @@ public:
 	void unsubscribeFromGroupEvents(int reqId);
 	void reqPositionsMulti(int reqId, const std::string& account, const std::string& modelCode);
 	void cancelPositionsMulti(int reqId);
-	void reqAccountUpdatessMulti(int reqId, const std::string& account, const std::string& modelCode, bool ledgerAndNLV);
+	void reqAccountUpdatesMulti(int reqId, const std::string& account, const std::string& modelCode, bool ledgerAndNLV);
 	void cancelAccountUpdatesMulti(int reqId);
 	void reqSecDefOptParams(int reqId, const std::string& underlyingSymbol, const std::string& futFopExchange, const std::string& underlyingSecType, int underlyingConId);
 	void reqSoftDollarTiers(int reqId);
@@ -344,7 +350,7 @@ public:
 	void cancelPnLSingle(int reqId);
     void reqHistoricalTicks(int reqId, const Contract &contract, const std::string& startDateTime,
             const std::string& endDateTime, int numberOfTicks, const std::string& whatToShow, int useRth, bool ignoreSize, const TagValueListSPtr& miscOptions);
-    void reqTickByTickData(int reqId, const Contract &contract, const std::string& tickType);
+    void reqTickByTickData(int reqId, const Contract &contract, const std::string& tickType, int numberOfTicks, bool ignoreSize);
     void cancelTickByTickData(int reqId);
 
 private:

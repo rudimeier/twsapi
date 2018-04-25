@@ -119,7 +119,7 @@ struct ContractDescription;
 struct Order;
 struct OrderState;
 struct Execution;
-struct UnderComp;
+struct DeltaNeutralContract;
 struct CommissionReport;
 
 class EWrapper
