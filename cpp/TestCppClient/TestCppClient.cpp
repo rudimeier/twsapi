@@ -815,12 +815,12 @@ void TestCppClient::conditionSamples()
 	TimeCondition* timeCondition = dynamic_cast<TimeCondition *>(OrderSamples::Time_Condition("20160118 23:59:59", true, false));
 	VolumeCondition* volumeCondition = dynamic_cast<VolumeCondition *>(OrderSamples::Volume_Condition(208813720, "SMART", false, 100, true));
 
-	lmt.conditions.push_back(ibapi::shared_ptr<PriceCondition>(priceCondition));
-	lmt.conditions.push_back(ibapi::shared_ptr<ExecutionCondition>(execCondition));
-	lmt.conditions.push_back(ibapi::shared_ptr<MarginCondition>(marginCondition));
-	lmt.conditions.push_back(ibapi::shared_ptr<PercentChangeCondition>(pctChangeCondition));
-	lmt.conditions.push_back(ibapi::shared_ptr<TimeCondition>(timeCondition));
-	lmt.conditions.push_back(ibapi::shared_ptr<VolumeCondition>(volumeCondition));
+	lmt.conditions.push_back(std::shared_ptr<PriceCondition>(priceCondition));
+	lmt.conditions.push_back(std::shared_ptr<ExecutionCondition>(execCondition));
+	lmt.conditions.push_back(std::shared_ptr<MarginCondition>(marginCondition));
+	lmt.conditions.push_back(std::shared_ptr<PercentChangeCondition>(pctChangeCondition));
+	lmt.conditions.push_back(std::shared_ptr<TimeCondition>(timeCondition));
+	lmt.conditions.push_back(std::shared_ptr<VolumeCondition>(volumeCondition));
 	m_pClient->placeOrder(m_orderId++, ContractSamples::USStock(),lmt);
 	//! [order_conditioning_activate]
 
@@ -830,7 +830,7 @@ void TestCppClient::conditionSamples()
 	//The active order will be cancelled if conditioning criteria is met
 	lmt2.conditionsCancelOrder = true;
 	PriceCondition* priceCondition2 = dynamic_cast<PriceCondition *>(OrderSamples::Price_Condition(208813720, "SMART", 600, false, false));
-	lmt2.conditions.push_back(ibapi::shared_ptr<PriceCondition>(priceCondition2));
+	lmt2.conditions.push_back(std::shared_ptr<PriceCondition>(priceCondition2));
 	m_pClient->placeOrder(m_orderId++, ContractSamples::EuropeanStock(), lmt2);
 	//! [order_conditioning_cancel]
 

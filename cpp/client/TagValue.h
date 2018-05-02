@@ -5,10 +5,10 @@
 #ifndef tagvalue_def
 #define tagvalue_def
 
-#include "shared_ptr.h"
 
 #include <string>
 #include <vector>
+#include <memory>
 
 struct TagValue
 {
@@ -21,9 +21,9 @@ struct TagValue
 	std::string value;
 };
 
-typedef ibapi::shared_ptr<TagValue> TagValueSPtr;
+typedef std::shared_ptr<TagValue> TagValueSPtr;
 typedef std::vector<TagValueSPtr> TagValueList;
-typedef ibapi::shared_ptr<TagValueList> TagValueListSPtr;
+typedef std::shared_ptr<TagValueList> TagValueListSPtr;
 
 #endif
 

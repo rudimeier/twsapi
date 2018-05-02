@@ -39,7 +39,7 @@ struct OrderComboLeg
 	}
 };
 
-typedef ibapi::shared_ptr<OrderComboLeg> OrderComboLegSPtr;
+typedef std::shared_ptr<OrderComboLeg> OrderComboLegSPtr;
 
 struct Order
 {
@@ -293,7 +293,7 @@ struct Order
 
 	// order combo legs
 	typedef std::vector<OrderComboLegSPtr> OrderComboLegList;
-	typedef ibapi::shared_ptr<OrderComboLegList> OrderComboLegListSPtr;
+	typedef std::shared_ptr<OrderComboLegList> OrderComboLegListSPtr;
 
 	OrderComboLegListSPtr orderComboLegs;
 
@@ -313,7 +313,7 @@ struct Order
 	int adjustableTrailingUnit;
 	double lmtPriceOffset;
 
-	std::vector<ibapi::shared_ptr<OrderCondition>> conditions;
+	std::vector<std::shared_ptr<OrderCondition>> conditions;
 	bool conditionsCancelOrder;
 	bool conditionsIgnoreRth;
 

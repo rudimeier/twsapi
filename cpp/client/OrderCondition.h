@@ -1,6 +1,5 @@
 #pragma once
 #include "IExternalizable.h"
-#include "shared_ptr.h"
 
 #ifndef _MSC_VER
 #include "StdAfx.h"

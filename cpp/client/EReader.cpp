@@ -2,7 +2,6 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
-#include "shared_ptr.h"
 #include "Contract.h"
 #include "EDecoder.h"
 #include "EMutex.h"
@@ -98,7 +97,7 @@ bool EReader::putMessageToQueue() {
 
 	{
 		EMutexGuard lock(m_csMsgQueue);
-		m_msgQueue.push_back(ibapi::shared_ptr<EMessage>(msg));
+		m_msgQueue.push_back(std::shared_ptr<EMessage>(msg));
 	}
 
 	m_pEReaderSignal->issueSignal();
@@ -256,14 +255,14 @@ EMessage * EReader::readSingleMsg() {
 	}
 }
 
-ibapi::shared_ptr<EMessage> EReader::getMsg(void) {
+std::shared_ptr<EMessage> EReader::getMsg(void) {
 	EMutexGuard lock(m_csMsgQueue);
 
 	if (m_msgQueue.size() == 0) {
-		return ibapi::shared_ptr<EMessage>();
+		return std::shared_ptr<EMessage>();
 	}
 
-	ibapi::shared_ptr<EMessage> msg = m_msgQueue.front();
+	std::shared_ptr<EMessage> msg = m_msgQueue.front();
 	m_msgQueue.pop_front();
 
 	return msg;
@@ -273,7 +272,7 @@ ibapi::shared_ptr<EMessage> EReader::getMsg(void) {
 void EReader::processMsgs(void) {
 	m_pClientSocket->onSend();
 
-	ibapi::shared_ptr<EMessage> msg = getMsg();
+	std::shared_ptr<EMessage> msg = getMsg();
 
 	if (!msg.get())
 		return;

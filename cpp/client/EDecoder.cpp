@@ -669,7 +669,7 @@ const char* EDecoder::processOpenOrderMsg(const char* ptr, const char* endPtr) {
 
 				DECODE_FIELD(conditionType);
 
-				ibapi::shared_ptr<OrderCondition> item = ibapi::shared_ptr<OrderCondition>(OrderCondition::create((OrderCondition::OrderConditionType)conditionType));
+				std::shared_ptr<OrderCondition> item = std::shared_ptr<OrderCondition>(OrderCondition::create((OrderCondition::OrderConditionType)conditionType));
 
 				if (!(ptr = item->readExternal(ptr, endPtr)))
 					return 0;

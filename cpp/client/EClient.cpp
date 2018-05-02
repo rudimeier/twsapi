@@ -1763,7 +1763,7 @@ void EClient::placeOrder( OrderId id, const Contract& contract, const Order& ord
 		ENCODE_FIELD(order.conditions.size());
 
 		if (order.conditions.size() > 0) {
-			for (ibapi::shared_ptr<OrderCondition> item : order.conditions) {
+			for (std::shared_ptr<OrderCondition> item : order.conditions) {
 				ENCODE_FIELD(item->type());
 				item->writeExternal(msg);
 			}

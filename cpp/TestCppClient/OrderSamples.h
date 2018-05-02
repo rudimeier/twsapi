@@ -3,7 +3,6 @@
 #define ORDERSAMPLES
 
 #include <vector>
-#include "shared_ptr.h"
 
 struct Order;
 class OrderCondition;
