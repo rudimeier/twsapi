@@ -62,7 +62,7 @@ TestCppClient::~TestCppClient()
     delete m_pClient;
 }
 
-bool TestCppClient::connect(const char *host, unsigned int port, int clientId)
+bool TestCppClient::connect(const char *host, int port, int clientId)
 {
 	// trying to connect
 	printf( "Connecting to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);

@@ -25,7 +25,7 @@ public:
 	explicit EClientSocketSSL(EWrapper *ptr, EReaderSignal *pSignal = 0);
 	virtual ~EClientSocketSSL();
 
-	bool eConnect( const char *host, unsigned int port, int clientId = 0, bool extraAuth = false);
+	bool eConnect( const char *host, int port, int clientId = 0, bool extraAuth = false);
 	// override virtual funcs from EClient
 	void eDisconnect(bool resetState = true);
 

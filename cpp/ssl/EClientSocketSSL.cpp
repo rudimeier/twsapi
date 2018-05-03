@@ -93,7 +93,7 @@ void EClientSocketSSL::asyncEConnect(bool val) {
     m_asyncEConnect = val;
 }
 
-bool EClientSocketSSL::eConnect( const char *host, unsigned int port, int clientId, bool extraAuth)
+bool EClientSocketSSL::eConnect( const char *host, int port, int clientId, bool extraAuth)
 {
 	if( m_fd == -2) {
 		getWrapper()->error( NO_VALID_ID, FAIL_CREATE_SOCK.code(), FAIL_CREATE_SOCK.msg());
@@ -372,7 +372,7 @@ void EClientSocketSSL::serverVersion(int version, const char *time) {
 void EClientSocketSSL::redirect(const char *host, int port) {
     const char* hostNorm = (host && *host) ? host : "127.0.0.1";
 
-	if( (hostNorm != this->host() || (port > 0 && (unsigned int)port != this->port()))) {
+	if( (hostNorm != this->host() || (port > 0 && port != this->port()))) {
         if (!m_allowRedirect) {
             getWrapper()->error(NO_VALID_ID, CONNECT_FAIL.code(), CONNECT_FAIL.msg());
 

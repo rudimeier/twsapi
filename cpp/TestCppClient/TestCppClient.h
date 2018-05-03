@@ -119,7 +119,7 @@ public:
 
 public:
 
-	bool connect(const char * host, unsigned int port, int clientId = 0);
+	bool connect(const char * host, int port, int clientId = 0);
 	void disconnect() const;
 	bool isConnected() const;
 
