@@ -3245,7 +3245,7 @@ void EClient::setHost( const std::string& host)
 	m_host = host;
 }
 
-void EClient::setPort( unsigned port)
+void EClient::setPort( int port)
 {
 	m_port = port;
 }

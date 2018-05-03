@@ -244,7 +244,7 @@ public:
 	bool isConnected() const;
 
 	const std::string& host() const { return m_host; }
-	unsigned port() const { return m_port; }
+	int port() const { return m_port; }
 
 public:
 
@@ -254,7 +254,7 @@ protected:
 	void setClientId(int clientId);
 	void setExtraAuth(bool extraAuth);
 	void setHost(const std::string& host);
-	void setPort(unsigned port);
+	void setPort(int port);
 
 public:
 
