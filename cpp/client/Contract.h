@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
@@ -64,7 +64,7 @@ struct DeltaNeutralContract
 	double	price;
 };
 
-typedef ibapi::shared_ptr<ComboLeg> ComboLegSPtr;
+typedef std::shared_ptr<ComboLeg> ComboLegSPtr;
 
 struct Contract
 {
@@ -98,7 +98,7 @@ struct Contract
 
 	// combo legs
 	typedef std::vector<ComboLegSPtr> ComboLegList;
-	typedef ibapi::shared_ptr<ComboLegList> ComboLegListSPtr;
+	typedef std::shared_ptr<ComboLegList> ComboLegListSPtr;
 
 	ComboLegListSPtr comboLegs;
 

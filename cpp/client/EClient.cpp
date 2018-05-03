@@ -1,5 +1,5 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
-* and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
+/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+ * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
 
@@ -1763,7 +1763,7 @@ void EClient::placeOrder( OrderId id, const Contract& contract, const Order& ord
 		ENCODE_FIELD(order.conditions.size());
 
 		if (order.conditions.size() > 0) {
-			for (ibapi::shared_ptr<OrderCondition> item : order.conditions) {
+			for (std::shared_ptr<OrderCondition> item : order.conditions) {
 				ENCODE_FIELD(item->type());
 				item->writeExternal(msg);
 			}
@@ -3245,7 +3245,7 @@ void EClient::setHost( const std::string& host)
 	m_host = host;
 }
 
-void EClient::setPort( unsigned port)
+void EClient::setPort( int port)
 {
 	m_port = port;
 }

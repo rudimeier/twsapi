@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+﻿/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
@@ -21,7 +21,7 @@ const unsigned SLEEP_TIME = 10;
 int main(int argc, char** argv)
 {
 	const char* host = argc > 1 ? argv[1] : "";
-	unsigned int port = argc > 2 ? atoi(argv[2]) : 0;
+	int port = argc > 2 ? atoi(argv[2]) : 0;
 	if (port <= 0)
 		port = 7496;
 	const char* connectOptions = argc > 3 ? argv[3] : "";

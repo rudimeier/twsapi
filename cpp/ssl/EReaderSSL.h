@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+﻿/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
@@ -17,7 +17,7 @@ class TWSAPISSLDLLEXP EReaderSSL
     EClientSocketSSL *m_pClientSocket;
     EReaderSignal *m_pEReaderSignal;
     EDecoder processMsgsDecoder_;
-    std::deque<ibapi::shared_ptr<EMessage>> m_msgQueue;
+    std::deque<std::shared_ptr<EMessage>> m_msgQueue;
     EMutex m_csMsgQueue;
     std::vector<char> m_buf;
 	EDecoder threadReadDecoder_;
@@ -38,7 +38,7 @@ public:
 
 protected:
 	bool processNonBlockingSelect();
-    ibapi::shared_ptr<EMessage> getMsg(void);
+    std::shared_ptr<EMessage> getMsg(void);
     void readToQueue();
 #if defined(IB_POSIX)
     static void * readToQueueThread(void * lpParam);

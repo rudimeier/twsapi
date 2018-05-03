@@ -1,4 +1,4 @@
-/* Copyright (C) 2017 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
@@ -38,7 +38,7 @@ TestCppClient::~TestCppClient()
     delete m_pClient;
 }
 
-bool TestCppClient::connect(const char *host, unsigned int port, int clientId)
+bool TestCppClient::connect(const char *host, int port, int clientId)
 {
 	// trying to connect
 	printf( "Connecting to %s:%d clientId:%d\n", !( host && *host) ? "127.0.0.1" : host, port, clientId);

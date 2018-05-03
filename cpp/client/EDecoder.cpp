@@ -1,5 +1,5 @@
-/* Copyright (C) 2017 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
-* and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
+/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+ * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
 #include <assert.h>
@@ -669,7 +669,7 @@ const char* EDecoder::processOpenOrderMsg(const char* ptr, const char* endPtr) {
 
 				DECODE_FIELD(conditionType);
 
-				ibapi::shared_ptr<OrderCondition> item = ibapi::shared_ptr<OrderCondition>(OrderCondition::create((OrderCondition::OrderConditionType)conditionType));
+				std::shared_ptr<OrderCondition> item = std::shared_ptr<OrderCondition>(OrderCondition::create((OrderCondition::OrderConditionType)conditionType));
 
 				if (!(ptr = item->readExternal(ptr, endPtr)))
 					return 0;

@@ -1,5 +1,5 @@
-/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
-* and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
+/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+ * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
 #ifndef testcppclient_h__INCLUDED
@@ -119,7 +119,7 @@ public:
 
 public:
 
-	bool connect(const char * host, unsigned int port, int clientId = 0);
+	bool connect(const char * host, int port, int clientId = 0);
 	void disconnect() const;
 	bool isConnected() const;
 

@@ -1,8 +1,7 @@
-﻿/* Copyright (C) 2013 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
+﻿/* Copyright (C) 2018 Interactive Brokers LLC. All rights reserved. This code is subject to the terms
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #include "StdAfx.h"
-#include "../client/shared_ptr.h"
 #include "../client/Contract.h"
 #include "../client/EDecoder.h"
 #include "../client/EMutex.h"
@@ -84,7 +83,7 @@ void EReaderSSL::readToQueue() {
 			break;
 
 		m_csMsgQueue.Enter();
-		m_msgQueue.push_back(ibapi::shared_ptr<EMessage>(msg));
+		m_msgQueue.push_back(std::shared_ptr<EMessage>(msg));
 		m_csMsgQueue.Leave();
 		m_pEReaderSignal->issueSignal();
 
@@ -238,16 +237,16 @@ EMessage * EReaderSSL::readSingleMsg() {
 	}
 }
 
-ibapi::shared_ptr<EMessage> EReaderSSL::getMsg(void) {
+std::shared_ptr<EMessage> EReaderSSL::getMsg(void) {
 	m_csMsgQueue.Enter();
 
 	if (m_msgQueue.size() == 0) {
 		m_csMsgQueue.Leave();
 
-		return ibapi::shared_ptr<EMessage>();
+		return std::shared_ptr<EMessage>();
 	}
 
-	ibapi::shared_ptr<EMessage> msg = m_msgQueue.front();
+	std::shared_ptr<EMessage> msg = m_msgQueue.front();
 
 	m_msgQueue.pop_front();
 	m_csMsgQueue.Leave();
@@ -260,7 +259,7 @@ void EReaderSSL::processMsgs(void) {
 	m_pClientSocket->onSend();
 	checkClient();
 
-	ibapi::shared_ptr<EMessage> msg = getMsg();
+	std::shared_ptr<EMessage> msg = getMsg();
 
 	if (!msg.get())
 		return;
