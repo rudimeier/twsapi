@@ -17,7 +17,7 @@ class TWSAPISSLDLLEXP EReaderSSL
     EClientSocketSSL *m_pClientSocket;
     EReaderSignal *m_pEReaderSignal;
     EDecoder processMsgsDecoder_;
-    std::deque<ibapi::shared_ptr<EMessage>> m_msgQueue;
+    std::deque<std::shared_ptr<EMessage>> m_msgQueue;
     EMutex m_csMsgQueue;
     std::vector<char> m_buf;
 	EDecoder threadReadDecoder_;
@@ -38,7 +38,7 @@ public:
 
 protected:
 	bool processNonBlockingSelect();
-    ibapi::shared_ptr<EMessage> getMsg(void);
+    std::shared_ptr<EMessage> getMsg(void);
     void readToQueue();
 #if defined(IB_POSIX)
     static void * readToQueueThread(void * lpParam);
