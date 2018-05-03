@@ -58,7 +58,6 @@ twsapi_musthave_h += client/PercentChangeCondition.h
 twsapi_musthave_h += client/PriceCondition.h
 twsapi_musthave_h += client/PriceIncrement.h
 twsapi_musthave_h += client/ScannerSubscription.h
-twsapi_musthave_h += client/shared_ptr.h
 twsapi_musthave_h += client/SoftDollarTier.h
 twsapi_musthave_h += client/StdAfx.h
 twsapi_musthave_h += client/TagValue.h
