@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef depthmktdatadescription_def
-#define depthmktdatadescription_def
+#ifndef TWS_API_CLIENT_DEPTHMKTDATADESCRIPTION_H
+#define TWS_API_CLIENT_DEPTHMKTDATADESCRIPTION_H
 
 #include <limits.h>
 #define UNSET_INTEGER INT_MAX

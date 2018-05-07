@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef historicaltickbidaskendtry_def
-#define historicaltickbidaskendtry_def
+#ifndef TWS_API_CLIENT_HISTORICALTICKBIDASK_H
+#define TWS_API_CLIENT_HISTORICALTICKBIDASK_H
 
 struct HistoricalTickBidAsk
 {

@@ -2,6 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef TWS_API_CLIENT_EDECODER_H
+#define TWS_API_CLIENT_EDECODER_H
 
 #include "Contract.h"
 #include "HistoricalTick.h"
@@ -334,3 +336,4 @@ public:
 #define DECODE_FIELD(x) if (!EDecoder::DecodeField(x, ptr, endPtr)) return 0;
 #define DECODE_FIELD_TIME(x) if (!EDecoder::DecodeFieldTime(x, ptr, endPtr)) return 0;
 #define DECODE_FIELD_MAX(x) if (!EDecoder::DecodeFieldMax(x, ptr, endPtr)) return 0;
+#endif

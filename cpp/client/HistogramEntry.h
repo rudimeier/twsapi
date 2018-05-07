@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef histogramentry_def
-#define histogramentry_def
+#ifndef TWS_API_CLIENT_HISTOGRAMENTRY_H
+#define TWS_API_CLIENT_HISTOGRAMENTRY_H
 
 struct HistogramEntry
 {

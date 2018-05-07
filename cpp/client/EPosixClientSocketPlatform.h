@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef eposixclientsocketcommon_def
-#define eposixclientsocketcommon_def
+#ifndef TWS_API_CLIENT_EPOSIXCLIENTSOCKETPLATFORM_H
+#define TWS_API_CLIENT_EPOSIXCLIENTSOCKETPLATFORM_H
 
 #ifdef _WIN32
 

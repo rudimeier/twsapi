@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef tswsocketclienterrors_def
-#define tswsocketclienterrors_def
+#ifndef TWS_API_CLIENT_TWSSOCKETCLIENTERRORS_H
+#define TWS_API_CLIENT_TWSSOCKETCLIENTERRORS_H
 
 static const int NO_VALID_ID = -1;
 static const int NO_VALID_ERROR_CODE = 0;

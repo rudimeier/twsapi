@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef SCANNERSUBSCRIPTIONSAMPLES
-#define SCANNERSUBSCRIPTIONSAMPLES
+#ifndef TWS_API_SAMPLES_TESTCPPCLIENT_SCANNERSUBSCRIPTIONSAMPLES_H
+#define TWS_API_SAMPLES_TESTCPPCLIENT_SCANNERSUBSCRIPTIONSAMPLES_H
 
 #include <string>
 

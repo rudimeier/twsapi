@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef ACCOUNTSUMMARYTAGS
-#define ACCOUNTSUMMARYTAGS
+#ifndef TWS_API_SAMPLES_TESTCPPCLIENT_ACCOUNTSUMMARYTAGS_H
+#define TWS_API_SAMPLES_TESTCPPCLIENT_ACCOUNTSUMMARYTAGS_H
 
 #include <string>
 

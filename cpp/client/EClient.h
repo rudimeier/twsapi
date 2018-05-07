@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef eclient_h__INCLUDED
-#define eclient_h__INCLUDED
+#ifndef TWS_API_CLIENT_ECLIENT_H
+#define TWS_API_CLIENT_ECLIENT_H
 
 
 #include <memory>

@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef familycode_def
-#define familycode_def
+#ifndef TWS_API_CLIENT_FAMILYCODE_H
+#define TWS_API_CLIENT_FAMILYCODE_H
 
 struct FamilyCode
 {
