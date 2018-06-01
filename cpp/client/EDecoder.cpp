@@ -2348,6 +2348,20 @@ const char* EDecoder::processTickByTickDataMsg(const char* ptr, const char* endP
     return ptr;
 }
 
+const char* EDecoder::processOrderBoundMsg(const char* ptr, const char* endPtr) {
+	long long orderId;
+	int apiClientId;
+	int apiOrderId;
+
+	DECODE_FIELD( orderId);
+	DECODE_FIELD( apiClientId);
+	DECODE_FIELD( apiOrderId);
+
+	m_pEWrapper->orderBound( orderId, apiClientId, apiOrderId);
+
+	return ptr;
+}
+
 int EDecoder::parseAndProcessMsg(const char*& beginPtr, const char* endPtr) {
 	// process a single message from the buffer;
 	// return number of bytes consumed
@@ -2659,6 +2673,10 @@ int EDecoder::parseAndProcessMsg(const char*& beginPtr, const char* endPtr) {
 
         case TICK_BY_TICK:
             ptr = processTickByTickDataMsg(ptr, endPtr);
+            break;
+
+        case ORDER_BOUND:
+            ptr = processOrderBoundMsg(ptr, endPtr);
             break;
 
 		default:

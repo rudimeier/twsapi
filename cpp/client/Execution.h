@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef execution_def
-#define execution_def
+#ifndef TWS_API_CLIENT_EXECUTION_H
+#define TWS_API_CLIENT_EXECUTION_H
 
 
 struct Execution

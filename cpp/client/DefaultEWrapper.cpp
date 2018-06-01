@@ -98,3 +98,4 @@ void DefaultEWrapper::historicalTicksLast(int reqId, const std::vector<Historica
 void DefaultEWrapper::tickByTickAllLast(int reqId, int tickType, time_t time, double price, int size, const TickAttrib& attribs, const std::string& exchange, const std::string& specialConditions) { }
 void DefaultEWrapper::tickByTickBidAsk(int reqId, time_t time, double bidPrice, double askPrice, int bidSize, int askSize, const TickAttrib& attribs) { }
 void DefaultEWrapper::tickByTickMidPoint(int reqId, time_t time, double midPoint) { }
+void DefaultEWrapper::orderBound(long long orderId, int apiClientId, int apiOrderId) { }

@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef newsprovider_def
-#define newsprovider_def
+#ifndef TWS_API_CLIENT_NEWSPROVIDER_H
+#define TWS_API_CLIENT_NEWSPROVIDER_H
 
 struct NewsProvider
 {

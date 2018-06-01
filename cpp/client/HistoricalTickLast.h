@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef historicalticklastendtry_def
-#define historicalticklastendtry_def
+#ifndef TWS_API_CLIENT_HISTORICALTICKLAST_H
+#define TWS_API_CLIENT_HISTORICALTICKLAST_H
 
 struct HistoricalTickLast
 {

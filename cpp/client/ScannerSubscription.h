@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef scanner_def
-#define scanner_def
+#ifndef TWS_API_CLIENT_SCANNERSUBSCRIPTION_H
+#define TWS_API_CLIENT_SCANNERSUBSCRIPTION_H
 
 #include <float.h>
 #include <limits.h>

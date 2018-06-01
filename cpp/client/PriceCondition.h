@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef TWS_API_CLIENT_PRICECONDITION_H
+#define TWS_API_CLIENT_PRICECONDITION_H
+
 #include "ContractCondition.h"
 
 class TWSAPIDLLEXP PriceCondition : public ContractCondition {
@@ -39,3 +42,5 @@ public:
 	std::string strTriggerMethod();
 	void triggerMethod(Method triggerMethod);
 };
+
+#endif

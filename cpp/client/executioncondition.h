@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef TWS_API_CLIENT_EXECUTIONCONDITION_H
+#define TWS_API_CLIENT_EXECUTIONCONDITION_H
+
 #include <string>
 #include "OrderCondition.h"
 
@@ -30,3 +33,5 @@ public:
 	std::string symbol();
 	void symbol(const std::string &symbol);
 };
+
+#endif

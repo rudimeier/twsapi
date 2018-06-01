@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef order_def
-#define order_def
+#ifndef TWS_API_CLIENT_ORDER_H
+#define TWS_API_CLIENT_ORDER_H
 
 #include "TagValue.h"
 #include "OrderCondition.h"

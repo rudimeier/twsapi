@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef ORDERSAMPLES
-#define ORDERSAMPLES
+#ifndef TWS_API_SAMPLES_TESTCPPCLIENT_ORDERSAMPLES_H
+#define TWS_API_SAMPLES_TESTCPPCLIENT_ORDERSAMPLES_H
 
 #include <vector>
 

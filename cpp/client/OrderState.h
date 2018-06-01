@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef ORDER_STATE_H__INCLUDED
-#define ORDER_STATE_H__INCLUDED
+#ifndef TWS_API_CLIENT_ORDERSTATE_H
+#define TWS_API_CLIENT_ORDERSTATE_H
 
 #include "Order.h"
 

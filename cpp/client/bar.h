@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef bar_def
-#define bar_def
+#ifndef TWS_API_CLIENT_BAR_H
+#define TWS_API_CLIENT_BAR_H
 
 struct Bar
 {

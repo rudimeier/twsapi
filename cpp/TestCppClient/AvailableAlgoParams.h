@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef AVAILABLEALGOPARAMS
-#define AVAILABLEALGOPARAMS
+#ifndef TWS_API_SAMPLES_TESTCPPCLIENT_AVAILABLEALGOPARAMS_H
+#define TWS_API_SAMPLES_TESTCPPCLIENT_AVAILABLEALGOPARAMS_H
 
 #include <string>
 

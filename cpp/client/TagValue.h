@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef tagvalue_def
-#define tagvalue_def
+#ifndef TWS_API_CLIENT_TAGVALUE_H
+#define TWS_API_CLIENT_TAGVALUE_H
 
 
 #include <string>

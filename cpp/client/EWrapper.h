@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef ewrapper_def
-#define ewrapper_def
+#ifndef TWS_API_CLIENT_EWRAPPER_H
+#define TWS_API_CLIENT_EWRAPPER_H
 
 #include <string>
 #include <set>

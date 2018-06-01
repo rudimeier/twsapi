@@ -2,6 +2,9 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef TWS_API_CLIENT_EREADEROSSIGNAL_H
+#define TWS_API_CLIENT_EREADEROSSIGNAL_H
+
 #include "EReaderSignal.h"
 #include "StdAfx.h"
 #include <stdexcept>
@@ -33,3 +36,4 @@ public:
 	virtual void waitForSignal();
 };
 
+#endif

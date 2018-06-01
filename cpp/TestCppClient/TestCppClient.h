@@ -2,8 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
-#ifndef testcppclient_h__INCLUDED
-#define testcppclient_h__INCLUDED
+#ifndef TWS_API_SAMPLES_TESTCPPCLIENT_TESTCPPCLIENT_H
+#define TWS_API_SAMPLES_TESTCPPCLIENT_TESTCPPCLIENT_H
 
 #include "EWrapper.h"
 #include "EReaderOSSignal.h"

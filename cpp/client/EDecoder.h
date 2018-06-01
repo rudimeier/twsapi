@@ -2,6 +2,8 @@
  * and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable. */
 
 #pragma once
+#ifndef TWS_API_CLIENT_EDECODER_H
+#define TWS_API_CLIENT_EDECODER_H
 
 #include "Contract.h"
 #include "HistoricalTick.h"
@@ -96,12 +98,14 @@ const int MIN_SERVER_VER_MIFID_EXECUTION            = 139;
 const int MIN_SERVER_VER_TICK_BY_TICK_IGNORE_SIZE   = 140;
 const int MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE       = 141;
 const int MIN_SERVER_VER_WHAT_IF_EXT_FIELDS         = 142;
+const int MIN_SERVER_VER_SCANNER_GENERIC_OPTS       = 143;
+const int MIN_SERVER_VER_API_BIND_ORDER             = 144;
 
 /* 100+ messaging */
 // 100 = enhanced handshake, msg length prefixes
 
 const int MIN_CLIENT_VER = 100;
-const int MAX_CLIENT_VER = MIN_SERVER_VER_WHAT_IF_EXT_FIELDS;
+const int MAX_CLIENT_VER = MIN_SERVER_VER_API_BIND_ORDER;
 
 
 // incoming msg id's
@@ -179,6 +183,7 @@ const int HISTORICAL_TICKS                          = 96;
 const int HISTORICAL_TICKS_BID_ASK                  = 97;
 const int HISTORICAL_TICKS_LAST                     = 98;
 const int TICK_BY_TICK                              = 99;
+const int ORDER_BOUND                               = 100;
 
 const int HEADER_LEN = 4; // 4 bytes for msg length
 const int MAX_MSG_LEN = 0xFFFFFF; // 16Mb - 1byte
@@ -294,6 +299,7 @@ class TWSAPIDLLEXP EDecoder
     const char* processHistoricalTicksBidAsk(const char* ptr, const char* endPtr);
     const char* processHistoricalTicksLast(const char* ptr, const char* endPtr);
     const char* processTickByTickDataMsg(const char* ptr, const char* endPtr);
+    const char* processOrderBoundMsg(const char* ptr, const char* endPtr);
 
 
     int processConnectAck(const char*& beginPtr, const char* endPtr);
@@ -334,3 +340,4 @@ public:
 #define DECODE_FIELD(x) if (!EDecoder::DecodeField(x, ptr, endPtr)) return 0;
 #define DECODE_FIELD_TIME(x) if (!EDecoder::DecodeFieldTime(x, ptr, endPtr)) return 0;
 #define DECODE_FIELD_MAX(x) if (!EDecoder::DecodeFieldMax(x, ptr, endPtr)) return 0;
+#endif
