@@ -29,7 +29,7 @@ class TWSAPIDLLEXP EReaderOSSignal :
     unsigned long m_waitTimeout; // in milliseconds
 
 public:
-	EReaderOSSignal(unsigned long waitTimeout = INFINITE) throw (std::runtime_error);
+	EReaderOSSignal(unsigned long waitTimeout = INFINITE);
 	virtual ~EReaderOSSignal(void);
 
 	virtual void issueSignal();
