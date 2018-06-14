@@ -692,7 +692,7 @@ void EClient::reqScannerSubscription(int tickerId,
 
     ENCODE_FIELD( REQ_SCANNER_SUBSCRIPTION);
 
-    if (m_serverVersion >= MIN_SERVER_VER_SCANNER_GENERIC_OPTS) {
+    if (m_serverVersion < MIN_SERVER_VER_SCANNER_GENERIC_OPTS) {
         ENCODE_FIELD(VERSION);
     }
 

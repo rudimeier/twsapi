@@ -11,7 +11,7 @@
 #endif
 #endif
 
-EReaderOSSignal::EReaderOSSignal(unsigned long waitTimeout) throw (std::runtime_error)
+EReaderOSSignal::EReaderOSSignal(unsigned long waitTimeout)
 {
     bool ok = true;
     m_waitTimeout = waitTimeout;
