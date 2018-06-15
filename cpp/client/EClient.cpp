@@ -1416,6 +1416,13 @@ void EClient::placeOrder( OrderId id, const Contract& contract, const Order& ord
             return;
     }
 
+    if (m_serverVersion < MIN_SERVER_VER_ORDER_CONTAINER 
+        && order.isOmsContainer) {
+            m_pEWrapper->error(id, UPDATE_TWS.code(), UPDATE_TWS.msg() +
+                " It does not support oms container parameter");
+            return;
+    }
+
     std::stringstream msg;
     prepareBuffer( msg);
 
@@ -1423,7 +1430,11 @@ void EClient::placeOrder( OrderId id, const Contract& contract, const Order& ord
 
     // send place order msg
     ENCODE_FIELD( PLACE_ORDER);
-    ENCODE_FIELD( VERSION);
+
+    if (m_serverVersion < MIN_SERVER_VER_ORDER_CONTAINER) {
+        ENCODE_FIELD( VERSION);
+    }
+
     ENCODE_FIELD( id);
 
     // send contract fields
@@ -1814,6 +1825,10 @@ void EClient::placeOrder( OrderId id, const Contract& contract, const Order& ord
 
     if (m_serverVersion >= MIN_SERVER_VER_AUTO_PRICE_FOR_HEDGE) {
         ENCODE_FIELD(order.dontUseAutoPriceForHedge);
+    }
+
+    if (m_serverVersion >= MIN_SERVER_VER_ORDER_CONTAINER) {
+        ENCODE_FIELD(order.isOmsContainer);
     }
 
     closeAndSend( msg.str());
