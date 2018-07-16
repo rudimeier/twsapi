@@ -106,18 +106,6 @@ header_HEADERS += client/EMutex.h
 header_HEADERS += client/EReader.h
 header_HEADERS += client/EReaderOSSignal.h
 header_HEADERS += client/EReaderSignal.h
-if HAVE_SSL
-## ssl
-libtwsapi_iborig_la_SOURCES += ssl/EClientSocketSSL.cpp
-libtwsapi_iborig_la_SOURCES += ssl/EReaderSSL.cpp
-libtwsapi_iborig_la_SOURCES += ssl/ESocketSSL.cpp
-libtwsapi_iborig_la_SOURCES += ssl/StdAfx.cpp
-header_HEADERS += ssl/EClientSocketSSL.h
-header_HEADERS += ssl/EReaderSSL.h
-header_HEADERS += ssl/ESocketSSL.h
-header_HEADERS += ssl/StdAfx.h
-libtwsapi_iborig_la_CPPFLAGS += $(openssl_CFLAGS)
-endif
 endif
 
 if WITH_IBORIG
@@ -147,24 +135,6 @@ testclient_CPPFLAGS =
 testclient_CPPFLAGS += $(AM_CPPFLAGS)
 testclient_CPPFLAGS += -I$(srcdir)/client
 testclient_LDFLAGS = $(AM_LDFLAGS)
-
-if HAVE_SSL
-noinst_PROGRAMS += testclientssl
-testclientssl_SOURCES =
-testclientssl_SOURCES += TestCppClientSSL/Main.cpp
-testclientssl_SOURCES += TestCppClientSSL/StdAfx.cpp
-testclientssl_SOURCES += TestCppClientSSL/TestCppClientSSL.cpp
-noinst_HEADERS += TestCppClientSSL/TestCppClientSSL.h
-noinst_HEADERS += TestCppClientSSL/StdAfx.h
-testclientssl_LDADD =
-testclientssl_LDADD += libtwsapi-iborig.la
-testclientssl_LDADD += $(openssl_LIBS)
-testclientssl_CPPFLAGS =
-testclientssl_CPPFLAGS += $(AM_CPPFLAGS)
-testclientssl_CPPFLAGS += -I$(srcdir)/client
-testclientssl_CPPFLAGS += $(openssl_CFLAGS)
-testclientssl_LDFLAGS = $(AM_LDFLAGS)
-endif
 endif
 
 CLEANFILES =

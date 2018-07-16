@@ -7,5 +7,5 @@ datadir=@datarootdir@
 Name: @PACKAGE@
 Description:  API Library for Interactive Brokers TWS
 Version: @VERSION@
-Libs: -L${libdir} -ltwsapi-iborig -pthread @LIBS@ @openssl_LIBS@
+Libs: -L${libdir} -ltwsapi-iborig -pthread @LIBS@
 Cflags: -DIBString=std::string -I${includedir}

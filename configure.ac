@@ -80,17 +80,6 @@ AS_IF([test "x$enable_iborig" != xno], [
     [*:yes], AC_DEFINE([WITH_IBORIG], [1], [Define if we build with iborig enabled]))])
 AM_CONDITIONAL([WITH_IBORIG], [test "x$have_pthreads" = xyes])
 
-AC_ARG_ENABLE([ssl],
-  AS_HELP_STRING([--enable-ssl], [build with ssl support]),
-  [], [enable_ssl=check])
-have_ssl=no
-AS_IF([test "x$enable_ssl" != xno], [
-  PKG_CHECK_MODULES([openssl], [openssl], [have_ssl=yes], [have_ssl=no])
-  AS_CASE([$enable_ssl:$have_ssl],
-    [yes:no], [AC_MSG_ERROR([ssl requested but not found])],
-    [*:yes], AC_DEFINE([HAVE_SSL], [1], [Define if openssl is available]))])
-AM_CONDITIONAL([HAVE_SSL], [test "x$have_ssl" = xyes])
-
 ## offload some of the final targets here
 headerdir="${includedir}/${PACKAGE}"
 AC_SUBST([headerdir])
