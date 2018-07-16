@@ -46,5 +46,8 @@ rm -rf %{buildroot}
 %doc %{_docdir}/%{name}/
 %{_libdir}/lib@PACKAGE@.a
 %{_libdir}/lib@PACKAGE@.la
+%{_libdir}/lib@PACKAGE@-iborig.a
+%{_libdir}/lib@PACKAGE@-iborig.la
 %{_libdir}/pkgconfig/@PACKAGE@.pc
+%{_libdir}/pkgconfig/@PACKAGE@-iborig.pc
 %{_includedir}/@PACKAGE@/
