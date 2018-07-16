@@ -324,8 +324,11 @@ const char* EDecoder::processErrMsgMsg(const char* ptr, const char* endPtr) {
 
 const char* EDecoder::processOpenOrderMsg(const char* ptr, const char* endPtr) {
 	// read version
-	int version;
-	DECODE_FIELD( version);
+	int version = m_serverVersion;
+
+    if (m_serverVersion < MIN_SERVER_VER_ORDER_CONTAINER) {
+	    DECODE_FIELD(version);
+    }
 
 	// read order id
 	Order order;
@@ -709,7 +712,11 @@ const char* EDecoder::processOpenOrderMsg(const char* ptr, const char* endPtr) {
 		DECODE_FIELD(order.dontUseAutoPriceForHedge);
 	}
 
-	m_pEWrapper->openOrder( (OrderId)order.orderId, contract, order, orderState);
+    if (m_serverVersion >= MIN_SERVER_VER_ORDER_CONTAINER) {
+        DECODE_FIELD(order.isOmsContainer);
+    }
+
+	m_pEWrapper->openOrder((OrderId)order.orderId, contract, order, orderState);
 
 	return ptr;
 } 

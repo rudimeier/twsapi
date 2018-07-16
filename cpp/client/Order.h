@@ -158,6 +158,8 @@ struct Order
 
 		// don't use auto price for hedge
 		dontUseAutoPriceForHedge = false;
+
+        isOmsContainer = false;
 	}
 
 	// order identifier
@@ -332,6 +334,8 @@ struct Order
 
 	// don't use auto price for hedge
 	bool dontUseAutoPriceForHedge;
+
+    bool isOmsContainer;
 
 public:
 

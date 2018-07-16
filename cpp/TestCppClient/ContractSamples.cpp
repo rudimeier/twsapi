@@ -595,7 +595,7 @@ Contract ContractSamples::NewsFeedForQuery()
 	//! [newsfeedforquery]
 	Contract contract;
 	contract.secType = "NEWS";
-	contract.exchange = "BT"; //Briefing Trader
+	contract.exchange = "BRF"; //Briefing Trader
 	//! [newsfeedforquery]
 	return contract;
 }
@@ -604,9 +604,9 @@ Contract ContractSamples::BTbroadtapeNewsFeed()
 {
 	//! [newscontractbt]
 	Contract contract;
-	contract.symbol = "BT:BT_ALL"; //BroadTape All News
+	contract.symbol = "BRF:BRF_ALL"; //BroadTape All News
 	contract.secType = "NEWS";
-	contract.exchange = "BT"; //Briefing Trader
+	contract.exchange = "BRF"; //Briefing Trader
 	//! [newscontractbt]
 	return contract;
 }

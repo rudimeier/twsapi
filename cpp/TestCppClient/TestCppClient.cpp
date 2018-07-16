@@ -613,12 +613,25 @@ void TestCppClient::marketScanners()
 	/*** Triggering a scanner subscription ***/
 	//! [reqscannersubscription]
 	m_pClient->reqScannerSubscription(7001, ScannerSubscriptionSamples::HotUSStkByVolume(), TagValueListSPtr(), TagValueListSPtr());
+	
+	TagValueSPtr t1(new TagValue("usdMarketCapAbove", "10000"));
+	TagValueSPtr t2(new TagValue("optVolumeAbove", "1000"));
+	TagValueSPtr t3(new TagValue("usdMarketCapAbove", "100000000"));
+
+	TagValueListSPtr TagValues(new TagValueList());
+	TagValues->push_back(t1);
+	TagValues->push_back(t2);
+	TagValues->push_back(t3);
+
+	m_pClient->reqScannerSubscription(7002, ScannerSubscriptionSamples::HotUSStkByVolume(), TagValueListSPtr(), TagValues); // requires TWS v973+
+	
 	//! [reqscannersubscription]
 
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	/*** Canceling the scanner subscription ***/
 	//! [cancelscannersubscription]
 	m_pClient->cancelScannerSubscription(7001);
+	m_pClient->cancelScannerSubscription(7002);
 	//! [cancelscannersubscription]
 
 	m_state = ST_MARKETSCANNERS_ACK;
@@ -857,6 +870,7 @@ void TestCppClient::hedgeSample(){
 	//Parent order on a contract which currency differs from your base currency
 	Order parent = OrderSamples::LimitOrder("BUY", 100, 10);
 	parent.orderId = m_orderId++;
+	parent.transmit = false;
 	//Hedge on the currency conversion
 	Order hedge = OrderSamples::MarketFHedge(parent.orderId, "BUY");
 	//Place the parent first...
