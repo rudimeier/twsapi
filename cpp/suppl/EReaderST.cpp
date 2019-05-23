@@ -128,15 +128,23 @@ void EReaderST::select_timeout( int msec )
 void EReaderST::onReceive()
 {
 	const char * errmsg;
-	size_t sz = m_buf->size - m_buf->offset;
-	int nRes = m_pClientSocket->receive(m_buf->begin + m_buf->offset, sz );
-	if (nRes <= 0) {
-		errmsg = nRes < 0 ? strerror(errno)
-			: "The remote host closed the connection.";
-		goto fail;
+	if (m_buf->offset == m_buf->size) {
+		if (resize_read_buf(m_buf, m_buf->size + IN_BLOCK_SIZE) == -1) {
+			errmsg = strerror(errno);
+			goto fail;
+		}
 	}
+	{
+		size_t sz = m_buf->size - m_buf->offset;
+		int nRes = m_pClientSocket->receive(m_buf->begin + m_buf->offset, sz );
+		if (nRes <= 0) {
+			errmsg = nRes < 0 ? strerror(errno)
+				: "The remote host closed the connection.";
+			goto fail;
+		}
 
-	m_buf->offset += nRes;
+		m_buf->offset += nRes;
+	}
 
 	assert(m_pClientSocket->usingV100Plus());
 	if (readV100Plus() == -1) {
@@ -229,7 +237,7 @@ reshape:
 
 	/* let the last incomplete message fit into the buffer */
 	if( msgSize > m_buf->size) {
-		size_t newsize = IN_BLOCK_SIZE * (1 + msgSize/IN_BLOCK_SIZE);
+		size_t newsize = IN_BLOCK_SIZE * ((msgSize + IN_BLOCK_SIZE - 1)/IN_BLOCK_SIZE);
 		if (resize_read_buf(m_buf, newsize) == -1) {
 			goto fail;
 		}
